@@ -379,7 +379,7 @@ export default async function RealisationDetailPage({
                 className="group rounded-2xl p-6 flex items-start gap-4 transition-all hover:-translate-y-1"
                 style={{ background: "var(--card-bg)", border: "1px solid var(--border)", boxShadow: "var(--card-shadow)" }}
               >
-                <svg className="h-5 w-5 mt-1 shrink-0 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }}>
+                <svg className="h-5 w-5 mt-1 shrink-0 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                   <path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 <div className="min-w-0">
@@ -409,7 +409,7 @@ export default async function RealisationDetailPage({
                     {next.title}
                   </div>
                 </div>
-                <svg className="h-5 w-5 mt-1 shrink-0 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }}>
+                <svg className="h-5 w-5 mt-1 shrink-0 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                   <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </Link>

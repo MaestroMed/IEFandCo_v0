@@ -143,7 +143,7 @@ export default async function ComparatorPage({
                     <td className="p-4 text-sm" style={{ color: "var(--text-secondary)" }}>
                       <div className="flex items-start gap-2">
                         {row.winner === "A" && (
-                          <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }}>
+                          <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }} role="img" aria-label="Avantage">
                             <path d="M4.5 12.75l6 6 9-13.5" />
                           </svg>
                         )}
@@ -153,7 +153,7 @@ export default async function ComparatorPage({
                     <td className="p-4 text-sm" style={{ color: "var(--text-secondary)" }}>
                       <div className="flex items-start gap-2">
                         {row.winner === "B" && (
-                          <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-primary)" }}>
+                          <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-primary)" }} role="img" aria-label="Avantage">
                             <path d="M4.5 12.75l6 6 9-13.5" />
                           </svg>
                         )}
@@ -270,7 +270,7 @@ export default async function ComparatorPage({
                   <span className="font-display text-base font-semibold md:text-lg pr-4" style={{ color: "var(--text)" }}>
                     {q.question}
                   </span>
-                  <svg className="h-5 w-5 transition-transform group-open:rotate-180 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--color-copper)" }}>
+                  <svg className="h-5 w-5 transition-transform group-open:rotate-180 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                     <path d="M19 9l-7 7-7-7" />
                   </svg>
                 </summary>

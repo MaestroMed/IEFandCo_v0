@@ -55,16 +55,16 @@ export function TeamMember({ name, role, expertise, initials, index }: TeamMembe
               {initials}
             </span>
             {/* Corner brackets */}
-            <svg className="absolute -top-3 -left-3 h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <svg className="absolute -top-3 -left-3 h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M 1 5 L 1 1 L 5 1" stroke="var(--color-copper)" strokeWidth="1.2" />
             </svg>
-            <svg className="absolute -top-3 -right-3 h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <svg className="absolute -top-3 -right-3 h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M 11 1 L 15 1 L 15 5" stroke="var(--color-copper)" strokeWidth="1.2" />
             </svg>
-            <svg className="absolute -bottom-3 -left-3 h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <svg className="absolute -bottom-3 -left-3 h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M 1 11 L 1 15 L 5 15" stroke="var(--color-copper)" strokeWidth="1.2" />
             </svg>
-            <svg className="absolute -bottom-3 -right-3 h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <svg className="absolute -bottom-3 -right-3 h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M 15 11 L 15 15 L 11 15" stroke="var(--color-copper)" strokeWidth="1.2" />
             </svg>
           </div>

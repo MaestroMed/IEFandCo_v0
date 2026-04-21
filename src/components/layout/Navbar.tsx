@@ -60,6 +60,7 @@ function ServicesDropdown({ items }: { items: NavItem[] }) {
             stroke="currentColor"
             strokeWidth={2.5}
             style={{ color: "var(--color-copper)" }}
+            aria-hidden="true"
           >
             <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
@@ -301,7 +302,7 @@ export function Navbar() {
                   >
                     <span className="inline-flex items-center gap-1">
                       {item.label}
-                      <svg className={cn("h-3 w-3 transition-transform duration-[var(--dur-sm)]", isOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path d="M19 9l-7 7-7-7" /></svg>
+                      <svg className={cn("h-3 w-3 transition-transform duration-[var(--dur-sm)]", isOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true"><path d="M19 9l-7 7-7-7" /></svg>
                     </span>
                     {/* Sliding underline indicator */}
                     <span

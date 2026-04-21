@@ -143,7 +143,7 @@ export default async function DepannageComboPage({
               className="inline-flex items-center gap-3 rounded-lg px-6 py-3 font-semibold text-white transition-all hover:scale-105"
               style={{ background: "var(--color-primary)", boxShadow: "0 10px 30px rgba(225, 16, 33, 0.3)" }}
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
               </svg>
               Appeler {companyInfo.phoneDisplay}
@@ -280,7 +280,7 @@ export default async function DepannageComboPage({
                       </div>
                     </div>
                   </div>
-                  <svg className="h-5 w-5 transition-transform group-open:rotate-180 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--color-copper)" }}>
+                  <svg className="h-5 w-5 transition-transform group-open:rotate-180 shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                     <path d="M19 9l-7 7-7-7" />
                   </svg>
                 </summary>
@@ -364,7 +364,7 @@ export default async function DepannageComboPage({
                 style={{ color: "var(--color-copper)" }}
               >
                 En savoir plus sur notre présence dans le {z.code}
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                   <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
@@ -433,7 +433,7 @@ export default async function DepannageComboPage({
               className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-semibold text-white text-lg transition-all hover:scale-105"
               style={{ background: "var(--color-primary)", boxShadow: "0 20px 60px rgba(225, 16, 33, 0.4)" }}
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
               </svg>
               {companyInfo.phoneDisplay}

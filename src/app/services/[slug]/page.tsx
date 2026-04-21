@@ -149,10 +149,10 @@ export default async function ServicePage({
                 />
 
                 {/* Corner brackets — service-color tint */}
-                <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none"><path d="M2 8V2h6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
-                <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none"><path d="M12 2h6v6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
-                <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none"><path d="M2 12v6h6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
-                <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none"><path d="M18 12v6h-6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 8V2h6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12 2h6v6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 12v6h6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18 12v6h-6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
 
                 {/* Title block */}
                 <div
@@ -303,7 +303,7 @@ export default async function ServicePage({
                   </p>
                   <div className="mt-5 inline-flex items-center gap-2 text-sm font-medium" style={{ color: "var(--color-copper)" }}>
                     <span>Découvrir</span>
-                    <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                   </div>
                 </Link>
               ))}

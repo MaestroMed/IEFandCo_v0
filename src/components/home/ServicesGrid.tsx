@@ -99,7 +99,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                           border: "1px solid rgba(196, 133, 92, 0.2)",
                         }}
                       >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "var(--color-copper)" }}>
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                           {iconMap[service.icon]}
                         </svg>
                       </div>
@@ -120,7 +120,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                       {/* Arrow CTA */}
                       <div className="mt-4 flex items-center gap-2 text-sm font-medium transition-colors duration-300" style={{ color: "var(--color-copper)" }}>
                         <span className="font-mono text-[11px] uppercase tracking-[0.2em]">Découvrir</span>
-                        <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                           <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                         </svg>
                       </div>
@@ -147,7 +147,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
           >
             <span className="h-px w-12 transition-all duration-300 group-hover:w-16" style={{ background: "var(--color-copper)" }} />
             Voir l&apos;ensemble des services
-            <svg className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
           </Link>

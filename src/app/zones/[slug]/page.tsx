@@ -324,7 +324,7 @@ export default async function ZonePage({
                     </span>
                     <span className="font-display text-base font-semibold md:text-lg" style={{ color: "var(--text)" }}>{q.question}</span>
                   </span>
-                  <svg className="h-5 w-5 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--color-copper)" }}>
+                  <svg className="h-5 w-5 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                     <path d="M19 9l-7 7-7-7" />
                   </svg>
                 </summary>

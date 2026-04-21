@@ -62,7 +62,7 @@ export default function EstimateurPage() {
               { label: "Sans engagement", desc: "Rien à signer pour l'estimation" },
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-3">
-                <svg className="h-5 w-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }}>
+                <svg className="h-5 w-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                   <path d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
                 <div>

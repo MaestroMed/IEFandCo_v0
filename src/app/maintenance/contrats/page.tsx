@@ -191,11 +191,11 @@ export default function ContratsMaintenancePage() {
                       {tier.features.map((f, j) => (
                         <li key={j} className="flex items-start gap-3 text-sm">
                           {f.included ? (
-                            <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: `rgb(${tier.color})` }}>
+                            <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: `rgb(${tier.color})` }} role="img" aria-label="Inclus">
                               <path d="M4.5 12.75l6 6 9-13.5" />
                             </svg>
                           ) : (
-                            <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "rgba(0, 0, 0, 0.18)" }}>
+                            <svg className="h-4 w-4 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "rgba(0, 0, 0, 0.18)" }} role="img" aria-label="Non inclus">
                               <path d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           )}

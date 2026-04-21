@@ -88,16 +88,16 @@ export function Photo({
       {/* Corner brackets */}
       {brackets && (
         <>
-          <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+          <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M2 8V2h6" stroke="rgba(196, 133, 92, 0.85)" strokeWidth="1.4" />
           </svg>
-          <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+          <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M12 2h6v6" stroke="rgba(196, 133, 92, 0.85)" strokeWidth="1.4" />
           </svg>
-          <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+          <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M2 12v6h6" stroke="rgba(196, 133, 92, 0.85)" strokeWidth="1.4" />
           </svg>
-          <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+          <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M18 12v6h-6" stroke="rgba(196, 133, 92, 0.85)" strokeWidth="1.4" />
           </svg>
         </>

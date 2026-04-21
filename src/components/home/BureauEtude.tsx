@@ -83,7 +83,7 @@ export function BureauEtude() {
                       border: "1px solid rgba(196, 133, 92, 0.22)",
                     }}
                   >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} style={{ color: "var(--color-copper)" }}>
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                       {f.icon}
                     </svg>
                   </div>
@@ -123,16 +123,16 @@ export function BureauEtude() {
               <CADIllustration />
 
               {/* Corner brackets */}
-              <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+              <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M2 8V2h6" stroke="var(--blueprint-ink)" strokeWidth="1.2" />
               </svg>
-              <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+              <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M12 2h6v6" stroke="var(--blueprint-ink)" strokeWidth="1.2" />
               </svg>
-              <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+              <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M2 12v6h6" stroke="var(--blueprint-ink)" strokeWidth="1.2" />
               </svg>
-              <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none">
+              <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M18 12v6h-6" stroke="var(--blueprint-ink)" strokeWidth="1.2" />
               </svg>
 

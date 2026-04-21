@@ -231,7 +231,7 @@ export default function AssisteoPage() {
                       border: `1px solid rgba(${techAccent}, 0.25)`,
                     }}
                   >
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} style={{ color: `rgb(${techAccent})` }}>
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} style={{ color: `rgb(${techAccent})` }} aria-hidden="true">
                       {f.icon === "video" && <path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />}
                       {f.icon === "clock" && <path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />}
                       {f.icon === "wrench" && <path d="M11.42 15.17l-5.1 5.1a2.121 2.121 0 01-3-3l5.1-5.1M18.36 8.04l-3.53 3.53M15.54 12.29l5.66-5.66a2.121 2.121 0 00-3-3l-5.66 5.66" />}
