@@ -250,7 +250,38 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
                 {paused ? "PAUSE" : reduceMotion ? "STATIC" : "LIVE"}
               </span>
             </div>
-            <span className="hidden md:inline">IEF-CO · REV.03 · ECH 1:100</span>
+            <div className="flex items-center gap-3">
+              <span className="hidden md:inline">IEF-CO · REV.03 · ECH 1:100</span>
+              {/* Explicit play/pause — essential on touch devices where there's
+                  no hover-to-pause affordance. */}
+              {!reduceMotion && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPaused((p) => !p);
+                  }}
+                  className="pointer-events-auto inline-flex h-6 w-6 items-center justify-center rounded-full transition-all hover:scale-110"
+                  style={{
+                    background: `rgba(${scene.accent}, 0.12)`,
+                    border: `1px solid rgba(${scene.accent}, 0.28)`,
+                    color: `rgb(${scene.accent})`,
+                  }}
+                  aria-label={paused ? "Reprendre le défilement automatique" : "Mettre en pause le défilement"}
+                  aria-pressed={paused}
+                >
+                  {paused ? (
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M5.25 3A1.25 1.25 0 004 4.25v11.5c0 .69.56 1.25 1.25 1.25h2.5A1.25 1.25 0 009 15.75V4.25A1.25 1.25 0 007.75 3h-2.5zm7 0A1.25 1.25 0 0011 4.25v11.5c0 .69.56 1.25 1.25 1.25h2.5A1.25 1.25 0 0016 15.75V4.25A1.25 1.25 0 0014.75 3h-2.5z" />
+                    </svg>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Bottom: title + subtitle + deep-link to service page */}
