@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { comparatifs } from "@/data/comparatifs";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = generatePageMetadata({
@@ -16,6 +17,7 @@ export default function ComparatifsPage() {
     <>
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 
         <div className="relative z-10 mx-auto max-w-5xl px-6">

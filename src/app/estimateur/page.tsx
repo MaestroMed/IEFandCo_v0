@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { QuoteEstimator } from "@/components/forms/QuoteEstimator";
 import { Button } from "@/components/ui/Button";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = generatePageMetadata({
@@ -17,6 +18,7 @@ export default function EstimateurPage() {
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-24">
         <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 

@@ -4,6 +4,7 @@ import { depannageServices } from "@/data/depannage";
 import { zones } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
 
@@ -20,6 +21,7 @@ export default function DepannageIndexPage() {
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.55} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 
