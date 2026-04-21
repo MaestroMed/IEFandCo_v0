@@ -107,6 +107,7 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [hoveredDot, setHoveredDot] = useState<number | null>(null);
 
   // Auto-cycle. Restarts whenever `index` changes so that pausing/resuming
   // gets a full remaining lifetime on the current scene.
@@ -328,7 +329,11 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
                     aria-selected={active}
                     aria-label={`Afficher la scène ${i + 1} sur ${SCENES.length} — ${s.title}`}
                     onClick={() => setIndex(i)}
-                    className="pointer-events-auto transition-all"
+                    onMouseEnter={() => setHoveredDot(i)}
+                    onMouseLeave={() => setHoveredDot(null)}
+                    onFocus={() => setHoveredDot(i)}
+                    onBlur={() => setHoveredDot(null)}
+                    className="pointer-events-auto relative transition-all"
                     style={{
                       width: active ? 28 : 10,
                       height: 3,
@@ -337,7 +342,27 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
                         ? `rgb(${s.accent})`
                         : "rgba(255,255,255,0.18)",
                     }}
-                  />
+                  >
+                    {/* Visual tooltip — same info surfaced to a11y via aria-label */}
+                    <AnimatePresence>
+                      {hoveredDot === i && (
+                        <motion.span
+                          className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md px-2 py-1 font-mono text-[9px] uppercase tracking-[0.2em]"
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 4 }}
+                          transition={{ duration: 0.18 }}
+                          style={{
+                            background: "rgba(14, 14, 18, 0.95)",
+                            border: `1px solid rgba(${s.accent}, 0.35)`,
+                            color: `rgb(${s.accent})`,
+                          }}
+                        >
+                          {s.title}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </button>
                 );
               })}
             </div>
