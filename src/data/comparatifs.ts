@@ -34,6 +34,20 @@ export interface Comparator {
   /** FAQ */
   faq: { question: string; answer: string }[];
   seo: { title: string; description: string };
+  /**
+   * Illustration category key — drives the blueprint drawing and accent color
+   * rendered in the hero. Must match a PROJECT_ILLUSTRATION_KEYS value.
+   */
+  category:
+    | "industrielles"
+    | "portails"
+    | "structures"
+    | "menuiserie"
+    | "coupe-feu"
+    | "automatismes"
+    | "maintenance";
+  /** RGB triplet for per-page accent (matches the service family) */
+  accent: string;
 }
 
 export const comparatifs: Comparator[] = [
@@ -80,6 +94,8 @@ export const comparatifs: Comparator[] = [
       title: "Porte sectionnelle vs Rideau métallique : comparatif 2026",
       description: "Comparatif détaillé porte sectionnelle vs rideau métallique : prix, isolation, sécurité, durée de vie, cas d'usage. Verdict expert IEF & CO pour vos projets pros.",
     },
+    category: "industrielles",
+    accent: "59, 130, 180",
   },
 
   {
@@ -122,6 +138,8 @@ export const comparatifs: Comparator[] = [
       title: "Contrat maintenance préventive vs curative : comparatif & ROI",
       description: "Faut-il un contrat préventif ou attendre la panne ? Comparatif détaillé : coûts réels, ROI, obligations légales, cas d'usage B2B. Verdict expert IEF & CO.",
     },
+    category: "maintenance",
+    accent: "60, 170, 140",
   },
 
   {
@@ -162,6 +180,8 @@ export const comparatifs: Comparator[] = [
       title: "Motorisation porte à chaîne ou courroie : comparatif technique",
       description: "Chaîne vs courroie pour porte sectionnelle motorisée : bruit, durabilité, coût, cas d'usage. Comparatif technique IEF & CO pour bien choisir.",
     },
+    category: "automatismes",
+    accent: "80, 120, 220",
   },
 
   {
@@ -203,6 +223,8 @@ export const comparatifs: Comparator[] = [
       title: "Portail acier ou aluminium ? Comparatif détaillé 2026",
       description: "Acier vs aluminium pour portail : prix, durabilité, entretien, esthétique, cas d'usage. Verdict expert IEF & CO selon votre contexte (industriel, tertiaire, résidentiel).",
     },
+    category: "portails",
+    accent: "166, 124, 82",
   },
 
   {
@@ -246,6 +268,8 @@ export const comparatifs: Comparator[] = [
       title: "Hörmann vs Crawford : quelle marque de porte industrielle choisir ?",
       description: "Comparatif Hörmann vs Crawford pour porte industrielle B2B : gamme, prix, durabilité, SAV, cas d'usage. Verdict expert IEF & CO sur le terrain.",
     },
+    category: "industrielles",
+    accent: "59, 130, 180",
   },
 ];
 

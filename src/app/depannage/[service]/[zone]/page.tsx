@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { depannageServices, getDepannageService } from "@/data/depannage";
 import { zones, getZoneBySlug } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
+import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
 
@@ -130,25 +131,62 @@ export default async function DepannageComboPage({
             </span>
           </div>
 
-          <h1 className="max-w-4xl font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl leading-[1]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            Dépannage <span style={{ color: `rgb(${accent})` }}>{s.label.toLowerCase()}</span><br />
-            <span className="text-gradient-metal">dans le {z.code} — {z.name}</span>
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {s.tagline}
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <a
-              href={`tel:${companyInfo.phone}`}
-              className="inline-flex items-center gap-3 rounded-lg px-6 py-3 font-semibold text-white transition-all hover:scale-105"
-              style={{ background: "var(--color-primary)", boxShadow: "0 10px 30px rgba(225, 16, 33, 0.3)" }}
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-              </svg>
-              Appeler {companyInfo.phoneDisplay}
-            </a>
-            <Button href="/devis" variant="secondary" size="lg">Demander un devis</Button>
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16 items-center">
+            <div>
+              <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl leading-[1]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
+                Dépannage <span style={{ color: `rgb(${accent})` }}>{s.label.toLowerCase()}</span><br />
+                <span className="text-gradient-metal">dans le {z.code} — {z.name}</span>
+              </h1>
+              <p className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
+                {s.tagline}
+              </p>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <a
+                  href={`tel:${companyInfo.phone}`}
+                  className="inline-flex items-center gap-3 rounded-lg px-6 py-3 font-semibold text-white transition-all hover:scale-105"
+                  style={{ background: "var(--color-primary)", boxShadow: "0 10px 30px rgba(225, 16, 33, 0.3)" }}
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
+                  Appeler {companyInfo.phoneDisplay}
+                </a>
+                <Button href="/devis" variant="secondary" size="lg">Demander un devis</Button>
+              </div>
+            </div>
+
+            {/* Blueprint illustration on the right — tinted with accent */}
+            <div className="relative hidden lg:block">
+              <div
+                className="absolute -inset-8 pointer-events-none -z-10"
+                style={{
+                  background: `radial-gradient(ellipse 60% 60% at 50% 50%, rgba(${accent}, 0.30) 0%, transparent 70%)`,
+                }}
+              />
+              <div
+                className="relative overflow-hidden rounded-2xl"
+                style={{
+                  boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(${accent}, 0.18)`,
+                }}
+              >
+                <ProjectIllustration
+                  category={s.relatedServices[0] || "industrielles"}
+                  accentColor={accent}
+                  hideTitle
+                />
+                <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 8V2h6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12 2h6v6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 12v6h6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18 12v6h-6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>
+                <div
+                  className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] pointer-events-none z-10"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <span style={{ color: `rgb(${accent})` }}>URG · {z.code} · {s.slug.toUpperCase()}</span>
+                  <span>SLA {z.slaUrgence}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

@@ -3,7 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { brands, getBrandBySlug } from "@/data/brands";
 import { Button } from "@/components/ui/Button";
+import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
+
+// Which blueprint best represents each brand's core expertise.
+const BRAND_ILLUSTRATION: Record<string, "industrielles" | "automatismes" | "portails" | "coupe-feu"> = {
+  hormann: "industrielles",
+  crawford: "industrielles",
+  maviflex: "industrielles",
+  came: "automatismes",
+};
 
 export function generateStaticParams() {
   return brands.map((b) => ({ brand: b.slug }));
@@ -83,22 +92,59 @@ export default async function BrandMaintenancePage({
             <span style={{ color: `rgb(${brand.accentColor})` }}>{brand.name}</span>
           </nav>
 
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-10" style={{ background: `rgb(${brand.accentColor})` }} />
-            <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: `rgb(${brand.accentColor})` }}>
-              Spécialiste {brand.name}
-            </span>
-          </div>
-          <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            Maintenance <span style={{ color: `rgb(${brand.accentColor})` }}>{brand.name}</span><br />
-            <span className="text-gradient-metal">en Île-de-France</span>
-          </h1>
-          <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {brand.tagline}
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Button href={`/devis?marque=${brand.slug}`} size="lg">Devis maintenance {brand.name}</Button>
-            <Button href="/contact" variant="secondary" size="lg">Nous contacter</Button>
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16 items-center">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="h-px w-10" style={{ background: `rgb(${brand.accentColor})` }} />
+                <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: `rgb(${brand.accentColor})` }}>
+                  Spécialiste {brand.name}
+                </span>
+              </div>
+              <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
+                Maintenance <span style={{ color: `rgb(${brand.accentColor})` }}>{brand.name}</span><br />
+                <span className="text-gradient-metal">en Île-de-France</span>
+              </h1>
+              <p className="mt-8 max-w-xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
+                {brand.tagline}
+              </p>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <Button href={`/devis?marque=${brand.slug}`} size="lg">Devis maintenance {brand.name}</Button>
+                <Button href="/contact" variant="secondary" size="lg">Nous contacter</Button>
+              </div>
+            </div>
+
+            {/* Blueprint illustration tinted with brand color */}
+            <div className="relative hidden lg:block">
+              <div
+                className="absolute -inset-8 pointer-events-none -z-10"
+                style={{
+                  background: `radial-gradient(ellipse 60% 60% at 50% 50%, rgba(${brand.accentColor}, 0.28) 0%, transparent 70%)`,
+                }}
+              />
+              <div
+                className="relative overflow-hidden rounded-2xl"
+                style={{
+                  boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(${brand.accentColor}, 0.18)`,
+                }}
+              >
+                <ProjectIllustration
+                  category={BRAND_ILLUSTRATION[brand.slug] ?? "industrielles"}
+                  accentColor={brand.accentColor}
+                  hideTitle
+                />
+                <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 8V2h6" stroke={`rgb(${brand.accentColor})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12 2h6v6" stroke={`rgb(${brand.accentColor})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 12v6h6" stroke={`rgb(${brand.accentColor})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18 12v6h-6" stroke={`rgb(${brand.accentColor})`} strokeWidth="1.4" /></svg>
+                <div
+                  className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] pointer-events-none z-10"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <span style={{ color: `rgb(${brand.accentColor})` }}>BRAND · {brand.name.toUpperCase()}</span>
+                  <span>REV · 03</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

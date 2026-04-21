@@ -147,17 +147,33 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
             ease: [0.22, 1, 0.36, 1],
           }}
         >
-          <ProjectIllustration
-            category={scene.key}
-            accentColor={scene.accent}
-            hideTitle
-            animKey={scene.key}
-            className="w-full shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
-          />
+          <div className="relative w-full">
+            <ProjectIllustration
+              category={scene.key}
+              accentColor={scene.accent}
+              hideTitle
+              animKey={scene.key}
+              className="w-full shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+            />
+            {/* Blueprint scan-line that sweeps once when the scene enters */}
+            {!reduceMotion && (
+              <motion.div
+                key={`scan-${scene.key}`}
+                className="pointer-events-none absolute inset-x-0 h-px"
+                initial={{ top: "0%", opacity: 0 }}
+                animate={{ top: "100%", opacity: [0, 0.9, 0] }}
+                transition={{ duration: 1.6, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
+                style={{
+                  background: `linear-gradient(90deg, transparent, rgb(${scene.accent}), transparent)`,
+                  boxShadow: `0 0 18px rgba(${scene.accent}, 0.6)`,
+                }}
+              />
+            )}
+          </div>
         </motion.div>
       </AnimatePresence>
     ),
-    [scene.key, scene.accent]
+    [scene.key, scene.accent, reduceMotion]
   );
 
   return (
@@ -197,18 +213,30 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
       >
         {/* Drafting frame with live scene label */}
         <div className="absolute inset-0 pointer-events-none z-20 flex flex-col">
-          {/* Top bar: counter · scene title · technical reference */}
+          {/* Top bar: liveness + counter · technical reference */}
           <div
             className="flex items-center justify-between px-5 pt-4 text-[10px] font-mono uppercase tracking-[0.25em]"
             style={{ color: "var(--text-muted)" }}
           >
-            <div className="flex items-center gap-2">
-              <span
-                className="h-px w-6"
-                style={{ background: `rgb(${scene.accent})` }}
-              />
+            <div className="flex items-center gap-2.5">
+              {!reduceMotion && !paused && (
+                <span className="relative flex h-2 w-2" aria-hidden="true">
+                  <span
+                    className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+                    style={{ background: `rgb(${scene.accent})` }}
+                  />
+                  <span
+                    className="relative inline-flex h-2 w-2 rounded-full"
+                    style={{ background: `rgb(${scene.accent})` }}
+                  />
+                </span>
+              )}
               <span style={{ color: `rgb(${scene.accent})` }}>
                 {String(index + 1).padStart(2, "0")} / {String(SCENES.length).padStart(2, "0")}
+              </span>
+              <span className="hidden sm:inline opacity-50">·</span>
+              <span className="hidden sm:inline">
+                {paused ? "PAUSE" : reduceMotion ? "STATIC" : "LIVE"}
               </span>
             </div>
             <span className="hidden md:inline">IEF-CO · REV.03 · ECH 1:100</span>

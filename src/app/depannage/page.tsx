@@ -3,6 +3,7 @@ import Link from "next/link";
 import { depannageServices } from "@/data/depannage";
 import { zones } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
+import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
 
@@ -89,25 +90,34 @@ export default function DepannageIndexPage() {
                   boxShadow: "var(--card-shadow)",
                 }}
               >
+                {/* Blueprint thumbnail */}
+                <div className="relative" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <ProjectIllustration
+                    category={s.relatedServices[0] || "industrielles"}
+                    accentColor={s.accentColor}
+                    hideTitle
+                  />
+                  <div
+                    className="absolute top-3 left-3 rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.2em] pointer-events-none"
+                    style={{
+                      background: `rgba(${s.accentColor}, 0.12)`,
+                      color: `rgb(${s.accentColor})`,
+                      border: `1px solid rgba(${s.accentColor}, 0.25)`,
+                    }}
+                  >
+                    URG · {s.commonFailures.length} pannes
+                  </div>
+                </div>
+
                 <div className="p-7">
                   <div className="flex items-start justify-between mb-4">
-                    <div
-                      className="flex h-12 w-12 items-center justify-center rounded-xl font-mono font-bold text-sm"
-                      style={{
-                        background: `rgba(${s.accentColor}, 0.15)`,
-                        color: `rgb(${s.accentColor})`,
-                        border: `1px solid rgba(${s.accentColor}, 0.25)`,
-                      }}
-                    >
-                      {s.commonFailures.length}
-                    </div>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
+                    <h3 className="font-display text-xl font-bold leading-tight" style={{ color: "var(--text)" }}>
+                      {s.label}
+                    </h3>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] mt-1 shrink-0" style={{ color: "var(--text-muted)" }}>
                       {s.brands.length} marques
                     </span>
                   </div>
-                  <h3 className="font-display text-xl font-bold leading-tight mb-2" style={{ color: "var(--text)" }}>
-                    {s.label}
-                  </h3>
                   <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--text-secondary)" }}>
                     {s.tagline}
                   </p>

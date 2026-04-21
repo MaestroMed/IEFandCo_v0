@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { comparatifs } from "@/data/comparatifs";
+import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = generatePageMetadata({
@@ -48,31 +49,61 @@ export default function ComparatifsPage() {
               <Link
                 key={c.slug}
                 href={`/comparatif/${c.slug}`}
-                className="group flex flex-col rounded-2xl p-7 transition-all hover:-translate-y-1"
+                className="group flex flex-col overflow-hidden rounded-2xl transition-all hover:-translate-y-1"
                 style={{
                   background: "var(--card-bg)",
                   border: "1px solid var(--border)",
                   boxShadow: "var(--card-shadow)",
                 }}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--text-muted)" }}>
-                    Comparatif {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <svg className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
-                    <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
+                {/* Illustration slab with accent wash */}
+                <div className="relative" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <ProjectIllustration
+                    category={c.category}
+                    accentColor={c.accent}
+                    hideTitle
+                  />
+                  {/* Accent overlay */}
+                  <div
+                    className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none"
+                    style={{
+                      background: `radial-gradient(ellipse 60% 50% at 30% 30%, rgba(${c.accent}, 0.18) 0%, transparent 70%)`,
+                    }}
+                  />
+                  {/* Chip: vs pair */}
+                  <div
+                    className="absolute top-3 left-3 rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.2em] pointer-events-none"
+                    style={{
+                      background: `rgba(${c.accent}, 0.1)`,
+                      color: `rgb(${c.accent})`,
+                      border: `1px solid rgba(${c.accent}, 0.25)`,
+                    }}
+                  >
+                    CMP-{String(i + 1).padStart(2, "0")}
+                  </div>
                 </div>
-                <h2 className="font-display text-xl font-bold leading-tight mb-2" style={{ color: "var(--text)" }}>
-                  {c.title}
-                </h2>
-                <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{c.tagline}</p>
-                <div className="mt-5 pt-4 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ borderTop: "1px solid var(--border)", color: "var(--text-muted)" }}>
-                  <span>{c.rows.length} critères</span>
-                  <span>·</span>
-                  <span>{c.useCases.length} cas d&apos;usage</span>
-                  <span>·</span>
-                  <span>{c.faq.length} FAQ</span>
+
+                {/* Body */}
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--text-muted)" }}>
+                      {c.optionAName} · vs · {c.optionBName}
+                    </span>
+                    <svg className="h-4 w-4 transition-transform group-hover:translate-x-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: `rgb(${c.accent})` }} aria-hidden="true">
+                      <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </div>
+                  <h2 className="font-display text-xl font-bold leading-tight mb-2" style={{ color: "var(--text)" }}>
+                    {c.title}
+                  </h2>
+                  <p className="flex-1 text-sm" style={{ color: "var(--text-secondary)" }}>{c.tagline}</p>
+                  <div className="mt-5 pt-4 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ borderTop: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                    <span>{c.rows.length} critères</span>
+                    <span>·</span>
+                    <span>{c.useCases.length} cas d&apos;usage</span>
+                    <span>·</span>
+                    <span>{c.faq.length} FAQ</span>
+                  </div>
                 </div>
               </Link>
             ))}

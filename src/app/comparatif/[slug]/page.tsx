@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { comparatifs, getComparatorBySlug } from "@/data/comparatifs";
 import { Button } from "@/components/ui/Button";
+import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -61,31 +62,76 @@ export default async function ComparatorPage({
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="forge-gradient-dark" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `radial-gradient(ellipse 55% 45% at 80% 40%, rgba(${comp.accent}, 0.18) 0%, transparent 60%)`,
+          }}
+        />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 
-        <div className="relative z-10 mx-auto max-w-5xl px-6">
+        <div className="relative z-10 mx-auto max-w-7xl px-6">
           <nav className="mb-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
             <Link href="/" className="hover:opacity-80">Accueil</Link>
             <span style={{ color: "var(--border-strong)" }}>/</span>
             <Link href="/comparatifs" className="hover:opacity-80">Comparatifs</Link>
             <span style={{ color: "var(--border-strong)" }}>/</span>
-            <span style={{ color: "var(--color-copper)" }}>{comp.title}</span>
+            <span style={{ color: `rgb(${comp.accent})` }}>{comp.title}</span>
           </nav>
 
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
-            <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              Comparatif technique
-            </span>
+          <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16 items-center">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="h-px w-10" style={{ background: `rgb(${comp.accent})` }} />
+                <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: `rgb(${comp.accent})` }}>
+                  Comparatif technique · {comp.rows.length} critères
+                </span>
+              </div>
+              <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
+                <span className="text-gradient-metal">{comp.optionAName}</span>
+                <span className="block text-2xl md:text-3xl my-3 font-mono font-normal uppercase tracking-[0.3em]" style={{ color: "var(--text-muted)" }}>— vs —</span>
+                <span style={{ color: "var(--text)" }}>{comp.optionBName}</span>
+              </h1>
+              <p className="mt-8 max-w-xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
+                {comp.tagline}
+              </p>
+            </div>
+
+            {/* Blueprint illustration — tinted with comparator accent */}
+            <div className="relative hidden lg:block">
+              <div
+                className="absolute -inset-6 pointer-events-none -z-10"
+                style={{
+                  background: `radial-gradient(ellipse 60% 60% at 50% 50%, rgba(${comp.accent}, 0.25) 0%, transparent 70%)`,
+                }}
+              />
+              <div
+                className="relative overflow-hidden rounded-2xl"
+                style={{
+                  boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(${comp.accent}, 0.18)`,
+                }}
+              >
+                <ProjectIllustration
+                  category={comp.category}
+                  accentColor={comp.accent}
+                  hideTitle
+                />
+                {/* Corner brackets */}
+                <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 8V2h6" stroke={`rgb(${comp.accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute top-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12 2h6v6" stroke={`rgb(${comp.accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 12v6h6" stroke={`rgb(${comp.accent})`} strokeWidth="1.4" /></svg>
+                <svg className="absolute bottom-3 right-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18 12v6h-6" stroke={`rgb(${comp.accent})`} strokeWidth="1.4" /></svg>
+                {/* Title block */}
+                <div
+                  className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] pointer-events-none z-10"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <span style={{ color: `rgb(${comp.accent})` }}>CMP · {comp.slug.toUpperCase().slice(0, 18)}</span>
+                  <span>ECH · 1:100</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            <span className="text-gradient-metal">{comp.optionAName}</span>
-            <span className="block text-3xl md:text-4xl mt-2" style={{ color: "var(--text-muted)" }}>vs</span>
-            <span style={{ color: "var(--text)" }}>{comp.optionBName}</span>
-          </h1>
-          <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {comp.tagline}
-          </p>
         </div>
       </section>
 
