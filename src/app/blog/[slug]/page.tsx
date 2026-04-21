@@ -5,6 +5,7 @@ import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { getBlogPosts, getBlogPostBySlug, getStaticBlogSlugs } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Photo } from "@/components/ui/Photo";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { getBlogPhoto } from "@/lib/photoMap";
 
 export function generateStaticParams() {
@@ -70,6 +71,7 @@ export default async function BlogArticle({
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-0 md:pt-40">
         <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 
         <div className="relative z-10 mx-auto max-w-3xl px-6">

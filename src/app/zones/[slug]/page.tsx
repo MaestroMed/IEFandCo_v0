@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { zones, getZoneBySlug } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
 import { getServices } from "@/lib/content";
@@ -93,6 +94,7 @@ export default async function ZonePage({
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
         <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 

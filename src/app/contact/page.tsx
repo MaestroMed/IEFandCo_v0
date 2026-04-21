@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
 import { ContactForm } from "@/components/forms/ContactForm";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Contact | Parlons de votre projet metallique",
@@ -26,6 +27,7 @@ export default function ContactPage() {
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-16 md:pt-40">
         <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
         <div className="relative z-10 mx-auto max-w-7xl px-6">
           <div className="flex items-center gap-3 mb-6">
