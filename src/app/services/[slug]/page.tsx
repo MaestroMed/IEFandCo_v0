@@ -277,29 +277,46 @@ export default async function ServicePage({
               </h2>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((rel) => (
-                <Link
-                  key={rel.slug}
-                  href={`/services/${rel.slug}`}
-                  className="group relative overflow-hidden rounded-2xl p-7 transition-all duration-300 hover:-translate-y-1"
-                  style={{
-                    background: "var(--card-bg)",
-                    border: "1px solid var(--border)",
-                    boxShadow: "var(--card-shadow)",
-                  }}
-                >
-                  <h3 className="font-display text-lg font-bold leading-tight" style={{ color: "var(--text)" }}>
-                    {rel.shortTitle}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                    {rel.shortDescription}
-                  </p>
-                  <div className="mt-5 inline-flex items-center gap-2 text-sm font-medium" style={{ color: "var(--color-copper)" }}>
-                    <span>Découvrir</span>
-                    <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
-                  </div>
-                </Link>
-              ))}
+              {related.map((rel) => {
+                const relAccent = rel.accentColor;
+                return (
+                  <Link
+                    key={rel.slug}
+                    href={`/services/${rel.slug}`}
+                    className="group relative overflow-hidden rounded-2xl p-7 transition-all duration-300 hover:-translate-y-1"
+                    style={{
+                      background: "var(--card-bg)",
+                      border: "1px solid var(--border)",
+                      boxShadow: "var(--card-shadow)",
+                    }}
+                  >
+                    {/* Hover accent wash using the target service's color */}
+                    <div
+                      className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
+                      style={{
+                        background: `radial-gradient(ellipse 80% 60% at 50% 100%, rgba(${relAccent}, 0.12) 0%, transparent 70%)`,
+                      }}
+                    />
+
+                    <h3 className="relative font-display text-lg font-bold leading-tight" style={{ color: "var(--text)" }}>
+                      {rel.shortTitle}
+                    </h3>
+                    <p className="relative mt-2 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                      {rel.shortDescription}
+                    </p>
+                    <div className="relative mt-5 inline-flex items-center gap-2 text-sm font-medium" style={{ color: `rgb(${relAccent})` }}>
+                      <span>Découvrir</span>
+                      <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    </div>
+
+                    {/* Bottom accent line in target service color */}
+                    <div
+                      className="absolute bottom-0 left-0 h-[2px] w-0 transition-all duration-500 group-hover:w-full"
+                      style={{ background: `linear-gradient(90deg, rgb(${relAccent}), var(--color-copper))` }}
+                    />
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
