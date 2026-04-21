@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
 
 export const metadata: Metadata = {
-  title: "Mentions legales",
-  description: "Mentions legales du site IEF & CO.",
+  title: "Mentions légales",
+  description: "Mentions légales du site IEF & CO.",
 };
 
 export default function MentionsLegales() {
@@ -29,14 +29,14 @@ export default function MentionsLegales() {
             <p>SIREN : {companyInfo.siren}</p>
             <p>RCS : {companyInfo.rcs}</p>
             <p>Capital social : {companyInfo.capital} EUR</p>
-            <p>President : {companyInfo.president}</p>
-            <p>Telephone : {companyInfo.phoneDisplay}</p>
+            <p>Président : {companyInfo.president}</p>
+            <p>Téléphone : {companyInfo.phoneDisplay}</p>
             <p>Email : {companyInfo.email}</p>
           </section>
 
           <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Hebergement</h2>
-            <p>Ce site est heberge par Vercel Inc., 440 N Bayard St #201, Wilmington, DE 19801, USA.</p>
+            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Hébergement</h2>
+            <p>Ce site est hébergé par Vercel Inc., 440 N Bayard St #201, Wilmington, DE 19801, USA.</p>
           </section>
 
           <section>

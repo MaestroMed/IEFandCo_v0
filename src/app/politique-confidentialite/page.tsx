@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialite",
-  description: "Politique de confidentialite du site IEF & CO.",
+  title: "Politique de confidentialité",
+  description: "Politique de confidentialité du site IEF & CO.",
 };
 
 export default function PolitiqueConfidentialite() {
@@ -29,18 +29,18 @@ export default function PolitiqueConfidentialite() {
           </section>
 
           <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Donnees collectees</h2>
-            <p>Les donnees collectees via les formulaires de contact et de devis comprennent : nom, prenom, email, telephone, societe, et le contenu du message. Ces donnees sont utilisees exclusivement pour repondre a vos demandes.</p>
+            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Données collectées</h2>
+            <p>Les données collectées via les formulaires de contact et de devis comprennent : nom, prénom, email, téléphone, société, et le contenu du message. Ces données sont utilisées exclusivement pour répondre à vos demandes.</p>
           </section>
 
           <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Duree de conservation</h2>
-            <p>Les donnees sont conservees pendant une duree de 3 ans a compter du dernier contact, conformement a la reglementation en vigueur.</p>
+            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Durée de conservation</h2>
+            <p>Les données sont conservées pendant une durée de 3 ans à compter du dernier contact, conformément à la réglementation en vigueur.</p>
           </section>
 
           <section>
             <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Vos droits</h2>
-            <p>Conformement au RGPD, vous disposez d&apos;un droit d&apos;acces, de rectification, de suppression et de portabilite de vos donnees. Pour exercer ces droits, contactez-nous a {companyInfo.email}.</p>
+            <p>Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de rectification, de suppression et de portabilité de vos données. Pour exercer ces droits, contactez-nous à {companyInfo.email}.</p>
           </section>
 
           <section>
