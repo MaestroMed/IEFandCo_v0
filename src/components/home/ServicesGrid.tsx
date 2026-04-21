@@ -57,11 +57,13 @@ export function ServicesGrid({ services }: { services: Service[] }) {
           </p>
         </div>
 
-        {/* Bento grid */}
+        {/* Bento grid — each card takes on its service's accent color so the
+             grid reads as a palette of the whole catalogue. */}
         <div className="grid auto-rows-[210px] grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service, i) => {
             const isFeature = i === 0;
             const isWide = i === 3 || i === 6;
+            const accent = service.accentColor;
             return (
               <motion.div
                 key={service.slug}
@@ -82,11 +84,11 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--card-shadow-hover)"; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--card-shadow)"; }}
                   >
-                    {/* Hover warm gradient overlay */}
+                    {/* Hover accent gradient — uses the service's OWN color */}
                     <div
                       className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none"
                       style={{
-                        background: "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(196, 133, 92, 0.08) 0%, transparent 70%)",
+                        background: `radial-gradient(ellipse 80% 60% at 50% 100%, rgba(${accent}, 0.12) 0%, transparent 70%)`,
                       }}
                     />
 
@@ -95,11 +97,11 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                       <div
                         className="flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3"
                         style={{
-                          background: "linear-gradient(135deg, rgba(196, 133, 92, 0.15) 0%, rgba(212, 165, 116, 0.08) 100%)",
-                          border: "1px solid rgba(196, 133, 92, 0.2)",
+                          background: `linear-gradient(135deg, rgba(${accent}, 0.18) 0%, rgba(${accent}, 0.06) 100%)`,
+                          border: `1px solid rgba(${accent}, 0.25)`,
                         }}
                       >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: `rgb(${accent})` }} aria-hidden="true">
                           {iconMap[service.icon]}
                         </svg>
                       </div>
@@ -117,8 +119,8 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                         {service.shortDescription}
                       </p>
 
-                      {/* Arrow CTA */}
-                      <div className="mt-4 flex items-center gap-2 text-sm font-medium transition-colors duration-300" style={{ color: "var(--color-copper)" }}>
+                      {/* Arrow CTA — coloured with the service's accent */}
+                      <div className="mt-4 flex items-center gap-2 text-sm font-medium transition-colors duration-300" style={{ color: `rgb(${accent})` }}>
                         <span className="font-mono text-[11px] uppercase tracking-[0.2em]">Découvrir</span>
                         <svg className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
                           <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -126,10 +128,10 @@ export function ServicesGrid({ services }: { services: Service[] }) {
                       </div>
                     </div>
 
-                    {/* Bottom accent line */}
+                    {/* Bottom accent line — service's accent fading into copper */}
                     <div
                       className="absolute bottom-0 left-0 h-[2px] w-0 transition-all duration-500 group-hover:w-full"
-                      style={{ background: "linear-gradient(90deg, var(--color-copper), var(--color-primary))" }}
+                      style={{ background: `linear-gradient(90deg, rgb(${accent}), var(--color-copper))` }}
                     />
                   </div>
                 </Link>
