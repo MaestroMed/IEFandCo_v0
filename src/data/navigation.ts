@@ -40,6 +40,7 @@ export const navigation: NavItem[] = [
       { label: "Blog & guides", href: "/blog" },
     ],
   },
+  { label: "Estimateur", href: "/estimateur" },
   { label: "Zones d'intervention", href: "/zones-intervention" },
   { label: "À propos", href: "/a-propos" },
   { label: "Contact", href: "/contact" },

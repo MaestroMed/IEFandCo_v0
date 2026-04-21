@@ -232,39 +232,44 @@ export function HeroSection() {
             </a>
           </motion.div>
 
-          {[
-            { content: "L'art du metal,", className: "" },
-            { content: "entre force", className: "text-gradient-metal" },
-            { content: null, className: "" },
-          ].map((line, i) => (
-            <div key={i} className="overflow-hidden">
-              <motion.div
-                className={`font-display font-bold leading-[0.95] tracking-[-0.03em] ${line.className}`}
-                style={{
-                  fontSize: "clamp(2.75rem, 6.5vw, 5.5rem)",
-                  color: line.className ? undefined : "var(--text)",
-                  textWrap: "balance",
-                } as React.CSSProperties}
-                variants={{
-                  hidden: { y: "100%" },
-                  visible: { y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
-                }}
-              >
-                {line.content ?? (
-                  <>
-                    <span style={{ color: "var(--text-muted)" }}>&</span>{" "}
-                    <motion.span
-                      className="text-primary inline-block"
-                      animate={ready ? { textShadow: ["0 0 30px rgba(225,16,33,0.25)", "0 0 80px rgba(225,16,33,0.5)", "0 0 30px rgba(225,16,33,0.25)"] } : {}}
-                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                      precision
-                    </motion.span>
-                  </>
-                )}
-              </motion.div>
-            </div>
-          ))}
+          <h1
+            className="font-display font-bold leading-[0.95] tracking-[-0.03em] sr-only-hidden"
+            aria-label="L'art du metal, entre force et precision — IEF & CO"
+          >
+            {[
+              { content: "L'art du metal,", className: "" },
+              { content: "entre force", className: "text-gradient-metal" },
+              { content: null, className: "" },
+            ].map((line, i) => (
+              <span key={i} className="block overflow-hidden">
+                <motion.span
+                  className={`block ${line.className}`}
+                  style={{
+                    fontSize: "clamp(2.75rem, 6.5vw, 5.5rem)",
+                    color: line.className ? undefined : "var(--text)",
+                    textWrap: "balance",
+                  } as React.CSSProperties}
+                  variants={{
+                    hidden: { y: "100%" },
+                    visible: { y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
+                  }}
+                >
+                  {line.content ?? (
+                    <>
+                      <span style={{ color: "var(--text-muted)" }}>&</span>{" "}
+                      <motion.span
+                        className="text-primary inline-block"
+                        animate={ready ? { textShadow: ["0 0 30px rgba(225,16,33,0.25)", "0 0 80px rgba(225,16,33,0.5)", "0 0 30px rgba(225,16,33,0.25)"] } : {}}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        precision
+                      </motion.span>
+                    </>
+                  )}
+                </motion.span>
+              </span>
+            ))}
+          </h1>
 
           <motion.div
             className="mt-10 flex items-center gap-3"
