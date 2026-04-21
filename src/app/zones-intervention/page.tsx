@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { zones } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
+import ZonesMapClient from "@/components/ui/ZonesMapClient";
 import { generatePageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = generatePageMetadata({
@@ -118,16 +119,15 @@ export default function ZonesInterventionPage() {
             ))}
           </div>
 
-          {/* Map placeholder — could integrate Mapbox here */}
-          <div className="mt-16 rounded-2xl p-12 text-center" style={{ background: "var(--card-bg)", border: "1px dashed var(--border-strong)" }}>
-            <svg className="h-12 w-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "var(--color-copper)" }}>
-              <path d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
-            </svg>
-            <h3 className="font-display text-xl font-bold mb-2" style={{ color: "var(--text)" }}>Carte interactive — bientôt</h3>
-            <p className="text-sm max-w-md mx-auto" style={{ color: "var(--text-muted)" }}>
-              Une carte interactive Mapbox vous permettra prochainement de visualiser nos zones d&apos;intervention,
-              nos clients de référence et les délais garantis par localisation.
-            </p>
+          {/* Carte interactive Mapbox (fallback SVG si pas de token) */}
+          <div className="mt-16">
+            <div className="mb-6 flex items-center gap-3">
+              <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
+              <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
+                Carte interactive · Survolez un département
+              </span>
+            </div>
+            <ZonesMapClient height={500} />
           </div>
         </div>
       </section>

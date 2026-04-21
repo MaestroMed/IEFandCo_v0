@@ -4,63 +4,84 @@ import { eq, count, gte, sql, and, asc } from "drizzle-orm";
 import Link from "next/link";
 import { ArrowRight, Inbox, FolderKanban, FileText, TrendingUp, Wrench, Calendar as CalendarIcon } from "lucide-react";
 
+// Admin pages must render on-demand — they query DB + require auth
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getDashboardData() {
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const [
-    leadsTotal,
-    leadsNew,
-    leadsThisWeek,
-    projectsPublished,
-    projectsDraft,
-    postsPublished,
-    postsDraft,
-    latestLeads,
-    leadsLastWeek,
-    upcomingVisits,
-  ] = await Promise.all([
-    db.select({ c: count() }).from(schema.leads),
-    db.select({ c: count() }).from(schema.leads).where(eq(schema.leads.status, "new")),
-    db.select({ c: count() }).from(schema.leads).where(gte(schema.leads.receivedAt, weekAgo)),
-    db.select({ c: count() }).from(schema.projects).where(eq(schema.projects.status, "published")),
-    db.select({ c: count() }).from(schema.projects).where(eq(schema.projects.status, "draft")),
-    db.select({ c: count() }).from(schema.blogPosts).where(eq(schema.blogPosts.status, "published")),
-    db.select({ c: count() }).from(schema.blogPosts).where(eq(schema.blogPosts.status, "draft")),
-    db.select().from(schema.leads).orderBy(sql`${schema.leads.receivedAt} DESC`).limit(5),
-    db.select({ at: schema.leads.receivedAt }).from(schema.leads).where(gte(schema.leads.receivedAt, weekAgo)),
-    db
-      .select()
-      .from(schema.maintenanceVisits)
-      .where(and(gte(schema.maintenanceVisits.scheduledFor, now), eq(schema.maintenanceVisits.status, "scheduled")))
-      .orderBy(asc(schema.maintenanceVisits.scheduledFor))
-      .limit(5),
-  ]);
-
-  // Build per-day buckets for the last 7 days (oldest -> newest)
-  const buckets: { label: string; date: Date; count: number }[] = [];
+  // Empty buckets (fallback if DB unavailable)
+  const emptyBuckets: { label: string; date: Date; count: number }[] = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now);
     d.setHours(0, 0, 0, 0);
     d.setDate(d.getDate() - i);
-    buckets.push({ label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""), date: d, count: 0 });
-  }
-  for (const row of leadsLastWeek) {
-    const d = row.at instanceof Date ? row.at : new Date(row.at);
-    const key = new Date(d);
-    key.setHours(0, 0, 0, 0);
-    const idx = buckets.findIndex((b) => b.date.getTime() === key.getTime());
-    if (idx >= 0) buckets[idx].count++;
+    emptyBuckets.push({ label: d.toLocaleDateString("fr-FR", { weekday: "short" }).replace(".", ""), date: d, count: 0 });
   }
 
-  return {
-    leads: { total: leadsTotal[0].c, unread: leadsNew[0].c, thisWeek: leadsThisWeek[0].c },
-    projects: { published: projectsPublished[0].c, draft: projectsDraft[0].c },
-    posts: { published: postsPublished[0].c, draft: postsDraft[0].c },
-    latestLeads,
-    weekly: buckets,
-    upcomingVisits,
+  const emptyState = {
+    leads: { total: 0, unread: 0, thisWeek: 0 },
+    projects: { published: 0, draft: 0 },
+    posts: { published: 0, draft: 0 },
+    latestLeads: [] as Array<typeof schema.leads.$inferSelect>,
+    weekly: emptyBuckets,
+    upcomingVisits: [] as Array<typeof schema.maintenanceVisits.$inferSelect>,
   };
+
+  try {
+    const [
+      leadsTotal,
+      leadsNew,
+      leadsThisWeek,
+      projectsPublished,
+      projectsDraft,
+      postsPublished,
+      postsDraft,
+      latestLeads,
+      leadsLastWeek,
+      upcomingVisits,
+    ] = await Promise.all([
+      db.select({ c: count() }).from(schema.leads),
+      db.select({ c: count() }).from(schema.leads).where(eq(schema.leads.status, "new")),
+      db.select({ c: count() }).from(schema.leads).where(gte(schema.leads.receivedAt, weekAgo)),
+      db.select({ c: count() }).from(schema.projects).where(eq(schema.projects.status, "published")),
+      db.select({ c: count() }).from(schema.projects).where(eq(schema.projects.status, "draft")),
+      db.select({ c: count() }).from(schema.blogPosts).where(eq(schema.blogPosts.status, "published")),
+      db.select({ c: count() }).from(schema.blogPosts).where(eq(schema.blogPosts.status, "draft")),
+      db.select().from(schema.leads).orderBy(sql`${schema.leads.receivedAt} DESC`).limit(5),
+      db.select({ at: schema.leads.receivedAt }).from(schema.leads).where(gte(schema.leads.receivedAt, weekAgo)),
+      db
+        .select()
+        .from(schema.maintenanceVisits)
+        .where(and(gte(schema.maintenanceVisits.scheduledFor, now), eq(schema.maintenanceVisits.status, "scheduled")))
+        .orderBy(asc(schema.maintenanceVisits.scheduledFor))
+        .limit(5),
+    ]);
+
+    // Build per-day buckets for the last 7 days (oldest -> newest)
+    const buckets = [...emptyBuckets];
+    for (const row of leadsLastWeek) {
+      const d = row.at instanceof Date ? row.at : new Date(row.at);
+      const key = new Date(d);
+      key.setHours(0, 0, 0, 0);
+      const idx = buckets.findIndex((b) => b.date.getTime() === key.getTime());
+      if (idx >= 0) buckets[idx].count++;
+    }
+
+    return {
+      leads: { total: leadsTotal[0].c, unread: leadsNew[0].c, thisWeek: leadsThisWeek[0].c },
+      projects: { published: projectsPublished[0].c, draft: projectsDraft[0].c },
+      posts: { published: postsPublished[0].c, draft: postsDraft[0].c },
+      latestLeads,
+      weekly: buckets,
+      upcomingVisits,
+    };
+  } catch (err) {
+    console.warn("[admin/dashboard] DB query failed, returning empty state:", err instanceof Error ? err.message : err);
+    return emptyState;
+  }
 }
 
 function KPICard({ label, value, sub, icon: Icon, href, accent }: { label: string; value: string | number; sub?: string; icon: typeof Inbox; href?: string; accent?: boolean }) {
