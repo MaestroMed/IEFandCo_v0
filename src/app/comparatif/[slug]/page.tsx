@@ -333,6 +333,60 @@ export default async function ComparatorPage({
         </div>
       </section>
 
+      {/* OTHER COMPARATIFS */}
+      {comparatifs.filter((c) => c.slug !== slug).length > 0 && (
+        <section className="section-forge-light relative overflow-hidden py-20 md:py-24" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="relative z-10 mx-auto max-w-5xl px-6">
+            <div className="mb-10 flex items-center gap-3">
+              <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
+              <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
+                Autres comparatifs techniques
+              </span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {comparatifs
+                .filter((c) => c.slug !== slug)
+                .slice(0, 3)
+                .map((other) => (
+                  <Link
+                    key={other.slug}
+                    href={`/comparatif/${other.slug}`}
+                    className="group relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1"
+                    style={{
+                      background: "var(--card-bg)",
+                      border: "1px solid var(--border)",
+                      boxShadow: "var(--card-shadow)",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
+                      style={{
+                        background: `radial-gradient(ellipse 80% 60% at 50% 100%, rgba(${other.accent}, 0.12) 0%, transparent 70%)`,
+                      }}
+                    />
+                    <div className="relative flex items-center gap-2 mb-3 font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: `rgb(${other.accent})` }}>
+                      <span className="h-px w-4" style={{ background: `rgb(${other.accent})` }} />
+                      <span>Comparatif</span>
+                    </div>
+                    <h3 className="relative font-display text-base font-bold leading-tight mb-2" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
+                      {other.title}
+                    </h3>
+                    <p className="relative text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                      {other.tagline}
+                    </p>
+                    <div className="relative mt-4 inline-flex items-center gap-1.5 text-xs font-medium" style={{ color: `rgb(${other.accent})` }}>
+                      <span>Lire</span>
+                      <svg className="h-3 w-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                        <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* CTA */}
       <section className="section-forge-dark relative overflow-hidden py-20 md:py-28">
         <div className="forge-gradient-cta" />
