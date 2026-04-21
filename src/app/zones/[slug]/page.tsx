@@ -341,6 +341,59 @@ export default async function ZonePage({
         </div>
       </section>
 
+      {/* ═══════════ OTHER ZONES ═══════════ */}
+      {zones.filter((z) => z.slug !== zone.slug).length > 0 && (
+        <section className="section-forge-light relative overflow-hidden py-20 md:py-24" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="relative z-10 mx-auto max-w-6xl px-6">
+            <div className="mb-10 flex items-center gap-3">
+              <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
+              <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
+                Autres départements d&apos;intervention
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {zones
+                .filter((z) => z.slug !== zone.slug)
+                .map((other) => (
+                  <Link
+                    key={other.slug}
+                    href={`/zones/${other.slug}`}
+                    className="group relative overflow-hidden rounded-xl p-4 transition-all hover:-translate-y-0.5"
+                    style={{
+                      background: "var(--card-bg)",
+                      border: "1px solid var(--border)",
+                      boxShadow: "var(--card-shadow)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[0.22em]"
+                        style={{ color: "var(--color-copper)" }}
+                      >
+                        {other.code}
+                      </span>
+                      <svg
+                        className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                        style={{ color: "var(--color-copper)" }}
+                        aria-hidden="true"
+                      >
+                        <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </div>
+                    <div className="font-display text-sm font-bold leading-tight" style={{ color: "var(--text)" }}>
+                      {other.name}
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ═══════════ CTA (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden py-24 md:py-32">
         <div className="forge-gradient-cta" />
