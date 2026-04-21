@@ -109,6 +109,7 @@ export function Footer() {
               {[
                 { href: "/maintenance/contrats", label: "Contrats Bronze / Argent / Or" },
                 { href: "/depannage", label: "Dépannage urgent" },
+                { href: "/assisteo", label: "ASSISTEO — diagnostic à distance" },
                 { href: "/maintenance/hormann", label: "Maintenance Hörmann" },
                 { href: "/maintenance/crawford", label: "Maintenance Crawford" },
                 { href: "/maintenance/maviflex", label: "Maintenance Maviflex" },
