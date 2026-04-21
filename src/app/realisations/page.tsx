@@ -8,9 +8,9 @@ import { getRealisations } from "@/lib/content";
 import { getRealisationPhoto } from "@/lib/photoMap";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Nos Realisations | Portfolio metallerie",
+  title: "Nos Réalisations | Portfolio métallerie",
   description:
-    "Decouvrez les realisations d'IEF & CO : charpentes, facades, portails, fermetures industrielles. Projets en Ile-de-France pour l'industrie et le tertiaire.",
+    "Découvrez les réalisations d'IEF & CO : charpentes, façades, portails, fermetures industrielles. Projets en Île-de-France pour l'industrie et le tertiaire.",
   path: "/realisations",
 });
 

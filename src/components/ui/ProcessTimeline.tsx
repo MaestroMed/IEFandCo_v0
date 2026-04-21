@@ -12,33 +12,33 @@ interface Step {
 const steps: Step[] = [
   {
     number: "01",
-    title: "Releve & etude",
+    title: "Relevé & étude",
     description:
-      "Visite sur site, prise de cotes, analyse des contraintes. Notre bureau d'etude modelise en 3D et calcule chaque element selon l'Eurocode 3.",
+      "Visite sur site, prise de cotes, analyse des contraintes. Notre bureau d'étude modélise en 3D et calcule chaque élément selon l'Eurocode 3.",
   },
   {
     number: "02",
-    title: "Plans d'execution",
+    title: "Plans d'exécution",
     description:
-      "Modelisation 3D, notes de calcul, plans de fabrication. Validation avec le client avant lancement en production.",
+      "Modélisation 3D, notes de calcul, plans de fabrication. Validation avec le client avant lancement en production.",
   },
   {
     number: "03",
     title: "Fabrication atelier",
     description:
-      "Decoupe, soudure, assemblage dans notre atelier. Controle qualite par WPQR. Traitement de surface selon l'environnement final.",
+      "Découpe, soudure, assemblage dans notre atelier. Contrôle qualité par WPQR. Traitement de surface selon l'environnement final.",
   },
   {
     number: "04",
     title: "Pose sur chantier",
     description:
-      "Equipes formees au travail en hauteur. Coordination avec les autres corps d'etat. Livraison dans les delais.",
+      "Équipes formées au travail en hauteur. Coordination avec les autres corps d'état. Livraison dans les délais.",
   },
   {
     number: "05",
     title: "Maintenance",
     description:
-      "Contrat d'entretien preventif, depannage 24/7, carnet d'entretien digital. Nous accompagnons vos ouvrages dans la duree.",
+      "Contrat d'entretien préventif, dépannage 24/7, carnet d'entretien digital. Nous accompagnons vos ouvrages dans la durée.",
   },
 ];
 

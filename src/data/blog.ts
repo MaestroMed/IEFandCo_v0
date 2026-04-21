@@ -20,10 +20,10 @@ export interface BlogSection {
 export const blogPosts: BlogPost[] = [
   {
     slug: "pourquoi-choisir-la-construction-metallique",
-    title: "Pourquoi choisir la construction metallique aujourd'hui",
+    title: "Pourquoi choisir la construction métallique aujourd'hui",
     excerpt:
-      "Resistance, rapidite de mise en oeuvre, recyclabilite, maitrise des couts : pourquoi de plus en plus de professionnels choisissent l'acier pour leurs projets industriels et tertiaires.",
-    date: "23 decembre 2025",
+      "Résistance, rapidité de mise en œuvre, recyclabilité, maîtrise des coûts : pourquoi de plus en plus de professionnels choisissent l'acier pour leurs projets industriels et tertiaires.",
+    date: "23 décembre 2025",
     dateISO: "2025-12-23",
     category: "Guide",
     author: "IEF & CO",
@@ -31,20 +31,20 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "La construction metallique connait un essor sans precedent. Que ce soit pour des batiments industriels, des locaux tertiaires ou des ouvrages d'art, l'acier s'impose comme le materiau de reference grace a ses proprietes uniques.",
+          "La construction métallique connaît un essor sans précédent. Que ce soit pour des bâtiments industriels, des locaux tertiaires ou des ouvrages d'art, l'acier s'impose comme le matériau de référence grâce à ses propriétés uniques.",
         ],
       },
       {
         heading: "Les avantages de l'acier",
         paragraphs: [
-          "Resistance mecanique exceptionnelle, rapidite de mise en oeuvre, recyclabilite a 100%, souplesse de conception, maitrise des couts : l'acier offre un rapport performance/prix inegale dans le secteur de la construction.",
-          "Une charpente metallique peut etre prefabriquee en atelier puis montee sur site en quelques jours, contre plusieurs semaines pour une structure beton equivalente.",
+          "Résistance mécanique exceptionnelle, rapidité de mise en œuvre, recyclabilité à 100%, souplesse de conception, maîtrise des coûts : l'acier offre un rapport performance/prix inégalé dans le secteur de la construction.",
+          "Une charpente métallique peut être préfabriquée en atelier puis montée sur site en quelques jours, contre plusieurs semaines pour une structure béton équivalente.",
         ],
       },
       {
         heading: "Normes et certifications",
         paragraphs: [
-          "La certification EN 1090 et le respect de l'Eurocode 3 garantissent la qualite et la securite des ouvrages metalliques. Chez IEF & CO, chaque structure est calculee, fabriquee et controlee selon ces references.",
+          "La certification EN 1090 et le respect de l'Eurocode 3 garantissent la qualité et la sécurité des ouvrages métalliques. Chez IEF & CO, chaque structure est calculée, fabriquée et contrôlée selon ces références.",
         ],
       },
     ],
@@ -53,7 +53,7 @@ export const blogPosts: BlogPost[] = [
     slug: "maintenance-obligatoire-portes-industrielles",
     title: "Maintenance obligatoire des portes industrielles : ce que dit la loi",
     excerpt:
-      "L'arrete du 21 decembre 1993 impose une maintenance semestrielle de toutes les portes automatiques en milieu professionnel. Detail des obligations et des consequences en cas de manquement.",
+      "L'arrêté du 21 décembre 1993 impose une maintenance semestrielle de toutes les portes automatiques en milieu professionnel. Détail des obligations et des conséquences en cas de manquement.",
     date: "8 janvier 2026",
     dateISO: "2026-01-08",
     category: "Normes",
@@ -62,36 +62,36 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "Toute porte automatique ou semi-automatique installee dans un lieu de travail doit faire l'objet d'une maintenance semestrielle. Cette obligation, souvent meconnue, est encadree par l'arrete du 21 decembre 1993 et engage la responsabilite directe du proprietaire ou de l'exploitant.",
+          "Toute porte automatique ou semi-automatique installée dans un lieu de travail doit faire l'objet d'une maintenance semestrielle. Cette obligation, souvent méconnue, est encadrée par l'arrêté du 21 décembre 1993 et engage la responsabilité directe du propriétaire ou de l'exploitant.",
         ],
       },
       {
-        heading: "Que dit precisement la reglementation ?",
+        heading: "Que dit précisément la réglementation ?",
         paragraphs: [
-          "L'arrete impose un controle complet tous les six mois : verification des organes de securite (cellules, bords sensibles, arrets d'urgence), des reglages mecaniques, du fonctionnement de la motorisation, et de la conformite globale a la norme EN 13241-1.",
-          "Chaque intervention doit etre tracee dans un carnet d'entretien, conserve sur site et presentable a l'inspection du travail.",
+          "L'arrêté impose un contrôle complet tous les six mois : vérification des organes de sécurité (cellules, bords sensibles, arrêts d'urgence), des réglages mécaniques, du fonctionnement de la motorisation, et de la conformité globale à la norme EN 13241-1.",
+          "Chaque intervention doit être tracée dans un carnet d'entretien, conservé sur site et présentable à l'inspection du travail.",
         ],
       },
       {
         heading: "Quels risques en cas de non-respect ?",
         paragraphs: [
-          "En cas d'accident, l'absence de maintenance documentee engage la responsabilite penale du chef d'etablissement. Les assurances peuvent egalement refuser la prise en charge.",
-          "Au-dela du cadre legal, une porte non entretenue voit sa duree de vie chuter de moitie et augmente significativement les risques d'arret de production.",
+          "En cas d'accident, l'absence de maintenance documentée engage la responsabilité pénale du chef d'établissement. Les assurances peuvent également refuser la prise en charge.",
+          "Au-delà du cadre légal, une porte non entretenue voit sa durée de vie chuter de moitié et augmente significativement les risques d'arrêt de production.",
         ],
       },
       {
-        heading: "Comment se mettre en conformite ?",
+        heading: "Comment se mettre en conformité ?",
         paragraphs: [
-          "Un contrat de maintenance preventive avec un prestataire qualifie (comme IEF & CO) couvre l'ensemble des obligations : visites planifiees, PV d'intervention, carnet d'entretien digital, et acces 24/7 au depannage en cas d'incident.",
+          "Un contrat de maintenance préventive avec un prestataire qualifié (comme IEF & CO) couvre l'ensemble des obligations : visites planifiées, PV d'intervention, carnet d'entretien digital, et accès 24/7 au dépannage en cas d'incident.",
         ],
       },
     ],
   },
   {
     slug: "comparatif-rideau-metallique-porte-sectionnelle",
-    title: "Rideau metallique ou porte sectionnelle : quel choix pour votre site ?",
+    title: "Rideau métallique ou porte sectionnelle : quel choix pour votre site ?",
     excerpt:
-      "Securite, isolation, encombrement, vitesse d'ouverture : guide comparatif des deux solutions de fermeture les plus courantes en milieu industriel.",
+      "Sécurité, isolation, encombrement, vitesse d'ouverture : guide comparatif des deux solutions de fermeture les plus courantes en milieu industriel.",
     date: "20 janvier 2026",
     dateISO: "2026-01-20",
     category: "Technique",
@@ -100,37 +100,37 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "Le choix entre un rideau metallique et une porte sectionnelle depend de plusieurs criteres : usage (logistique, commerce, atelier), frequence d'ouverture, contraintes thermiques, et budget. Voici les criteres essentiels pour decider.",
+          "Le choix entre un rideau métallique et une porte sectionnelle dépend de plusieurs critères : usage (logistique, commerce, atelier), fréquence d'ouverture, contraintes thermiques, et budget. Voici les critères essentiels pour décider.",
         ],
       },
       {
-        heading: "Rideau metallique : robuste et economique",
+        heading: "Rideau métallique : robuste et économique",
         paragraphs: [
-          "Compose de lames articulees en acier galvanise ou aluminium, le rideau metallique s'enroule en partie haute. Son atout principal : un encombrement minimal et une excellente resistance aux intrusions.",
-          "Adapte aux commerces, garages, et zones de stockage non chauffees. Cycle de fonctionnement modere (jusqu'a 10 000 cycles/an).",
+          "Composé de lames articulées en acier galvanisé ou aluminium, le rideau métallique s'enroule en partie haute. Son atout principal : un encombrement minimal et une excellente résistance aux intrusions.",
+          "Adapté aux commerces, garages, et zones de stockage non chauffées. Cycle de fonctionnement modéré (jusqu'à 10 000 cycles/an).",
         ],
       },
       {
         heading: "Porte sectionnelle : isolation et confort thermique",
         paragraphs: [
-          "Constituee de panneaux articules isoles, la porte sectionnelle se loge sous le plafond. Elle offre une excellente isolation thermique et acoustique, indispensable pour les entrepots chauffes ou frigorifiques.",
-          "Compatible avec les ouvertures de grande hauteur (jusqu'a 7m), elle supporte des cycles intenses (50 000 cycles/an avec maintenance reguliere).",
+          "Constituée de panneaux articulés isolés, la porte sectionnelle se loge sous le plafond. Elle offre une excellente isolation thermique et acoustique, indispensable pour les entrepôts chauffés ou frigorifiques.",
+          "Compatible avec les ouvertures de grande hauteur (jusqu'à 7m), elle supporte des cycles intenses (50 000 cycles/an avec maintenance régulière).",
         ],
       },
       {
         heading: "Le verdict",
         paragraphs: [
-          "Pour la logistique haute frequence et les sites isoles thermiquement : porte sectionnelle. Pour la securite anti-intrusion et les budgets contraints : rideau metallique. En cas de doute, contactez-nous pour un audit sur site.",
+          "Pour la logistique haute fréquence et les sites isolés thermiquement : porte sectionnelle. Pour la sécurité anti-intrusion et les budgets contraints : rideau métallique. En cas de doute, contactez-nous pour un audit sur site.",
         ],
       },
     ],
   },
   {
     slug: "certification-en-1090-pourquoi-elle-compte",
-    title: "Certification EN 1090 : pourquoi elle protege votre projet",
+    title: "Certification EN 1090 : pourquoi elle protège votre projet",
     excerpt:
-      "La certification EN 1090 est obligatoire pour tout element structurel en acier. Detail de ses exigences, des classes d'execution et des consequences en cas d'absence.",
-    date: "5 fevrier 2026",
+      "La certification EN 1090 est obligatoire pour tout élément structurel en acier. Détail de ses exigences, des classes d'exécution et des conséquences en cas d'absence.",
+    date: "5 février 2026",
     dateISO: "2026-02-05",
     category: "Normes",
     author: "IEF & CO",
@@ -138,34 +138,34 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "Depuis le 1er juillet 2014, tout fabricant ou poseur d'elements structurels en acier ou en aluminium destines a la construction doit etre certifie EN 1090. Cette norme europeenne harmonise les exigences de qualite et engage directement la responsabilite des intervenants.",
+          "Depuis le 1er juillet 2014, tout fabricant ou poseur d'éléments structurels en acier ou en aluminium destinés à la construction doit être certifié EN 1090. Cette norme européenne harmonise les exigences de qualité et engage directement la responsabilité des intervenants.",
         ],
       },
       {
-        heading: "Les 4 classes d'execution",
+        heading: "Les 4 classes d'exécution",
         paragraphs: [
-          "EXC1 : structures simples, faibles consequences en cas de defaillance (cloisons, supports legers).",
-          "EXC2 : structures courantes (charpentes, mezzanines, garde-corps). C'est la classe la plus repandue.",
-          "EXC3 : structures complexes ou a hautes consequences (ponts, batiments hauts).",
-          "EXC4 : ouvrages exceptionnels ou criticites particulieres.",
-          "IEF & CO est certifie EXC2, ce qui couvre l'integralite de notre champ d'intervention en metallerie batiment.",
+          "EXC1 : structures simples, faibles conséquences en cas de défaillance (cloisons, supports légers).",
+          "EXC2 : structures courantes (charpentes, mezzanines, garde-corps). C'est la classe la plus répandue.",
+          "EXC3 : structures complexes ou à hautes conséquences (ponts, bâtiments hauts).",
+          "EXC4 : ouvrages exceptionnels ou criticités particulières.",
+          "IEF & CO est certifié EXC2, ce qui couvre l'intégralité de notre champ d'intervention en métallerie bâtiment.",
         ],
       },
       {
         heading: "Que se passe-t-il sans certification ?",
         paragraphs: [
-          "Un element structurel installe sans certification EN 1090 peut etre refuse a la reception, au controle technique, ou conduire a un refus d'assurance dommages-ouvrage.",
-          "En cas de sinistre, la responsabilite du maitre d'ouvrage et du poseur peut etre engagee, avec des consequences financieres potentiellement majeures.",
+          "Un élément structurel installé sans certification EN 1090 peut être refusé à la réception, au contrôle technique, ou conduire à un refus d'assurance dommages-ouvrage.",
+          "En cas de sinistre, la responsabilité du maître d'ouvrage et du poseur peut être engagée, avec des conséquences financières potentiellement majeures.",
         ],
       },
     ],
   },
   {
     slug: "renovation-portail-coulissant-roissy",
-    title: "Renovation d'un portail coulissant 12m sur site logistique",
+    title: "Rénovation d'un portail coulissant 12m sur site logistique",
     excerpt:
-      "Etude de cas : remplacement d'un portail vetuste par un portail coulissant motorise + controle d'acces RFID, en moins de 5 jours, sur un site logistique en activite.",
-    date: "18 fevrier 2026",
+      "Étude de cas : remplacement d'un portail vétuste par un portail coulissant motorisé + contrôle d'accès RFID, en moins de 5 jours, sur un site logistique en activité.",
+    date: "18 février 2026",
     dateISO: "2026-02-18",
     category: "Case Study",
     author: "IEF & CO",
@@ -173,26 +173,26 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         paragraphs: [
-          "Un operateur logistique en Val-d'Oise nous a sollicite pour le remplacement d'un portail coulissant 12m vetuste, devenu source de pannes recurrentes et bloquant occasionnellement l'acces aux poids lourds.",
+          "Un opérateur logistique en Val-d'Oise nous a sollicité pour le remplacement d'un portail coulissant 12m vétuste, devenu source de pannes récurrentes et bloquant occasionnellement l'accès aux poids lourds.",
         ],
       },
       {
         heading: "Le challenge",
         paragraphs: [
-          "Site en activite 24/7, impossibilite d'arreter le flux logistique. Contraintes : intervention sans interruption d'exploitation, securisation des manoeuvres, integration avec le controle d'acces existant.",
+          "Site en activité 24/7, impossibilité d'arrêter le flux logistique. Contraintes : intervention sans interruption d'exploitation, sécurisation des manœuvres, intégration avec le contrôle d'accès existant.",
         ],
       },
       {
         heading: "Notre solution",
         paragraphs: [
-          "Pre-fabrication du nouveau portail en atelier (rail, vantail, motorisation), depose du portail existant en horaires de creux d'activite (nuit + week-end), pose du nouveau systeme avec mise en service progressive.",
-          "Integration d'un nouveau lecteur RFID + lecteur de plaques d'immatriculation pour identifier automatiquement les chauffeurs habituels.",
+          "Pré-fabrication du nouveau portail en atelier (rail, vantail, motorisation), dépose du portail existant en horaires de creux d'activité (nuit + week-end), pose du nouveau système avec mise en service progressive.",
+          "Intégration d'un nouveau lecteur RFID + lecteur de plaques d'immatriculation pour identifier automatiquement les chauffeurs habituels.",
         ],
       },
       {
-        heading: "Le resultat",
+        heading: "Le résultat",
         paragraphs: [
-          "5 jours d'intervention totale. Zero arret de production. Reduction de 80% des pannes sur les 6 mois suivants. Gain de temps moyen de 12 secondes par passage poids lourd grace au lecteur de plaques.",
+          "5 jours d'intervention totale. Zéro arrêt de production. Réduction de 80% des pannes sur les 6 mois suivants. Gain de temps moyen de 12 secondes par passage poids lourd grâce au lecteur de plaques.",
         ],
       },
     ],

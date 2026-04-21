@@ -1496,7 +1496,7 @@ function gearPath(cx: number, cy: number, outerR: number, innerR: number, teeth:
    ────────────────────────────────────────────────────────── */
 
 const labelMap: Record<string, string> = {
-  structures: "Charpente metallique",
+  structures: "Charpente métallique",
   portails: "Portail coulissant",
   industrielles: "Porte sectionnelle",
   menuiserie: "Mur rideau VEC",
@@ -1551,7 +1551,7 @@ export function ProjectIllustration({
 }: ProjectIllustrationProps) {
   const key = resolveIllustrationKey(category);
   const Drawing = drawingMap[key] ?? StructuresDrawing;
-  const defaultTitle = labelMap[key] ?? "Projet metallique";
+  const defaultTitle = labelMap[key] ?? "Projet métallique";
   const resolvedTitle = title ?? defaultTitle;
   const patternId = `proj-${key}`;
 

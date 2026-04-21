@@ -19,20 +19,20 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://iefandco.com"),
   title: {
     default:
-      "IEF & CO | Metallerie Serrurerie Ile-de-France — Groslay (95)",
-    template: "%s | IEF & CO — Metallerie Serrurerie",
+      "IEF & CO | Métallerie Serrurerie Île-de-France — Groslay (95)",
+    template: "%s | IEF & CO — Métallerie Serrurerie",
   },
   description:
-    "IEF & CO, expert en metallerie et serrurerie a Groslay (95). Fermetures industrielles, portails, structures metalliques, menuiserie, portes coupe-feu, automatismes et maintenance 24/7 en Ile-de-France.",
+    "IEF & CO, expert en métallerie et serrurerie à Groslay (95). Fermetures industrielles, portails, structures métalliques, menuiserie, portes coupe-feu, automatismes et maintenance 24/7 en Île-de-France.",
   keywords: [
-    "metallerie",
+    "métallerie",
     "serrurerie",
     "Groslay",
     "Val-d'Oise",
-    "Ile-de-France",
+    "Île-de-France",
     "porte industrielle",
     "portail",
-    "structure metallique",
+    "structure métallique",
     "coupe-feu",
     "maintenance",
   ],
@@ -43,15 +43,15 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://iefandco.com",
     siteName: "IEF & CO",
-    title: "IEF & CO | Metallerie Serrurerie Ile-de-France",
+    title: "IEF & CO | Métallerie Serrurerie Île-de-France",
     description:
-      "Concepteur et fabricant de solutions metalliques sur mesure. De la conception a la pose.",
+      "Concepteur et fabricant de solutions métalliques sur mesure. De la conception à la pose.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "IEF & CO | Metallerie Serrurerie Ile-de-France",
+    title: "IEF & CO | Métallerie Serrurerie Île-de-France",
     description:
-      "Concepteur et fabricant de solutions metalliques sur mesure.",
+      "Concepteur et fabricant de solutions métalliques sur mesure.",
   },
   robots: {
     index: true,

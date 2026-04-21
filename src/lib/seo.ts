@@ -86,7 +86,7 @@ export function generateServiceSchema(service: {
     },
     areaServed: {
       "@type": "AdministrativeArea",
-      name: "Ile-de-France",
+      name: "Île-de-France",
     },
   };
 }

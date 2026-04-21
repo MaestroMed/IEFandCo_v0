@@ -4,9 +4,9 @@ import { generatePageMetadata } from "@/lib/seo";
 import { DevisMultiStep } from "@/components/forms/DevisMultiStep";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Demander un devis gratuit | Metallerie sur mesure",
+  title: "Demander un devis gratuit | Métallerie sur mesure",
   description:
-    "Obtenez un devis gratuit pour votre projet de metallerie en Ile-de-France. Fermetures, portails, structures, coupe-feu, maintenance. Reponse sous 48h.",
+    "Obtenez un devis gratuit pour votre projet de métallerie en Île-de-France. Fermetures, portails, structures, coupe-feu, maintenance. Réponse sous 48h.",
   path: "/devis",
 });
 

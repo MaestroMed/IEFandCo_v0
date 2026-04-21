@@ -269,10 +269,10 @@ export function HeroSection() {
 
           <h1
             className="font-display font-bold leading-[0.95] tracking-[-0.03em] sr-only-hidden"
-            aria-label="L'art du metal, entre force et precision — IEF & CO"
+            aria-label="L'art du métal, entre force et précision — IEF & CO"
           >
             {[
-              { content: "L'art du metal,", className: "" },
+              { content: "L'art du métal,", className: "" },
               { content: "entre force", className: "text-gradient-metal" },
               { content: null, className: "" },
             ].map((line, i) => (
@@ -297,7 +297,7 @@ export function HeroSection() {
                         animate={ready ? { textShadow: ["0 0 30px rgba(225,16,33,0.25)", "0 0 80px rgba(225,16,33,0.5)", "0 0 30px rgba(225,16,33,0.25)"] } : {}}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        precision
+                        précision
                       </motion.span>
                     </>
                   )}
@@ -321,15 +321,15 @@ export function HeroSection() {
             style={{ color: "var(--text-secondary)" }}
             variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
           >
-            Concepteur et fabricant de solutions metalliques sur mesure — de la
-            conception a la pose, IEF & CO transforme le metal en performance durable.
+            Concepteur et fabricant de solutions métalliques sur mesure — de la
+            conception à la pose, IEF & CO transforme le métal en performance durable.
           </motion.p>
 
           <motion.div
             className="mt-10 flex flex-wrap gap-4"
             variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
           >
-            <Button href="/services" size="lg">Decouvrir nos services</Button>
+            <Button href="/services" size="lg">Découvrir nos services</Button>
             <Button href="/devis" variant="secondary" size="lg">Demander un devis</Button>
           </motion.div>
         </motion.div>

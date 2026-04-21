@@ -10,9 +10,9 @@ import { getTeam } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "A propos | Expert en construction metallique sur mesure",
+  title: "À propos | Expert en construction métallique sur mesure",
   description:
-    "IEF & CO : concepteur et fabricant de solutions metalliques a Groslay (95). Bureau d'etude integre, fabrication certifiee EN 1090, service ASSISTEO.",
+    "IEF & CO : concepteur et fabricant de solutions métalliques à Groslay (95). Bureau d'étude intégré, fabrication certifiée EN 1090, service ASSISTEO.",
   path: "/a-propos",
 });
 

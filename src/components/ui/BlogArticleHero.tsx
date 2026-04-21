@@ -883,7 +883,7 @@ const labelMap: Record<string, string> = {
   techniques: "Technique",
   "case study": "Case Study",
   "case-study": "Case Study",
-  "etude de cas": "Etude de cas",
+  "etude de cas": "Étude de cas",
   case: "Case Study",
 };
 

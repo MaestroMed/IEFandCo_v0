@@ -59,12 +59,12 @@ export const secondaryNavigation: NavItem[] = [
 export const companyInfo = {
   name: "IEF & CO",
   fullName: "IEF AND CO",
-  description: "Concepteur et fabricant de solutions metalliques sur mesure",
+  description: "Concepteur et fabricant de solutions métalliques sur mesure",
   address: {
-    street: "8 Rue Rene Dubos",
+    street: "8 Rue René Dubos",
     city: "Groslay",
     postalCode: "95410",
-    region: "Ile-de-France",
+    region: "Île-de-France",
     country: "FR",
   },
   phone: "+33 1 34 05 87 03",

@@ -388,7 +388,7 @@ export function CADIllustration({ className, ariaLabel }: CADIllustrationProps) 
         aspectRatio: "4/3",
       }}
       role="img"
-      aria-label={ariaLabel ?? "Vue isometrique CAD d'une charpente metallique avec cotation"}
+      aria-label={ariaLabel ?? "Vue isométrique CAD d'une charpente métallique avec cotation"}
     >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}

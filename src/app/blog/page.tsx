@@ -7,9 +7,9 @@ import { getBlogPosts } from "@/lib/content";
 import { getBlogPhoto } from "@/lib/photoMap";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Blog | Actualites metallerie & serrurerie",
+  title: "Blog | Actualités métallerie & serrurerie",
   description:
-    "Articles techniques, guides et actualites sur la metallerie, les fermetures industrielles et la maintenance. Blog IEF & CO.",
+    "Articles techniques, guides et actualités sur la métallerie, les fermetures industrielles et la maintenance. Blog IEF & CO.",
   path: "/blog",
 });
 

@@ -5,9 +5,9 @@ import { ContactForm } from "@/components/forms/ContactForm";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Contact | Parlons de votre projet metallique",
+  title: "Contact | Parlons de votre projet métallique",
   description:
-    "Contactez IEF & CO pour vos projets de metallerie en Ile-de-France. Devis gratuit, etude technique, intervention rapide. Tel : 01 34 05 87 03.",
+    "Contactez IEF & CO pour vos projets de métallerie en Île-de-France. Devis gratuit, étude technique, intervention rapide. Tel : 01 34 05 87 03.",
   path: "/contact",
 });
 

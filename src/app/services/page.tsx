@@ -7,9 +7,9 @@ import { generatePageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "Nos Services en Metallerie & Serrurerie",
+  title: "Nos Services en Métallerie & Serrurerie",
   description:
-    "Decouvrez les 7 domaines d'expertise d'IEF & CO : fermetures industrielles, portails, structures metalliques, menuiserie, coupe-feu, automatismes et maintenance.",
+    "Découvrez les 7 domaines d'expertise d'IEF & CO : fermetures industrielles, portails, structures métalliques, menuiserie, coupe-feu, automatismes et maintenance.",
   path: "/services",
 });
 

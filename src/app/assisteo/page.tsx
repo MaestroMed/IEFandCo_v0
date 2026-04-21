@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/Button";
 import { AssisteoMockup } from "@/components/ui/AssisteoMockup";
 
 export const metadata: Metadata = generatePageMetadata({
-  title: "ASSISTEO | Diagnostic technique a distance",
+  title: "ASSISTEO | Diagnostic technique à distance",
   description:
-    "ASSISTEO by IEF & CO : assistance video et diagnostic technique a distance pour vos fermetures industrielles. Reduction des temps d'arret, intervention preparee.",
+    "ASSISTEO by IEF & CO : assistance vidéo et diagnostic technique à distance pour vos fermetures industrielles. Réduction des temps d'arrêt, intervention préparée.",
   path: "/assisteo",
 });
 
