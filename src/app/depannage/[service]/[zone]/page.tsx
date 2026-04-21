@@ -480,6 +480,109 @@ export default async function DepannageComboPage({
           </div>
         </div>
       </section>
+
+      {/* ═══════════ CROSS-LINKS (LIGHT) ═══════════ */}
+      <section className="section-forge-light relative overflow-hidden py-20 md:py-24" style={{ borderTop: "1px solid var(--border)" }}>
+        <div className="relative z-10 mx-auto max-w-6xl px-6 space-y-12">
+          {/* Same service, other zones */}
+          <div>
+            <div className="mb-8 flex items-center gap-3">
+              <span className="h-px w-8" style={{ background: `rgb(${accent})` }} />
+              <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: `rgb(${accent})` }}>
+                {s.label} dans les autres départements
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {zones
+                .filter((otherZ) => otherZ.slug !== z.slug)
+                .map((otherZ) => (
+                  <Link
+                    key={otherZ.slug}
+                    href={`/depannage/${s.slug}/${otherZ.slug}`}
+                    className="group rounded-xl px-4 py-3 transition-all hover:-translate-y-0.5"
+                    style={{
+                      background: "var(--card-bg)",
+                      border: `1px solid rgba(${accent}, 0.15)`,
+                      boxShadow: "var(--card-shadow)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[0.22em]"
+                        style={{ color: `rgb(${accent})` }}
+                      >
+                        {otherZ.code}
+                      </span>
+                      <svg
+                        className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                        style={{ color: `rgb(${accent})` }}
+                        aria-hidden="true"
+                      >
+                        <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </div>
+                    <div className="mt-1 font-display text-sm font-bold leading-tight" style={{ color: "var(--text)" }}>
+                      {otherZ.name}
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
+
+          {/* Other services, same zone */}
+          <div>
+            <div className="mb-8 flex items-center gap-3">
+              <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
+              <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
+                Autres dépannages dans le {z.code}
+              </span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {depannageServices
+                .filter((otherS) => otherS.slug !== s.slug)
+                .map((otherS) => (
+                  <Link
+                    key={otherS.slug}
+                    href={`/depannage/${otherS.slug}/${z.slug}`}
+                    className="group rounded-xl px-4 py-3 transition-all hover:-translate-y-0.5"
+                    style={{
+                      background: "var(--card-bg)",
+                      border: `1px solid rgba(${otherS.accentColor}, 0.18)`,
+                      boxShadow: "var(--card-shadow)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[0.22em]"
+                        style={{ color: `rgb(${otherS.accentColor})` }}
+                      >
+                        URG
+                      </span>
+                      <svg
+                        className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                        style={{ color: `rgb(${otherS.accentColor})` }}
+                        aria-hidden="true"
+                      >
+                        <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </div>
+                    <div className="font-display text-sm font-bold leading-tight" style={{ color: "var(--text)" }}>
+                      {otherS.label}
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
