@@ -8,8 +8,7 @@ import {
   getStaticServiceSlugs,
 } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
-import { Photo } from "@/components/ui/Photo";
-import { getServicePhoto } from "@/lib/photoMap";
+import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { FAQAccordion } from "./FAQAccordion";
 import {
   generatePageMetadata,
@@ -122,7 +121,7 @@ export default async function ServicePage({
               </div>
             </div>
 
-            {/* Real photo with corner-bracket frame + service color glow */}
+            {/* Hand-drawn blueprint illustration (per-service accent) */}
             <div className="relative hidden lg:block">
               <div
                 className="absolute -inset-8 pointer-events-none -z-10"
@@ -133,19 +132,13 @@ export default async function ServicePage({
               <div
                 className="relative overflow-hidden rounded-2xl"
                 style={{
-                  border: "1px solid var(--border)",
                   boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(${accent}, 0.18)`,
                 }}
               >
-                <Photo
-                  src={getServicePhoto(service.slug)}
-                  alt={service.title}
-                  aspect="aspect-[4/3]"
-                  treatment="moody"
-                  brackets={false}
-                  hoverZoom={false}
-                  priority
-                  sizes="(max-width: 1024px) 0px, 50vw"
+                <ProjectIllustration
+                  category={service.slug}
+                  accentColor={accent}
+                  hideTitle
                 />
 
                 {/* Corner brackets — service-color tint */}
@@ -157,9 +150,9 @@ export default async function ServicePage({
                 {/* Title block */}
                 <div
                   className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] pointer-events-none z-10"
-                  style={{ color: "rgba(245, 245, 242, 0.85)" }}
+                  style={{ color: "var(--text-secondary)" }}
                 >
-                  <span>SVC · {service.slug.toUpperCase()}</span>
+                  <span style={{ color: `rgb(${accent})` }}>SVC · {service.slug.toUpperCase()}</span>
                   <span>ECH · 1:100</span>
                 </div>
               </div>

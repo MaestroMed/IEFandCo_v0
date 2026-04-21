@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { getServices } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
-import { Photo } from "@/components/ui/Photo";
-import { getServicePhoto } from "@/lib/photoMap";
+import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -87,22 +86,31 @@ export default async function ServicesPage() {
                     boxShadow: "var(--card-shadow)",
                   }}
                 >
-                  {/* Real photo with brand treatment */}
+                  {/* Hand-drawn blueprint illustration with service accent */}
                   <div className="relative" style={{ borderBottom: "1px solid var(--border)" }}>
-                    <Photo
-                      src={getServicePhoto(service.slug)}
-                      alt={service.shortTitle}
-                      aspect="aspect-[4/3]"
-                      treatment="default"
-                      caption={`SVC-${String(i + 1).padStart(2, "0")}`}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                    <ProjectIllustration
+                      category={service.slug}
+                      accentColor={service.accentColor}
+                      hideTitle
                     />
+
+                    {/* SVC code chip */}
+                    <div
+                      className="absolute top-3 right-3 rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.25em] pointer-events-none"
+                      style={{
+                        background: `rgba(${service.accentColor}, 0.08)`,
+                        color: `rgb(${service.accentColor})`,
+                        border: `1px solid rgba(${service.accentColor}, 0.22)`,
+                      }}
+                    >
+                      SVC-{String(i + 1).padStart(2, "0")}
+                    </div>
 
                     {/* Service color wash on hover */}
                     <div
                       className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none"
                       style={{
-                        background: `radial-gradient(ellipse 60% 50% at 30% 30%, rgba(${service.accentColor}, 0.25) 0%, transparent 70%)`,
+                        background: `radial-gradient(ellipse 60% 50% at 30% 30%, rgba(${service.accentColor}, 0.18) 0%, transparent 70%)`,
                       }}
                     />
                   </div>

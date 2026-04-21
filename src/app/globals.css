@@ -181,6 +181,12 @@
   100% { background-position: 200% 0; }
 }
 
+/* Hero carousel scene progress: fills a strip left→right during a scene's lifetime */
+@keyframes hero-scene-progress {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+
 /* ── Base ── */
 html {
   scroll-behavior: smooth;

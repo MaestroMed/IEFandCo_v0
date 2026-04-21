@@ -13,6 +13,13 @@ const HeroJourney = dynamic(
   { ssr: false, loading: () => null }
 );
 
+// Hand-drawn blueprint carousel that chains the 7 service families.
+// Loaded client-only because it uses AnimatePresence + useEffect-driven timers.
+const HeroServiceCarousel = dynamic(
+  () => import("./HeroServiceCarousel").then((m) => m.HeroServiceCarousel),
+  { ssr: false, loading: () => null }
+);
+
 /**
  * Parallax isometric grid plane — extremely subtle, amber tinted.
  */
@@ -173,21 +180,27 @@ export function HeroSection() {
       {/* Subtle isometric grid */}
       <IsometricGrid tiltX={tiltX} tiltY={tiltY} />
 
-      {/* Hero scene carousel — Bureau d'étude → Atelier → Pose chantier */}
+      {/* Hero illustration sequence — cycles through the 7 service drawings */}
       {isLg && (
         <div
           className="absolute"
           style={{ right: "2%", top: "50%", transform: "translateY(-50%)" }}
         >
-          <HeroJourney tiltX={tiltX} tiltY={tiltY} size={620} />
+          <HeroServiceCarousel tiltX={tiltX} tiltY={tiltY} size={620} />
         </div>
       )}
+      {/* Mobile: ambient blueprint activity at low opacity, no labels, no dots */}
       {!isLg && (
         <div
-          className="absolute pointer-events-none opacity-40"
-          style={{ right: "-40px", top: "60px" }}
+          className="absolute pointer-events-none opacity-25"
+          style={{
+            right: "-80px",
+            top: "24px",
+            transformOrigin: "top right",
+          }}
+          aria-hidden="true"
         >
-          <HeroJourney tiltX={tiltX} tiltY={tiltY} size={280} />
+          <HeroJourney tiltX={tiltX} tiltY={tiltY} size={360} />
         </div>
       )}
 

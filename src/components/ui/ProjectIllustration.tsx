@@ -31,6 +31,19 @@ interface ProjectIllustrationProps {
   category: string;
   className?: string;
   title?: string;
+  /**
+   * RGB triplet ("R, G, B") to override the copper accent for this specific
+   * instance — lets each service hero match its own accentColor, and lets
+   * HeroServiceCarousel crossfade accent tones per scene.
+   */
+  accentColor?: string;
+  /** Hide the top-left title chip when embedded in a frame that has its own label. */
+  hideTitle?: boolean;
+  /**
+   * When provided, remounts the drawing on every change to replay entry animations.
+   * Used by HeroServiceCarousel when cycling scenes.
+   */
+  animKey?: string | number;
 }
 
 const ANIM = {
@@ -1502,16 +1515,52 @@ const drawingMap: Record<string, React.FC> = {
   maintenance: MaintenanceDrawing,
 };
 
+// Some callers pass the full service slug (e.g. "fermetures-industrielles"),
+// others pass the short category key (e.g. "industrielles"). This map bridges
+// both so the drawings pick up correctly in either case.
+const slugAliases: Record<string, string> = {
+  "fermetures-industrielles": "industrielles",
+  "portails-clotures": "portails",
+  "structures-metalliques": "structures",
+  "menuiserie-vitrerie": "menuiserie",
+  "portes-coupe-feu": "coupe-feu",
+};
+
+export function resolveIllustrationKey(category: string): string {
+  const lc = category.toLowerCase();
+  return slugAliases[lc] ?? lc;
+}
+
+export const PROJECT_ILLUSTRATION_KEYS = [
+  "industrielles",
+  "portails",
+  "structures",
+  "menuiserie",
+  "coupe-feu",
+  "automatismes",
+  "maintenance",
+] as const;
+
 export function ProjectIllustration({
   category,
   className,
   title,
+  accentColor,
+  hideTitle = false,
+  animKey,
 }: ProjectIllustrationProps) {
-  const key = category.toLowerCase();
+  const key = resolveIllustrationKey(category);
   const Drawing = drawingMap[key] ?? StructuresDrawing;
   const defaultTitle = labelMap[key] ?? "Projet metallique";
   const resolvedTitle = title ?? defaultTitle;
   const patternId = `proj-${key}`;
+
+  // Override the copper var locally so every `var(--color-copper)` inside
+  // the drawing picks up the per-instance accent. If accentColor is absent,
+  // the drawing keeps the global copper.
+  const styleOverride: React.CSSProperties = accentColor
+    ? ({ "--color-copper": `rgb(${accentColor})` } as React.CSSProperties)
+    : {};
 
   return (
     <div
@@ -1522,6 +1571,7 @@ export function ProjectIllustration({
       style={{
         background: "var(--bg-muted)",
         border: "1px solid var(--border)",
+        ...styleOverride,
       }}
       role="img"
       aria-label={`Illustration technique — ${resolvedTitle}`}
@@ -1534,25 +1584,30 @@ export function ProjectIllustration({
       >
         <BlueprintGrid id={patternId} />
         <Frame>
-          <Drawing />
+          {/* Keyed so that cycling scenes triggers a fresh entry animation */}
+          <g key={animKey ?? key}>
+            <Drawing />
+          </g>
         </Frame>
       </svg>
       {/* Small title label overlay */}
-      <div
-        className="pointer-events-none absolute left-4 top-4 flex items-center gap-2"
-        aria-hidden
-      >
-        <span
-          className="h-px w-6"
-          style={{ background: "var(--color-copper)" }}
-        />
-        <span
-          className="font-mono text-[10px] uppercase tracking-[0.25em]"
-          style={{ color: "var(--text-secondary)" }}
+      {!hideTitle && (
+        <div
+          className="pointer-events-none absolute left-4 top-4 flex items-center gap-2"
+          aria-hidden
         >
-          {resolvedTitle}
-        </span>
-      </div>
+          <span
+            className="h-px w-6"
+            style={{ background: "var(--color-copper)" }}
+          />
+          <span
+            className="font-mono text-[10px] uppercase tracking-[0.25em]"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            {resolvedTitle}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
