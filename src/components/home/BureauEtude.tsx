@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { useInView } from "@/hooks/useInView";
 import { Button } from "@/components/ui/Button";
 import { CADIllustration } from "@/components/ui/CADIllustration";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 
 const features = [
   {
@@ -36,6 +37,9 @@ export function BureauEtude() {
     <section className="section-forge-dark relative overflow-hidden py-28 md:py-36">
       {/* Living gradient background */}
       <div className="forge-gradient-dark" />
+
+      {/* Subtle workshop atmosphere — lower intensity to not compete with CAD */}
+      <WorkshopAtmosphere intensity={0.45} origin="right" />
 
       {/* Blueprint grid — full width, very subtle */}
       <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.06 }} />

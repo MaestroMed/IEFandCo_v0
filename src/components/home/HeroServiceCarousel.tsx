@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
   motion,
   AnimatePresence,
@@ -37,6 +38,8 @@ interface Scene {
   subtitle: string;
   /** RGB triplet aligned with data/services.ts accentColor values */
   accent: string;
+  /** Deep-link destination when the scene is clicked */
+  href: string;
 }
 
 const SCENES: Scene[] = [
@@ -45,42 +48,49 @@ const SCENES: Scene[] = [
     title: "Fermetures industrielles",
     subtitle: "Porte sectionnelle — rail haut",
     accent: "59, 130, 180", // steel blue
+    href: "/services/fermetures-industrielles",
   },
   {
     key: "portails",
     title: "Portails & clôtures",
     subtitle: "Portail coulissant — rail inox",
     accent: "166, 124, 82", // warm earth
+    href: "/services/portails-clotures",
   },
   {
     key: "structures",
     title: "Structures métalliques",
     subtitle: "Charpente isométrique — S355",
     accent: "160, 170, 180", // chrome
+    href: "/services/structures-metalliques",
   },
   {
     key: "menuiserie",
     title: "Menuiserie & vitrerie",
     subtitle: "Mur-rideau VEC — trame 1200",
     accent: "100, 180, 200", // glass cyan
+    href: "/services/menuiserie-vitrerie",
   },
   {
     key: "coupe-feu",
     title: "Portes coupe-feu",
     subtitle: "Porte EI 60 — battant acier",
     accent: "200, 120, 50", // amber
+    href: "/services/portes-coupe-feu",
   },
   {
     key: "automatismes",
     title: "Automatismes",
     subtitle: "Motorisation tubulaire 24V",
     accent: "80, 120, 220", // electric blue
+    href: "/services/automatismes",
   },
   {
     key: "maintenance",
     title: "Maintenance préventive",
     subtitle: "Plan annuel — 4 visites",
     accent: "60, 170, 140", // teal
+    href: "/services/maintenance",
   },
 ];
 
@@ -242,7 +252,7 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
             <span className="hidden md:inline">IEF-CO · REV.03 · ECH 1:100</span>
           </div>
 
-          {/* Bottom: title + subtitle */}
+          {/* Bottom: title + subtitle + deep-link to service page */}
           <div className="mt-auto px-5 pb-5">
             <AnimatePresence mode="wait">
               <motion.div
@@ -258,11 +268,24 @@ export function HeroServiceCarousel({ tiltX, tiltY, size = 620 }: Props) {
                 >
                   {scene.subtitle}
                 </div>
-                <div
-                  className="mt-1 font-display text-lg font-semibold md:text-xl"
-                  style={{ color: "var(--text)" }}
-                >
-                  {scene.title}
+                <div className="mt-1 flex items-end justify-between gap-4">
+                  <div
+                    className="font-display text-lg font-semibold md:text-xl"
+                    style={{ color: "var(--text)" }}
+                  >
+                    {scene.title}
+                  </div>
+                  <Link
+                    href={scene.href}
+                    className="pointer-events-auto shrink-0 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.22em] transition-opacity hover:opacity-80"
+                    style={{ color: `rgb(${scene.accent})` }}
+                    aria-label={`Voir le service ${scene.title}`}
+                  >
+                    Voir
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                      <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </Link>
                 </div>
               </motion.div>
             </AnimatePresence>

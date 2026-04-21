@@ -5,6 +5,7 @@ import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { TeamMember } from "@/components/ui/TeamMember";
 import { ProcessTimeline } from "@/components/ui/ProcessTimeline";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { getTeam } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
@@ -64,6 +65,7 @@ export default async function AProposPage() {
         </div>
 
         <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.55} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
         <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 

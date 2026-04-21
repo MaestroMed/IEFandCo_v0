@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useInView } from "@/hooks/useInView";
 import { Button } from "@/components/ui/Button";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 
 function EmberField({ count = 10 }: { count?: number }) {
   const embers = Array.from({ length: count }).map((_, i) => ({
@@ -42,6 +43,9 @@ export function ContactCTA() {
     <section className="section-forge-dark relative overflow-hidden py-32 md:py-44">
       {/* Most dramatic living gradient */}
       <div className="forge-gradient-cta" />
+
+      {/* Workshop atmosphere — heat haze + breathing copper glow */}
+      <WorkshopAtmosphere intensity={1} origin="bottom" />
 
       {/* Central forge glow */}
       <div

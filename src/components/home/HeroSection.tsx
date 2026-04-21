@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { Button } from "@/components/ui/Button";
+import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 // Unified cinematic journey: bureau → atelier → pose → livré
@@ -177,16 +178,37 @@ export function HeroSection() {
       {/* Living mesh gradient — warm copper/amber overlay */}
       <div className="mesh-gradient-hero" />
 
+      {/* Workshop atmosphere — slow-breathing copper glow + heat haze */}
+      <WorkshopAtmosphere intensity={0.6} origin="bottom" />
+
       {/* Subtle isometric grid */}
       <IsometricGrid tiltX={tiltX} tiltY={tiltY} />
 
-      {/* Hero illustration sequence — cycles through the 7 service drawings */}
+      {/* Hero illustration sequence — cycles through the 7 service drawings.
+          Size scales with breakpoint to avoid colliding with title copy
+          at smaller desktop widths. */}
       {isLg && (
         <div
-          className="absolute"
-          style={{ right: "2%", top: "50%", transform: "translateY(-50%)" }}
+          className="absolute hidden lg:block xl:hidden"
+          style={{ right: "3%", top: "50%", transform: "translateY(-50%)" }}
         >
-          <HeroServiceCarousel tiltX={tiltX} tiltY={tiltY} size={620} />
+          <HeroServiceCarousel tiltX={tiltX} tiltY={tiltY} size={480} />
+        </div>
+      )}
+      {isLg && (
+        <div
+          className="absolute hidden xl:block 2xl:hidden"
+          style={{ right: "3%", top: "50%", transform: "translateY(-50%)" }}
+        >
+          <HeroServiceCarousel tiltX={tiltX} tiltY={tiltY} size={560} />
+        </div>
+      )}
+      {isLg && (
+        <div
+          className="absolute hidden 2xl:block"
+          style={{ right: "3%", top: "50%", transform: "translateY(-50%)" }}
+        >
+          <HeroServiceCarousel tiltX={tiltX} tiltY={tiltY} size={640} />
         </div>
       )}
       {/* Mobile: ambient blueprint activity at low opacity, no labels, no dots */}
