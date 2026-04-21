@@ -36,6 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/glossaire`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/maintenance/contrats`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.95 },
     { url: `${baseUrl}/depannage`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.95 },
+    { url: `${baseUrl}/estimateur`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
   ];
 
   // Combos zone × service dépannage — 40 URLs stratégiques pour SEO local

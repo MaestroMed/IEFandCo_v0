@@ -6,6 +6,7 @@ import { StatsForge } from "@/components/home/StatsForge";
 import { ClientLogos } from "@/components/home/ClientLogos";
 import { Testimonials } from "@/components/home/Testimonials";
 import { FAQSection } from "@/components/home/FAQSection";
+import { Newsletter } from "@/components/home/Newsletter";
 import { ContactCTA } from "@/components/home/ContactCTA";
 import { getServices, getTestimonials, getClients, getHomepageFAQ } from "@/lib/content";
 
@@ -27,6 +28,7 @@ export default async function HomePage() {
       <ClientLogos clients={clients} />
       <Testimonials testimonials={testimonials} />
       <FAQSection items={homepageFAQ} />
+      <Newsletter />
       <ContactCTA />
     </>
   );

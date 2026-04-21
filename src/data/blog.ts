@@ -459,6 +459,251 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+
+  /* ─────────── PILLAR ARTICLES — batch 2 (Phase C continued) ─────────── */
+
+  {
+    slug: "pannes-frequentes-portes-sectionnelles-industrielles",
+    title: "Les 10 pannes les plus fréquentes des portes sectionnelles industrielles",
+    excerpt:
+      "Inventaire détaillé des défaillances les plus courantes sur les portes sectionnelles de sites logistiques : causes, symptômes, coûts de réparation et prévention.",
+    date: "18 avril 2026",
+    dateISO: "2026-04-18",
+    category: "Technique",
+    author: "IEF & CO",
+    readingMinutes: 14,
+    sections: [
+      {
+        paragraphs: [
+          "Quand une porte sectionnelle industrielle tombe en panne, l'impact est immédiat : quai bloqué, camions immobilisés, chaîne logistique rompue. Sur 15 ans d'interventions terrain IEF & CO, nous avons catalogué les défaillances les plus fréquentes. Cet article détaille chacune d'elles — symptômes caractéristiques, causes racines, coût de réparation, et surtout : comment les prévenir via une maintenance préventive bien dimensionnée.",
+        ],
+      },
+      {
+        heading: "1. Ressort de torsion cassé (25% des interventions curatives)",
+        paragraphs: [
+          "**Symptôme** : la porte chute brutalement à la fermeture ou ne tient plus en position ouverte. Un claquement métallique fort au moment de la rupture (facilement identifiable).",
+          "**Cause racine** : usure mécanique — un ressort de torsion a une durée de vie de 20 000 à 30 000 cycles. Sur une porte à 200 cycles/jour, ça fait 2-3 ans. Sur une porte à 800 cycles/jour, ça fait 8-12 mois. La fatigue est progressive (fissures microscopiques) puis rupture soudaine.",
+          "**Coût** : 120-250 € pièce + 1-2h main d'œuvre = typiquement 350-500 € TTC. Risque : si le ressort casse pendant une fermeture, le tablier peut chuter brutalement (danger personnel).",
+          "**Prévention** : inspection visuelle du ressort tous les 6 mois (chercher les fissures, la déformation), remplacement préventif à 80% de la durée de vie théorique en cycles.",
+        ],
+      },
+      {
+        heading: "2. Câble de levage rompu (15% des interventions)",
+        paragraphs: [
+          "**Symptôme** : tablier qui part en biais, bruit métallique de frottement, blocage en cours de descente. Parfois un fil du câble qui dépasse visuellement.",
+          "**Cause** : abrasion progressive dans les poulies + corrosion (humidité chantier). Les câbles galvanisés standard durent 15-20 ans en usage normal, 5-8 ans en environnement humide ou salin.",
+          "**Coût** : 60-120 € le câble + 1h = 200-300 € TTC.",
+          "**Prévention** : inspection visuelle des câbles à chaque visite de maintenance (les deux : gauche et droite). Graissage des poulies pour réduire l'abrasion.",
+        ],
+      },
+      {
+        heading: "3. Carte électronique de motorisation HS (12% des interventions)",
+        paragraphs: [
+          "**Symptôme** : porte qui ne répond plus à la télécommande, code erreur sur l'écran d'affichage de l'armoire, ou fonctionnement erratique (une fois oui, une fois non).",
+          "**Cause** : vieillissement des composants électroniques (condensateurs en particulier), surtensions réseau, infiltration d'humidité. Les cartes Hörmann SupraMatic et Crawford Combi ont une durée de vie moyenne de 12-15 ans.",
+          "**Coût** : 350-800 € selon le modèle + 1h = 500-950 € TTC. Parfois combiné avec remplacement de l'alimentation (+150 €).",
+          "**Prévention** : installer un parafoudre dédié sur la ligne électrique (très efficace contre les surtensions), inspection des joints de l'armoire pour éviter les infiltrations.",
+        ],
+      },
+      {
+        heading: "4. Cellule photoélectrique de sécurité défaillante (10%)",
+        paragraphs: [
+          "**Symptôme** : la porte refuse de se fermer (reste ouverte), ou signal d'erreur cellule sur l'écran. Parfois fonctionne un jour, pas le lendemain.",
+          "**Cause** : vieillissement du capteur (5-8 ans en moyenne), désalignement des deux cellules émetteur/récepteur, saleté sur les lentilles, câblage oxydé.",
+          "**Coût** : 180-350 € le jeu complet + 45min = 250-450 € TTC.",
+          "**Prévention** : nettoyage des lentilles à chaque maintenance, remplacement préventif tous les 5 ans sur les portes très sollicitées.",
+        ],
+      },
+      {
+        heading: "5. Joints d'étanchéité dégradés (10%)",
+        paragraphs: [
+          "**Symptôme** : déperdition thermique, infiltrations d'eau/poussière, bruit au vent (sifflement). La porte ferme mais elle n'est plus étanche.",
+          "**Cause** : vieillissement naturel du caoutchouc EPDM (durée de vie typique 8-12 ans), déformation après de multiples chocs poids lourds, exposition UV.",
+          "**Coût** : 80-200 € par côté + 1h total = 150-300 € TTC pour les 3 joints (latéraux + linteau + sol).",
+          "**Prévention** : remplacement préventif à 10 ans, ou dès qu'un joint montre des signes de fissures/décollement.",
+        ],
+      },
+      {
+        heading: "6. Guide vertical tordu après choc (7%)",
+        paragraphs: [
+          "**Symptôme** : la porte frotte dans son rail, blocage ponctuel, rayures sur le tablier.",
+          "**Cause** : choc direct d'un chariot élévateur ou d'un poids lourd. C'est typiquement la conséquence d'une mauvaise signalétique ou d'une circulation mal canalisée autour du quai.",
+          "**Coût** : 250-500 € selon le profilé + 2h = 400-700 € TTC. Parfois redressable (économie 50%).",
+          "**Prévention** : installer des protections de bas-de-rail (poteaux acier ou butoirs caoutchouc), marquage au sol visible des zones de circulation PL.",
+        ],
+      },
+      {
+        heading: "7. Panneau déformé après impact (6%)",
+        paragraphs: [
+          "**Symptôme** : la porte frotte au passage du panneau endommagé, blocage en cours de cycle, tablier qui dévie.",
+          "**Cause** : choc frontal direct — le plus souvent un poids lourd qui reprend trop court, ou un chariot qui tape pendant un déchargement.",
+          "**Coût** : 400-900 € le panneau + 3h = 700-1200 € TTC. Important : ne pas tenter de redresser un panneau PUR (détruirait l'isolation), remplacer.",
+          "**Prévention** : idem guide vertical — protection physique des bas de porte et signalétique claire.",
+        ],
+      },
+      {
+        heading: "8. Roulements usés (5%)",
+        paragraphs: [
+          "**Symptôme** : bruit métallique au passage du tablier, vibrations à l'ouverture/fermeture.",
+          "**Cause** : usure progressive des roulements qui guident le tablier dans les rails (durée de vie 10-15 ans).",
+          "**Coût** : 25-50 € par roulement × 4-8 roulements + 1h = 200-400 € TTC.",
+          "**Prévention** : graissage annuel des roulements lors de la maintenance préventive.",
+        ],
+      },
+      {
+        heading: "9. Télécommande HS / perdue (5%)",
+        paragraphs: [
+          "**Symptôme** : plus de commande radio, pile neuve mais aucune réaction.",
+          "**Cause** : perte physique, pile épuisée (3-4 ans), électronique défaillante, ou désynchronisation du récepteur.",
+          "**Coût** : 40-80 € pour une nouvelle télécommande + 15 min de reprogrammation = 70-100 € TTC.",
+          "**Prévention** : conserver un stock de 2-3 télécommandes de rechange sur site, remplacer les piles tous les 3 ans.",
+        ],
+      },
+      {
+        heading: "10. Dispositif anti-chute défaillant (5%)",
+        paragraphs: [
+          "**Symptôme** : porte qui ne se bloque pas en sécurité en cas de coupure de courant, test d'anti-chute échoué.",
+          "**Cause** : vieillissement du dispositif mécanique de sécurité intégré au tablier, usure du ressort de compensation.",
+          "**Coût** : 300-600 € le dispositif + 2h = 500-800 € TTC. **Urgence absolue** — une porte sans anti-chute est un risque personnel majeur.",
+          "**Prévention** : test obligatoire de l'anti-chute à chaque visite de maintenance (simulation coupure de courant).",
+        ],
+      },
+      {
+        heading: "Le vrai coût d'un parc non maintenu",
+        paragraphs: [
+          "Sur un parc de 20 portes sectionnelles industrielles non maintenues préventivement, on observe en moyenne 2,5 pannes/porte/an. Ça fait 50 pannes curatives annuelles, coût moyen 450 € TTC = 22 500 €/an rien que de facture. Ajouter les pertes d'exploitation (3h d'arrêt par panne en moyenne, coût ~1 200 €/h sur site logistique) = +90 000 €/an.",
+          "**Total réel : ~112 000 €/an**. Le contrat de maintenance préventive Or coûte ~42 000 €/an pour le même parc, et divise par 5 le nombre de pannes. ROI immédiat. Voir notre article dédié ROI.",
+        ],
+      },
+      {
+        heading: "Conclusion",
+        paragraphs: [
+          "Chaque panne a une cause, une prévention, et un coût mesurable. Un parc de portes sectionnelles n'est pas une boîte noire — c'est un ensemble mécanique et électronique dont on connaît précisément les points de défaillance. La question n'est pas « vais-je avoir des pannes ? » (la réponse est oui), c'est « vais-je les subir ou les anticiper ? ».",
+          "Demandez un audit gratuit de votre parc à IEF & CO. Nous inspectons chaque porte et vous fournissons un plan d'entretien pluriannuel avec priorités claires.",
+        ],
+      },
+    ],
+  },
+
+  {
+    slug: "audit-parc-fermetures-checklist-2026",
+    title: "Audit de parc fermetures industrielles : la méthode + checklist 2026",
+    excerpt:
+      "Comment auditer sérieusement un parc de fermetures professionnelles : méthodologie complète, checklist de 32 points, scoring, et livrables attendus d'un prestataire.",
+    date: "10 avril 2026",
+    dateISO: "2026-04-10",
+    category: "Guide",
+    author: "IEF & CO",
+    readingMinutes: 11,
+    sections: [
+      {
+        paragraphs: [
+          "Un audit de parc de fermetures (portes industrielles, portails, rideaux, coupe-feu) est le point de départ de toute démarche de maintenance sérieuse. Mais qu'est-ce qu'un bon audit ? Quelle méthodologie ? Quels livrables attendre du prestataire ? Ce guide vous donne les standards professionnels pour ne pas vous faire avoir — et vous permet aussi de pré-auditer votre parc en interne avant de solliciter un professionnel.",
+        ],
+      },
+      {
+        heading: "1. Pourquoi faire un audit ?",
+        paragraphs: [
+          "Un audit répond à 3 besoins spécifiques :",
+          "• **Visibilité CAPEX** : savoir précisément ce que coûtera la remise à niveau de votre parc sur les 3-5 prochaines années, pour planifier les investissements.",
+          "• **Conformité réglementaire** : vérifier que toutes vos portes automatiques respectent l'arrêté du 21 décembre 1993 (entretien semestriel documenté), que vos portes coupe-feu en ERP sont en règle (arrêté du 24 mai 2010), et que les structures métalliques sont certifiées EN 1090.",
+          "• **Transmission / due diligence** : lors d'une cession, fusion, refinancement ou audit assurance, un état des lieux professionnel du parc métallerie est systématiquement demandé.",
+        ],
+      },
+      {
+        heading: "2. Méthodologie en 4 étapes",
+        paragraphs: [
+          "**Étape 1 : Inventaire exhaustif.** On recense chaque fermeture (porte, portail, rideau, coupe-feu) avec : localisation précise, marque, modèle, année d'installation, dimensions, type de motorisation, dernière date d'intervention connue. Durée : 1h par 5 équipements.",
+          "**Étape 2 : Inspection technique.** Pour chaque équipement, on vérifie 15-30 points techniques (voir checklist ci-dessous). Photos avant/après de chaque défaut constaté. Durée : 15-20 min par équipement.",
+          "**Étape 3 : Scoring et priorisation.** Chaque défaut est classé selon 3 axes : sécurité personnel (P1/P2/P3), conformité réglementaire (OK/avertissement/non-conforme), continuité d'exploitation (risque de panne : faible/moyen/élevé).",
+          "**Étape 4 : Livrables.** Rapport synthétique + tableau de bord par équipement + plan pluriannuel chiffré + fichier photos horodaté.",
+        ],
+      },
+      {
+        heading: "3. Checklist d'audit (32 points par équipement)",
+        paragraphs: [
+          "**Identification (6 points)**",
+          "☐ Marque + modèle + numéro de série visible (plaque constructeur)",
+          "☐ Année de fabrication / installation",
+          "☐ Dimensions (largeur × hauteur × épaisseur panneau)",
+          "☐ Type de motorisation (tubulaire / à arbre / manuelle)",
+          "☐ Classe d'isolation thermique annoncée",
+          "☐ Compteur de cycles relevé (si accessible via armoire)",
+
+          "**État mécanique (10 points)**",
+          "☐ Tablier : chocs, déformations, corrosion",
+          "☐ Panneaux : fissures, impacts, isolation visible",
+          "☐ Ressorts de torsion : fissures, corrosion, tension",
+          "☐ Câbles : effilochage, rouille, tension équilibrée",
+          "☐ Guides verticaux : déformations, alignement",
+          "☐ Roulements : bruit au passage, jeu excessif",
+          "☐ Joints d'étanchéité : état (6 latéraux + linteau + sol)",
+          "☐ Fixations : serrage des boulons, état des supports",
+          "☐ Portillon piéton (si équipé) : fonctionnement, joint, serrure",
+          "☐ Anti-chute : test fonctionnel obligatoire (simulation coupure)",
+
+          "**État électronique (8 points)**",
+          "☐ Motorisation : bruit anormal, cycles lents, surchauffe",
+          "☐ Carte de commande : code erreur, version firmware",
+          "☐ Photocellules de sécurité : alignement, propreté, test obstacle",
+          "☐ Bande palpeuse ou détecteur présence : fonctionnement",
+          "☐ Arrêt d'urgence : accessibilité, couleur réglementaire",
+          "☐ Télécommandes : nombre actif, piles, synchronisation",
+          "☐ Boîtier de commande : état général, protection IP",
+          "☐ Câblage électrique : infiltrations, protection IP armoire",
+
+          "**Conformité réglementaire (4 points)**",
+          "☐ Carnet d'entretien présent et à jour (arrêté 21/12/1993)",
+          "☐ Dernière visite préventive datée <6 mois",
+          "☐ Marquage CE visible sur le produit",
+          "☐ Plaque signalétique lisible",
+
+          "**Sécurité personnel (4 points)**",
+          "☐ Signalétique danger et mode d'emploi visible",
+          "☐ Dégagement libre autour de la porte respecté",
+          "☐ Protection physique des bas de rail (si zone PL)",
+          "☐ Détection présence cohérente avec usage (piéton / véhicule)",
+        ],
+      },
+      {
+        heading: "4. Scoring : comment classer les défauts",
+        paragraphs: [
+          "Chaque défaut constaté reçoit une **priorité** selon 3 axes combinés :",
+          "• **P1 — Critique immédiate** : défaut pouvant causer un accident personnel ou un arrêt immédiat d'exploitation. À traiter sous 48h. Exemples : anti-chute HS, ressort fissuré, câble effilloché, photocellule qui ne détecte plus.",
+          "• **P2 — Urgente** : défaut non immédiatement dangereux mais qui va s'aggraver et causer une panne sous 3-6 mois. Exemples : joints dégradés, motorisation bruyante, carte en limite de vie.",
+          "• **P3 — Planifiable** : remplacement préventif recommandé mais pas urgent (>12 mois). Exemples : remplacement ressort avant fin de vie théorique, repeinture préventive.",
+          "Un bon rapport d'audit classe les défauts par priorité ET par coût de remise en état — pour permettre de prioriser les interventions sous contrainte budgétaire.",
+        ],
+      },
+      {
+        heading: "5. Les livrables à exiger de votre prestataire",
+        paragraphs: [
+          "Un audit sérieux produit **5 livrables** formels :",
+          "1. **Rapport synthétique (10-15 pages)** : résumé exécutif, score global, top 10 des priorités, budget prévisionnel 3 ans.",
+          "2. **Tableau de bord Excel par équipement** : une ligne par porte avec tous les attributs et défauts. Filtrable, triable.",
+          "3. **Plan pluriannuel chiffré** : calendrier 2026-2028 avec coûts estimés par année et par équipement. Permet de lisser le CAPEX.",
+          "4. **Dossier photos horodaté** : 3-5 photos par équipement (vue générale + défauts si constatés). Preuve en cas de litige ultérieur.",
+          "5. **Recommandations contrat maintenance** : proposition de contrat de maintenance adapté au parc audité (Bronze / Argent / Or selon intensité d'usage).",
+          "Si le prestataire ne produit pas ces 5 livrables — fuyez. C'est le signe d'un audit superficiel.",
+        ],
+      },
+      {
+        heading: "6. Combien ça coûte et qui le fait ?",
+        paragraphs: [
+          "**Prix indicatif** : 80-150 € HT par équipement audité selon la complexité. Un audit de 20 portes coûte typiquement 1 800-3 000 € HT.",
+          "**Gratuit chez IEF & CO** : nous offrons l'audit complet à tout prospect envisageant un contrat de maintenance Argent ou Or. Le rapport vous appartient quoi qu'il advienne. Pas d'engagement.",
+          "**Auditeurs indépendants** : SOCOTEC, Bureau Veritas, APAVE font aussi des audits mais à des prix 3-5× supérieurs, et sans proposition de plan d'action concret derrière.",
+        ],
+      },
+      {
+        heading: "Conclusion",
+        paragraphs: [
+          "Un audit de parc fermetures n'est pas un luxe — c'est la base de toute démarche maintenance professionnelle. C'est ce qui vous permet de transformer un parc que vous subissez en actif que vous pilotez.",
+          "Contactez IEF & CO pour planifier votre audit gratuit. Nous nous déplaçons en Île-de-France sous 15 jours, et vous recevez votre rapport complet sous 7 jours après la visite.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {

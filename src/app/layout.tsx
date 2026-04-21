@@ -9,6 +9,8 @@ import { Footer } from "@/components/layout/Footer";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { PageProgress } from "@/components/layout/PageProgress";
 import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
+import { CookieBanner } from "@/components/layout/CookieBanner";
+import { Analytics } from "@/components/layout/Analytics";
 import { generateLocalBusinessSchema } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import "./globals.css";
@@ -101,7 +103,9 @@ export default function RootLayout({
           </ViewTransition>
           <Footer />
           <StickyMobileCTA />
+          <CookieBanner />
         </SmoothScroll>
+        <Analytics />
       </body>
     </html>
   );
