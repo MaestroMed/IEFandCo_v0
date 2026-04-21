@@ -21,7 +21,8 @@ function LogoRow({ clients, reverse = false }: { clients: Client[]; reverse?: bo
 export function ClientLogos({ clients }: { clients: Client[] }) {
   return (
     <section className="section-forge-light relative overflow-hidden py-24 md:py-32">
-      <div className="mx-auto max-w-7xl px-6 text-center">
+      <div className="forge-gradient-light" style={{ opacity: 0.35 }} />
+      <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
           <span className="h-px w-8" style={{ background: "var(--color-primary)" }} />
           <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-primary)" }}>
@@ -37,12 +38,12 @@ export function ClientLogos({ clients }: { clients: Client[] }) {
           notre technicité et notre engagement sur les délais.
         </p>
       </div>
-      <div className="mt-16 space-y-4">
+      <div className="relative z-10 mt-16 space-y-4">
         <LogoRow clients={clients} />
         <LogoRow clients={clients} reverse />
       </div>
       {/* Bottom accent */}
-      <div className="mt-16 flex items-center justify-center">
+      <div className="relative z-10 mt-16 flex items-center justify-center">
         <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--text-muted)" }}>
           <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
           <span>+ de 180 clients actifs</span>

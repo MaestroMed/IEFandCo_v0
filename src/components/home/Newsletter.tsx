@@ -48,7 +48,24 @@ export function Newsletter() {
         borderTop: "1px solid var(--border)",
       }}
     >
-      <div className="mx-auto max-w-3xl px-6">
+      {/* Faint blueprint grid watermark, barely there */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 blueprint-grid pointer-events-none"
+        style={{ opacity: 0.04 }}
+      />
+
+      {/* Off-center copper glow */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 45% 80% at 15% 50%, rgba(196, 133, 92, 0.08) 0%, transparent 60%), radial-gradient(ellipse 45% 80% at 85% 50%, rgba(196, 133, 92, 0.06) 0%, transparent 60%)",
+        }}
+      />
+
+      <div className="relative z-10 mx-auto max-w-3xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -59,7 +76,7 @@ export function Newsletter() {
           <div className="flex items-center justify-center gap-3 mb-4">
             <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              Newsletter B2B
+              Newsletter B2B · Mensuelle
             </span>
             <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
           </div>
