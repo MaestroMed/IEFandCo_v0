@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <rect width="180" height="180" rx="40" fill="#0A0A0C"/>
+  <text x="90" y="118" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="72" fill="#FFFFFF" text-anchor="middle" letter-spacing="-3">IEF</text>
+  <rect x="20" y="148" width="140" height="8" rx="2" fill="#E11021"/>
+</svg>

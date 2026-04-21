@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IEF & CO — local DB + Claude cache
+/.data/
+/.claude/
+
+# OS
+Thumbs.db
+desktop.ini
