@@ -35,15 +35,25 @@ export const navigation: NavItem[] = [
     label: "Ressources",
     href: "/glossaire",
     children: [
-      { label: "Comparatifs", href: "/comparatifs" },
+      { label: "Estimateur de prix", href: "/estimateur" },
+      { label: "Comparatifs techniques", href: "/comparatifs" },
       { label: "Glossaire technique", href: "/glossaire" },
       { label: "Blog & guides", href: "/blog" },
+      { label: "Zones d'intervention", href: "/zones-intervention" },
     ],
   },
-  { label: "Estimateur", href: "/estimateur" },
-  { label: "Zones d'intervention", href: "/zones-intervention" },
   { label: "À propos", href: "/a-propos" },
+];
+
+/**
+ * Secondary navigation — only shown in the footer and mobile menu.
+ * "Contact" sits in the top-right as the primary CTA alongside "Demander un devis",
+ * so it doesn't need to be repeated in the main link list.
+ */
+export const secondaryNavigation: NavItem[] = [
   { label: "Contact", href: "/contact" },
+  { label: "Mentions légales", href: "/mentions-legales" },
+  { label: "Politique de confidentialité", href: "/politique-confidentialite" },
 ];
 
 export const companyInfo = {

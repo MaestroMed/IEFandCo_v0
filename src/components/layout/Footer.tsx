@@ -161,8 +161,27 @@ export function Footer() {
               className="font-mono text-[11px] uppercase tracking-[0.3em] mb-5"
               style={{ color: "var(--color-copper)" }}
             >
-              Atelier
+              Entreprise
             </h3>
+            <ul className="space-y-3 text-sm mb-6">
+              {[
+                { href: "/a-propos", label: "À propos" },
+                { href: "/contact", label: "Contact" },
+                { href: "/devis", label: "Demander un devis" },
+                { href: "/estimateur", label: "Estimateur de prix" },
+              ].map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="group inline-flex items-center gap-2 transition-colors hover:text-white"
+                    style={{ color: "rgba(245, 245, 242, 0.6)" }}
+                  >
+                    <span className="h-px w-0 transition-all group-hover:w-3" style={{ background: "var(--color-copper)" }} />
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
             <address className="not-italic space-y-3 text-sm" style={{ color: "rgba(245, 245, 242, 0.6)" }}>
               <p>
                 {companyInfo.address.street}<br />

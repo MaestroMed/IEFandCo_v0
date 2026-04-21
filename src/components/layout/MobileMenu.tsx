@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { navigation, companyInfo } from "@/data/navigation";
+import { navigation, secondaryNavigation, companyInfo } from "@/data/navigation";
 
 export function MobileMenu({ onClose }: { onClose: () => void }) {
   useEffect(() => {
@@ -84,11 +84,26 @@ export function MobileMenu({ onClose }: { onClose: () => void }) {
         </nav>
 
         <motion.div
-          className="px-8 pb-12 space-y-6"
+          className="px-8 pb-12 space-y-5"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
+          {/* Secondary links (Contact + legal) */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+            {secondaryNavigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className="transition-colors hover:text-primary"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
           {/* Devis CTA */}
           <Link
             href="/devis"

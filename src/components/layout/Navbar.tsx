@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useScrolledPast } from "@/hooks/useScrollProgress";
-import { navigation, type NavItem } from "@/data/navigation";
+import { navigation, companyInfo, type NavItem } from "@/data/navigation";
 import { MobileMenu } from "./MobileMenu";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
@@ -249,10 +249,14 @@ export function Navbar() {
 
   // Text colors — when over a dark section, use PURE WHITE for max legibility
   const navTextPrimary = overDark ? "#FFFFFF" : "var(--text)";
+  // Bumped from 0.72 → 0.85 so menu labels have real presence on dark backgrounds
   const navTextSecondary = overDark
-    ? "rgba(255, 255, 255, 0.72)"
+    ? "rgba(255, 255, 255, 0.85)"
     : "var(--text-secondary)";
   const navBarsColor = overDark ? "#FFFFFF" : "var(--text)";
+  const navMutedOnDark = overDark
+    ? "rgba(255, 255, 255, 0.55)"
+    : "var(--text-muted)";
 
   // Scrolled background — matches the section's native dark (warm graphite in light, near-black in dark)
   const bgWhenScrolled = overDark
@@ -278,11 +282,12 @@ export function Navbar() {
             "background-color 350ms cubic-bezier(0.4, 0, 0.2, 1), border-color 350ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 350ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
           <div style={{ color: navTextPrimary, transition: "color 350ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
             <AnimatedLogo />
           </div>
 
+          {/* Primary nav — 5 items, centered, breathing room */}
           <div className="hidden items-center gap-1 lg:flex">
             {navigation.map((item) => {
               const active = isActive(item.href);
@@ -297,12 +302,12 @@ export function Navbar() {
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className="group/nav relative px-4 py-2 text-sm font-medium transition-colors duration-[var(--dur-md)] hover:text-[var(--color-primary)]"
+                    className="group/nav relative px-4 py-2 text-[13px] font-semibold tracking-[0.01em] transition-colors duration-[var(--dur-md)] hover:text-[var(--color-primary)]"
                     style={{ color: active ? navTextPrimary : navTextSecondary }}
                   >
-                    <span className="inline-flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1.5">
                       {item.label}
-                      <svg className={cn("h-3 w-3 transition-transform duration-[var(--dur-sm)]", isOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true"><path d="M19 9l-7 7-7-7" /></svg>
+                      <svg className={cn("h-3 w-3 transition-transform duration-[var(--dur-sm)]", isOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2} aria-hidden="true"><path d="M19 9l-7 7-7-7" /></svg>
                     </span>
                     {/* Sliding underline indicator */}
                     <span
@@ -320,7 +325,7 @@ export function Navbar() {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className="group/nav relative px-4 py-2 text-sm font-medium transition-colors duration-[var(--dur-md)] hover:text-[var(--color-primary)]"
+                  className="group/nav relative px-4 py-2 text-[13px] font-semibold tracking-[0.01em] transition-colors duration-[var(--dur-md)] hover:text-[var(--color-primary)]"
                   style={{ color: active ? navTextPrimary : navTextSecondary }}
                 >
                   {item.label}
@@ -336,13 +341,41 @@ export function Navbar() {
             })}
           </div>
 
+          {/* Right side: phone (xl+) · theme · CTA */}
           <div className="hidden items-center gap-3 lg:flex">
+            {/* Phone number — trust signal, hidden on smaller desktop to save space */}
+            <a
+              href={`tel:${companyInfo.phone}`}
+              className="hidden xl:inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 font-mono text-[12px] tracking-[0.04em] transition-colors duration-[var(--dur-md)]"
+              style={{ color: navTextSecondary }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-primary)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = navTextSecondary; }}
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+                <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+              </svg>
+              {companyInfo.phoneDisplay}
+            </a>
+
+            {/* Divider, xl+ only */}
+            <span className="hidden xl:block h-4 w-px" style={{ background: navMutedOnDark, opacity: 0.4 }} aria-hidden="true" />
+
+            {/* Contact as ghost link — lower weight than devis CTA but always visible */}
+            <Link
+              href="/contact"
+              aria-current={isActive("/contact") ? "page" : undefined}
+              className="inline-flex items-center rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors duration-[var(--dur-md)] hover:text-[var(--color-primary)]"
+              style={{ color: isActive("/contact") ? navTextPrimary : navTextSecondary }}
+            >
+              Contact
+            </Link>
+
             <div style={{ color: navTextPrimary, transition: "color 350ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
               <ThemeToggle />
             </div>
             <Link
               href="/devis"
-              className="relative inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white overflow-hidden group transition-all duration-[var(--dur-md)] ease-[var(--ease-out-quart)] hover:-translate-y-0.5"
+              className="relative inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-[13px] font-semibold text-white overflow-hidden group transition-all duration-[var(--dur-md)] ease-[var(--ease-out-quart)] hover:-translate-y-0.5"
               style={{ boxShadow: "0 6px 20px rgba(225, 16, 33, 0.25)" }}
             >
               <span className="relative z-10">Demander un devis</span>
