@@ -1,12 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { realisations, getRealisationBySlug } from "@/data/realisations";
+import { realisations, getRealisationBySlug, type Realisation } from "@/data/realisations";
 import { Button } from "@/components/ui/Button";
 import { Photo } from "@/components/ui/Photo";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { getRealisationPhoto } from "@/lib/photoMap";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
+
+// RGB accent per project family — mirrors the values in data/services.ts
+// so prev/next cards pick up the target project's service color.
+const CATEGORY_ACCENT: Record<Realisation["category"], string> = {
+  industrielles: "59, 130, 180",
+  portails: "166, 124, 82",
+  structures: "160, 170, 180",
+  menuiserie: "100, 180, 200",
+  "coupe-feu": "200, 120, 50",
+  automatismes: "80, 120, 220",
+  maintenance: "60, 170, 140",
+};
 
 export function generateStaticParams() {
   return realisations.map((r) => ({ slug: r.slug }));
@@ -378,15 +390,31 @@ export default async function RealisationDetailPage({
             {prev ? (
               <Link
                 href={`/realisations/${prev.slug}`}
-                className="group rounded-2xl p-6 flex items-start gap-4 transition-all hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-2xl p-6 flex items-start gap-4 transition-all hover:-translate-y-1"
                 style={{ background: "var(--card-bg)", border: "1px solid var(--border)", boxShadow: "var(--card-shadow)" }}
               >
-                <svg className="h-5 w-5 mt-1 shrink-0 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
+                <div
+                  className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
+                  style={{
+                    background: `radial-gradient(ellipse 80% 60% at 0% 50%, rgba(${CATEGORY_ACCENT[prev.category]}, 0.12) 0%, transparent 70%)`,
+                  }}
+                />
+                <svg
+                  className="relative h-5 w-5 mt-1 shrink-0 transition-transform group-hover:-translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                  style={{ color: `rgb(${CATEGORY_ACCENT[prev.category]})` }}
+                  aria-hidden="true"
+                >
                   <path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
-                <div className="min-w-0">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: "var(--text-muted)" }}>
-                    Projet précédent
+                <div className="relative min-w-0">
+                  <div className="flex items-center gap-2 mb-1 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--text-muted)" }}>
+                    <span>Projet précédent</span>
+                    <span className="opacity-50">·</span>
+                    <span style={{ color: `rgb(${CATEGORY_ACCENT[prev.category]})` }}>{prev.category}</span>
                   </div>
                   <div className="font-display text-base font-bold leading-tight" style={{ color: "var(--text)" }}>
                     {prev.title}
@@ -400,18 +428,34 @@ export default async function RealisationDetailPage({
             {next ? (
               <Link
                 href={`/realisations/${next.slug}`}
-                className="group rounded-2xl p-6 flex items-start justify-end gap-4 text-right transition-all hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-2xl p-6 flex items-start justify-end gap-4 text-right transition-all hover:-translate-y-1"
                 style={{ background: "var(--card-bg)", border: "1px solid var(--border)", boxShadow: "var(--card-shadow)" }}
               >
-                <div className="min-w-0">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: "var(--text-muted)" }}>
-                    Projet suivant
+                <div
+                  className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
+                  style={{
+                    background: `radial-gradient(ellipse 80% 60% at 100% 50%, rgba(${CATEGORY_ACCENT[next.category]}, 0.12) 0%, transparent 70%)`,
+                  }}
+                />
+                <div className="relative min-w-0">
+                  <div className="flex items-center justify-end gap-2 mb-1 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--text-muted)" }}>
+                    <span style={{ color: `rgb(${CATEGORY_ACCENT[next.category]})` }}>{next.category}</span>
+                    <span className="opacity-50">·</span>
+                    <span>Projet suivant</span>
                   </div>
                   <div className="font-display text-base font-bold leading-tight" style={{ color: "var(--text)" }}>
                     {next.title}
                   </div>
                 </div>
-                <svg className="h-5 w-5 mt-1 shrink-0 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} style={{ color: "var(--color-copper)" }} aria-hidden="true">
+                <svg
+                  className="relative h-5 w-5 mt-1 shrink-0 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                  style={{ color: `rgb(${CATEGORY_ACCENT[next.category]})` }}
+                  aria-hidden="true"
+                >
                   <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
