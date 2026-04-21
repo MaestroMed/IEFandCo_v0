@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { glossary, getTermBySlug } from "@/data/glossary";
+import { services } from "@/data/services";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
@@ -141,19 +142,28 @@ export default async function GlossaryTermPage({
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {t.relatedServices.map((slug) => (
-                  <Link
-                    key={slug}
-                    href={`/services/${slug}`}
-                    className="rounded-full px-4 py-2 text-sm font-medium transition-colors"
-                    style={{
-                      background: "var(--color-primary)",
-                      color: "white",
-                    }}
-                  >
-                    {slug.replace(/-/g, " ")}
-                  </Link>
-                ))}
+                {t.relatedServices.map((slug) => {
+                  const svc = services.find((s) => s.slug === slug);
+                  const label = svc?.shortTitle ?? slug.replace(/-/g, " ");
+                  const accent = svc?.accentColor ?? "225, 16, 33";
+                  return (
+                    <Link
+                      key={slug}
+                      href={`/services/${slug}`}
+                      className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all hover:-translate-y-0.5"
+                      style={{
+                        background: `rgba(${accent}, 0.12)`,
+                        color: `rgb(${accent})`,
+                        border: `1px solid rgba(${accent}, 0.28)`,
+                      }}
+                    >
+                      {label}
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                        <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           )}
