@@ -24,6 +24,7 @@ export const navigation: NavItem[] = [
     children: [
       { label: "Contrats Bronze / Argent / Or", href: "/maintenance/contrats" },
       { label: "Dépannage urgent", href: "/depannage" },
+      { label: "ASSISTEO — diagnostic à distance", href: "/assisteo" },
       { label: "Maintenance Hörmann", href: "/maintenance/hormann" },
       { label: "Maintenance Crawford", href: "/maintenance/crawford" },
       { label: "Maintenance Maviflex", href: "/maintenance/maviflex" },
