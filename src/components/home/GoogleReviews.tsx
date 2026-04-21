@@ -112,16 +112,14 @@ export function GoogleReviews() {
   };
 
   return (
-    <section
-      className="relative overflow-hidden py-20 md:py-28"
-      style={{ background: "var(--bg-muted)" }}
-    >
+    <section className="section-forge-warm relative overflow-hidden py-24 md:py-32">
+      <div className="forge-gradient-warm" style={{ opacity: 0.35 }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateSchema) }}
       />
 
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         {/* Header with aggregate rating */}
         <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
           <div>
