@@ -354,6 +354,72 @@ export default async function BrandMaintenancePage({
         </div>
       </section>
 
+      {/* OTHER BRANDS */}
+      {brands.filter((b) => b.slug !== brand.slug).length > 0 && (
+        <section className="section-forge-light relative overflow-hidden py-20 md:py-24" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="relative z-10 mx-auto max-w-5xl px-6">
+            <div className="mb-10 flex items-center gap-3">
+              <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
+              <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
+                Autres marques maintenues
+              </span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {brands
+                .filter((b) => b.slug !== brand.slug)
+                .map((other) => (
+                  <Link
+                    key={other.slug}
+                    href={`/maintenance/${other.slug}`}
+                    className="group relative overflow-hidden rounded-2xl p-6 transition-all hover:-translate-y-1"
+                    style={{
+                      background: "var(--card-bg)",
+                      border: "1px solid var(--border)",
+                      boxShadow: "var(--card-shadow)",
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
+                      style={{
+                        background: `radial-gradient(ellipse 80% 60% at 50% 100%, rgba(${other.accentColor}, 0.14) 0%, transparent 70%)`,
+                      }}
+                    />
+                    <div className="relative flex items-center justify-between mb-3">
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[0.2em]"
+                        style={{ color: `rgb(${other.accentColor})` }}
+                      >
+                        Maintenance
+                      </span>
+                      <svg
+                        className="h-3 w-3 transition-transform group-hover:translate-x-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                        style={{ color: `rgb(${other.accentColor})` }}
+                        aria-hidden="true"
+                      >
+                        <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </div>
+                    <h3 className="relative font-display text-xl font-bold" style={{ color: "var(--text)" }}>
+                      {other.name}
+                    </h3>
+                    <p className="relative mt-1 text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                      {other.tagline}
+                    </p>
+                    <div
+                      className="absolute bottom-0 left-0 h-[2px] w-0 transition-all duration-500 group-hover:w-full"
+                      style={{ background: `linear-gradient(90deg, rgb(${other.accentColor}), var(--color-copper))` }}
+                    />
+                  </Link>
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* CTA */}
       <section className="section-forge-dark relative overflow-hidden py-24 md:py-32">
         <div
