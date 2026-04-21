@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/Button";
 
 const steps = [
   { label: "Projet", number: 1 },
-  { label: "Details", number: 2 },
+  { label: "Détails", number: 2 },
   { label: "Contact", number: 3 },
-  { label: "Recap", number: 4 },
+  { label: "Récap", number: 4 },
 ];
 
 export function DevisMultiStep() {
@@ -37,8 +37,8 @@ export function DevisMultiStep() {
   const validateStep = (s: number): boolean => {
     const newErrors: Record<string, string> = {};
     if (s === 1) {
-      if (!data.service) newErrors.service = "Selectionnez un service";
-      if (!data.description.trim()) newErrors.description = "Decrivez votre projet";
+      if (!data.service) newErrors.service = "Sélectionnez un service";
+      if (!data.description.trim()) newErrors.description = "Décrivez votre projet";
     }
     if (s === 3) {
       if (!data.prenom.trim()) newErrors.prenom = "Requis";
@@ -46,7 +46,7 @@ export function DevisMultiStep() {
       if (!data.email.trim()) newErrors.email = "Requis";
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) newErrors.email = "Email invalide";
       if (!data.telephone.trim()) newErrors.telephone = "Requis";
-      else if (!/^[\d\s+()-]{8,}$/.test(data.telephone)) newErrors.telephone = "Numero invalide";
+      else if (!/^[\d\s+()-]{8,}$/.test(data.telephone)) newErrors.telephone = "Numéro invalide";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -66,9 +66,9 @@ export function DevisMultiStep() {
         body: JSON.stringify(data),
       });
       if (res.ok) setSubmitted(true);
-      else setErrors({ submit: "Echec de l'envoi. Reessayez ou contactez-nous par telephone." });
+      else setErrors({ submit: "Échec de l'envoi. Réessayez ou contactez-nous par téléphone." });
     } catch {
-      setErrors({ submit: "Echec de l'envoi. Verifiez votre connexion." });
+      setErrors({ submit: "Échec de l'envoi. Vérifiez votre connexion." });
     } finally {
       setSubmitting(false);
     }
@@ -83,10 +83,10 @@ export function DevisMultiStep() {
           </svg>
         </div>
         <h3 className="font-display text-xl font-bold" style={{ color: "var(--text)" }}>
-          Demande envoyee
+          Demande envoyée
         </h3>
         <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-          Nous reviendrons vers vous sous 48h avec un devis detaille.
+          Nous reviendrons vers vous sous 48h avec un devis détaillé.
         </p>
       </div>
     );
@@ -150,7 +150,7 @@ export function DevisMultiStep() {
                   onChange={(e) => update("service", e.target.value)}
                   className="w-full rounded-lg px-4 py-3 focus:border-primary focus:outline-none" style={{ border: "1px solid var(--border)", background: "var(--bg-muted)", color: "var(--text)" }}
                 >
-                  <option value="">Selectionnez un service</option>
+                  <option value="">Sélectionnez un service</option>
                   {services.map((s) => (
                     <option key={s.slug} value={s.slug}>
                       {s.title}
@@ -167,7 +167,7 @@ export function DevisMultiStep() {
                   onChange={(e) => update("description", e.target.value)}
                   rows={4}
                   className="w-full rounded-lg px-4 py-3 focus:border-primary focus:outline-none resize-none" style={{ border: "1px solid var(--border)", background: "var(--bg-muted)", color: "var(--text)" }}
-                  placeholder="Decrivez votre besoin..."
+                  placeholder="Décrivez votre besoin..."
                 />
               </div>
             </>
@@ -184,10 +184,10 @@ export function DevisMultiStep() {
                   onChange={(e) => update("urgence", e.target.value)}
                   className="w-full rounded-lg px-4 py-3 focus:border-primary focus:outline-none" style={{ border: "1px solid var(--border)", background: "var(--bg-muted)", color: "var(--text)" }}
                 >
-                  <option value="">Selectionnez</option>
+                  <option value="">Sélectionnez</option>
                   <option value="normal">Normal (2-4 semaines)</option>
                   <option value="urgent">Urgent (moins d&apos;1 semaine)</option>
-                  <option value="planifie">Planifie (plus d&apos;1 mois)</option>
+                  <option value="planifie">Planifié (plus d&apos;1 mois)</option>
                 </select>
               </div>
               <div>
@@ -210,7 +210,7 @@ export function DevisMultiStep() {
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
-                    Prenom *
+                    Prénom *
                   </label>
                   <input
                     autoComplete="given-name"
@@ -246,7 +246,7 @@ export function DevisMultiStep() {
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
-                    Telephone *
+                    Téléphone *
                   </label>
                   <input
                     type="tel"
@@ -258,7 +258,7 @@ export function DevisMultiStep() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
-                    Societe
+                    Société
                   </label>
                   <input
                     autoComplete="organization"
@@ -274,14 +274,14 @@ export function DevisMultiStep() {
           {step === 4 && (
             <div className="rounded-lg p-6 space-y-4" style={{ border: "1px solid var(--border)", background: "var(--card-bg)" }}>
               <h3 className="font-display text-lg font-semibold" style={{ color: "var(--text)" }}>
-                Recapitulatif
+                Récapitulatif
               </h3>
               <div className="grid gap-3 text-sm">
                 <div className="flex justify-between pb-2" style={{ borderBottom: "1px solid var(--border)" }}>
                   <span style={{ color: "var(--text-muted)" }}>Service</span>
                   <span style={{ color: "var(--text)" }}>
                     {services.find((s) => s.slug === data.service)?.title ||
-                      "Non renseigne"}
+                      "Non renseigné"}
                   </span>
                 </div>
                 <div className="flex justify-between pb-2" style={{ borderBottom: "1px solid var(--border)" }}>
@@ -295,7 +295,7 @@ export function DevisMultiStep() {
                   <span style={{ color: "var(--text)" }}>{data.email}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span style={{ color: "var(--text-muted)" }}>Telephone</span>
+                  <span style={{ color: "var(--text-muted)" }}>Téléphone</span>
                   <span style={{ color: "var(--text)" }}>{data.telephone}</span>
                 </div>
               </div>

@@ -28,7 +28,7 @@ export default async function AProposPage() {
   const team = await getTeam();
   const breadcrumb = generateBreadcrumbSchema([
     { name: "Accueil", url: "/" },
-    { name: "A propos", url: "/a-propos" },
+    { name: "À propos", url: "/a-propos" },
   ]);
 
   return (

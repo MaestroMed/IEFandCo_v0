@@ -22,9 +22,9 @@ export function ContactForm() {
         body: JSON.stringify(payload),
       });
       if (res.ok) setSubmitted(true);
-      else setError("Echec de l'envoi. Reessayez ou contactez-nous par telephone.");
+      else setError("Échec de l'envoi. Réessayez ou contactez-nous par téléphone.");
     } catch {
-      setError("Echec de l'envoi. Verifiez votre connexion.");
+      setError("Échec de l'envoi. Vérifiez votre connexion.");
     } finally {
       setSubmitting(false);
     }
@@ -39,10 +39,10 @@ export function ContactForm() {
           </svg>
         </div>
         <h3 className="font-display text-xl font-bold" style={{ color: "var(--text)" }}>
-          Message envoye
+          Message envoyé
         </h3>
         <p className="mt-2" style={{ color: "var(--text-muted)" }}>
-          Nous reviendrons vers vous dans les meilleurs delais.
+          Nous reviendrons vers vous dans les meilleurs délais.
         </p>
       </div>
     );
@@ -56,7 +56,7 @@ export function ContactForm() {
             htmlFor="prenom"
             className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}
           >
-            Prenom *
+            Prénom *
           </label>
           <input
             id="prenom"
@@ -65,7 +65,7 @@ export function ContactForm() {
             autoComplete="given-name"
             required
             className="w-full rounded-lg px-4 py-3 transition-colors focus:border-primary focus:outline-none" style={{ border: "1px solid var(--border)", background: "var(--bg-muted)", color: "var(--text)" }}
-            placeholder="Votre prenom"
+            placeholder="Votre prénom"
           />
         </div>
         <div>
@@ -93,7 +93,7 @@ export function ContactForm() {
             htmlFor="societe"
             className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}
           >
-            Societe
+            Société
           </label>
           <input
             id="societe"
@@ -101,7 +101,7 @@ export function ContactForm() {
             type="text"
             autoComplete="organization"
             className="w-full rounded-lg px-4 py-3 transition-colors focus:border-primary focus:outline-none" style={{ border: "1px solid var(--border)", background: "var(--bg-muted)", color: "var(--text)" }}
-            placeholder="Nom de votre societe"
+            placeholder="Nom de votre société"
           />
         </div>
         <div>
@@ -109,7 +109,7 @@ export function ContactForm() {
             htmlFor="telephone"
             className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}
           >
-            Telephone *
+            Téléphone *
           </label>
           <input
             id="telephone"
@@ -146,14 +146,14 @@ export function ContactForm() {
           htmlFor="service"
           className="mb-1.5 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}
         >
-          Service concerne
+          Service concerné
         </label>
         <select
           id="service"
           name="service"
           className="w-full rounded-lg px-4 py-3 transition-colors focus:border-primary focus:outline-none" style={{ border: "1px solid var(--border)", background: "var(--bg-muted)", color: "var(--text)" }}
         >
-          <option value="">Selectionnez un service</option>
+          <option value="">Sélectionnez un service</option>
           {services.map((s) => (
             <option key={s.slug} value={s.slug}>
               {s.title}
@@ -175,7 +175,7 @@ export function ContactForm() {
           required
           rows={5}
           className="w-full rounded-lg px-4 py-3 transition-colors focus:border-primary focus:outline-none resize-none" style={{ border: "1px solid var(--border)", background: "var(--bg-muted)", color: "var(--text)" }}
-          placeholder="Decrivez votre projet..."
+          placeholder="Décrivez votre projet..."
         />
       </div>
 
