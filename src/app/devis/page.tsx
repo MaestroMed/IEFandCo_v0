@@ -2,13 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo";
 import { DevisMultiStep } from "@/components/forms/DevisMultiStep";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Demander un devis gratuit | Métallerie sur mesure",
-  description:
-    "Obtenez un devis gratuit pour votre projet de métallerie en Île-de-France. Fermetures, portails, structures, coupe-feu, maintenance. Réponse sous 48h.",
-  path: "/devis",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("devis");
+  return generatePageMetadata({
+    title: seo?.title || "Demander un devis gratuit | Métallerie sur mesure",
+    description:
+      seo?.description ||
+      "Obtenez un devis gratuit pour votre projet de métallerie en Île-de-France. Fermetures, portails, structures, coupe-feu, maintenance. Réponse sous 48h.",
+    path: "/devis",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function DevisPage() {
   return (

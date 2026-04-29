@@ -4,13 +4,19 @@ import { comparatifs } from "@/data/comparatifs";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Comparatifs métallerie B2B — Choix techniques argumentés",
-  description:
-    "Comparatifs détaillés pour vos choix de métallerie B2B : porte sectionnelle vs rideau, contrat préventif vs curatif, motorisation, matériaux, marques. Verdict expert IEF & CO.",
-  path: "/comparatifs",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("comparatifs-index");
+  return generatePageMetadata({
+    title: seo?.title || "Comparatifs métallerie B2B — Choix techniques argumentés",
+    description:
+      seo?.description ||
+      "Comparatifs détaillés pour vos choix de métallerie B2B : porte sectionnelle vs rideau, contrat préventif vs curatif, motorisation, matériaux, marques. Verdict expert IEF & CO.",
+    path: "/comparatifs",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function ComparatifsPage() {
   return (

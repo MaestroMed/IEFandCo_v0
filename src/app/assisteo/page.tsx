@@ -3,13 +3,19 @@ import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { AssisteoMockup } from "@/components/ui/AssisteoMockup";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "ASSISTEO | Diagnostic technique à distance",
-  description:
-    "ASSISTEO by IEF & CO : assistance vidéo et diagnostic technique à distance pour vos fermetures industrielles. Réduction des temps d'arrêt, intervention préparée.",
-  path: "/assisteo",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("assisteo");
+  return generatePageMetadata({
+    title: seo?.title || "ASSISTEO | Diagnostic technique à distance",
+    description:
+      seo?.description ||
+      "ASSISTEO by IEF & CO : assistance vidéo et diagnostic technique à distance pour vos fermetures industrielles. Réduction des temps d'arrêt, intervention préparée.",
+    path: "/assisteo",
+    image: seo?.ogImageUrl,
+  });
+}
 
 const features = [
   {

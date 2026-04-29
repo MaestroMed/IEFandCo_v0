@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getBlogPost } from "@/data/blog";
+import { getBlogPostBySlug } from "@/lib/content";
 
 export const alt = "IEF & CO — Article";
 export const size = { width: 1200, height: 630 };
@@ -15,13 +15,19 @@ const CATEGORY_ACCENT: Record<string, string> = {
 
 export default async function OG({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPostBySlug(slug);
 
   const title = post?.title ?? "IEF & CO";
   const subtitle = post
     ? `${post.category} · ${post.readingMinutes} min de lecture`
     : "Insights métallerie & serrurerie — IEF & CO";
   const accent = (post && CATEGORY_ACCENT[post.category]) || "196, 133, 92";
+  const photoBg =
+    post?.coverUrl &&
+    !post.coverMime?.startsWith("video/") &&
+    post.coverUrl.startsWith("http")
+      ? post.coverUrl
+      : null;
 
   return new ImageResponse(
     (
@@ -38,30 +44,62 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
           fontFamily: "sans-serif",
         }}
       >
-        {/* Living gradient — category accent top-right */}
-        <div
-          style={{
-            position: "absolute",
-            top: -200,
-            right: -200,
-            width: 900,
-            height: 900,
-            background: `radial-gradient(circle, rgba(${accent}, 0.32) 0%, transparent 60%)`,
-            display: "flex",
-          }}
-        />
-        {/* Living gradient — red bottom-left */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: -300,
-            left: -100,
-            width: 700,
-            height: 700,
-            background: "radial-gradient(circle, rgba(225, 16, 33, 0.18) 0%, transparent 60%)",
-            display: "flex",
-          }}
-        />
+        {photoBg && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photoBg}
+            alt=""
+            width={1200}
+            height={630}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "flex",
+            }}
+          />
+        )}
+        {photoBg && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(135deg, rgba(5,5,8,0.92) 0%, rgba(5,5,8,0.55) 50%, rgba(5,5,8,0.85) 100%)",
+              display: "flex",
+            }}
+          />
+        )}
+        {/* Living gradient — category accent top-right (only when no photo) */}
+        {!photoBg && (
+          <div
+            style={{
+              position: "absolute",
+              top: -200,
+              right: -200,
+              width: 900,
+              height: 900,
+              background: `radial-gradient(circle, rgba(${accent}, 0.32) 0%, transparent 60%)`,
+              display: "flex",
+            }}
+          />
+        )}
+        {/* Living gradient — red bottom-left (only when no photo) */}
+        {!photoBg && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: -300,
+              left: -100,
+              width: 700,
+              height: 700,
+              background: "radial-gradient(circle, rgba(225, 16, 33, 0.18) 0%, transparent 60%)",
+              display: "flex",
+            }}
+          />
+        )}
 
         {/* Top accent rule */}
         <div

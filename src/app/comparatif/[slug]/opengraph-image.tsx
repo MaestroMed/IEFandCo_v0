@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getComparatorBySlug } from "@/data/comparatifs";
+import { getComparatorBySlug } from "@/lib/content";
 
 export const alt = "IEF & CO — Comparatif";
 export const size = { width: 1200, height: 630 };
@@ -7,7 +7,7 @@ export const contentType = "image/png";
 
 export default async function OG({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const cmp = getComparatorBySlug(slug);
+  const cmp = await getComparatorBySlug(slug);
 
   const optionA = cmp?.optionAName ?? "IEF";
   const optionB = cmp?.optionBName ?? "CO";

@@ -3,13 +3,19 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Contrats de maintenance porte industrielle — Bronze, Argent, Or",
-  description:
-    "Comparez nos 3 niveaux de contrat de maintenance porte industrielle, sectionnelle et fermeture professionnelle : Bronze (préventif), Argent (préventif + curatif), Or (full-service 24/7). Étude gratuite.",
-  path: "/maintenance/contrats",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("maintenance-contrats");
+  return generatePageMetadata({
+    title: seo?.title || "Contrats de maintenance porte industrielle — Bronze, Argent, Or",
+    description:
+      seo?.description ||
+      "Comparez nos 3 niveaux de contrat de maintenance porte industrielle, sectionnelle et fermeture professionnelle : Bronze (préventif), Argent (préventif + curatif), Or (full-service 24/7). Étude gratuite.",
+    path: "/maintenance/contrats",
+    image: seo?.ogImageUrl,
+  });
+}
 
 const tiers = [
   {

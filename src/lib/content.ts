@@ -152,12 +152,15 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 
     if (rows.length === 0) return staticTestimonials;
 
+    const mediaMap = await getMediaUrlMap(rows.map((r) => r.photoMediaId));
+
     return rows.map((r, i) => ({
       id: i + 1,
       name: r.author,
       company: r.company || "",
       text: r.quote,
       rating: r.rating || 5,
+      photoUrl: r.photoMediaId ? mediaMap.get(r.photoMediaId) : undefined,
     }));
   } catch (err) {
     console.warn("[content] getTestimonials failed, falling back to static:", err);
