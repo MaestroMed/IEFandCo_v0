@@ -30,7 +30,6 @@ export function ProjectGallery({ projectId, rows }: ProjectGalleryProps) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [draftId, setDraftId] = useState<string | null>(null);
 
   function handleAdd(mediaId: string | null) {
     if (!mediaId) return;
@@ -82,8 +81,6 @@ export function ProjectGallery({ projectId, rows }: ProjectGalleryProps) {
               isLast={idx === rows.length - 1}
               onMoveUp={() => move(idx, -1)}
               onMoveDown={() => move(idx, +1)}
-              setDraftId={setDraftId}
-              draftId={draftId}
             />
           ))}
         </ul>
@@ -145,8 +142,6 @@ function GalleryRowEditor({
   isLast: boolean;
   onMoveUp: () => void;
   onMoveDown: () => void;
-  setDraftId: (v: string | null) => void;
-  draftId: string | null;
 }) {
   const [caption, setCaption] = useState(row.caption || "");
   const [mediaId, setMediaId] = useState(row.mediaId);

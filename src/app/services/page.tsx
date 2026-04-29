@@ -1,17 +1,22 @@
 import Link from "next/link";
-import { getServices } from "@/lib/content";
+import { getServices, getPageSeo } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Nos Services en Métallerie & Serrurerie",
-  description:
-    "Découvrez les 7 domaines d'expertise d'IEF & CO : fermetures industrielles, portails, structures métalliques, menuiserie, coupe-feu, automatismes et maintenance.",
-  path: "/services",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("services-index");
+  return generatePageMetadata({
+    title: seo?.title || "Nos Services en Métallerie & Serrurerie",
+    description:
+      seo?.description ||
+      "Découvrez les 7 domaines d'expertise d'IEF & CO : fermetures industrielles, portails, structures métalliques, menuiserie, coupe-feu, automatismes et maintenance.",
+    path: "/services",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default async function ServicesPage() {
   const services = await getServices();
