@@ -92,17 +92,31 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
 
                 <div className="mt-8 flex items-center justify-between flex-wrap gap-4">
                   <div className="flex items-center gap-4">
-                    <div
-                      className="flex h-12 w-12 items-center justify-center rounded-full"
-                      style={{
-                        background: "linear-gradient(135deg, rgba(196, 133, 92, 0.2) 0%, rgba(212, 165, 116, 0.1) 100%)",
-                        border: "1px solid rgba(196, 133, 92, 0.3)",
-                      }}
-                    >
-                      <span className="font-display text-base font-bold" style={{ color: "var(--color-copper)" }}>
-                        {testimonials[current].name.split(" ").map(w => w[0]).join("")}
-                      </span>
-                    </div>
+                    {testimonials[current].photoUrl ? (
+                      <div
+                        className="h-12 w-12 rounded-full overflow-hidden shrink-0"
+                        style={{ border: "1px solid rgba(196, 133, 92, 0.3)" }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={testimonials[current].photoUrl}
+                          alt={testimonials[current].name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="flex h-12 w-12 items-center justify-center rounded-full shrink-0"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(196, 133, 92, 0.2) 0%, rgba(212, 165, 116, 0.1) 100%)",
+                          border: "1px solid rgba(196, 133, 92, 0.3)",
+                        }}
+                      >
+                        <span className="font-display text-base font-bold" style={{ color: "var(--color-copper)" }}>
+                          {testimonials[current].name.split(" ").map(w => w[0]).join("")}
+                        </span>
+                      </div>
+                    )}
                     <div>
                       <p className="font-display font-semibold" style={{ color: "var(--text)" }}>{testimonials[current].name}</p>
                       {testimonials[current].company && (

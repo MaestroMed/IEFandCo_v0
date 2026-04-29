@@ -4,13 +4,19 @@ import { QuoteEstimator } from "@/components/forms/QuoteEstimator";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Estimateur de prix instantané — métallerie B2B",
-  description:
-    "Obtenez une estimation instantanée pour porte sectionnelle, rideau métallique, portail, coupe-feu ou contrat de maintenance. Devis détaillé gratuit sous 48h.",
-  path: "/estimateur",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("estimateur");
+  return generatePageMetadata({
+    title: seo?.title || "Estimateur de prix instantané — métallerie B2B",
+    description:
+      seo?.description ||
+      "Obtenez une estimation instantanée pour porte sectionnelle, rideau métallique, portail, coupe-feu ou contrat de maintenance. Devis détaillé gratuit sous 48h.",
+    path: "/estimateur",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function EstimateurPage() {
   return (

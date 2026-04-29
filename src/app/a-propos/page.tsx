@@ -6,15 +6,20 @@ import { Button } from "@/components/ui/Button";
 import { TeamMember } from "@/components/ui/TeamMember";
 import { ProcessTimeline } from "@/components/ui/ProcessTimeline";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
-import { getTeam } from "@/lib/content";
+import { getTeam, getPageSeo } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "À propos | Expert en construction métallique sur mesure",
-  description:
-    "IEF & CO : concepteur et fabricant de solutions métalliques à Groslay (95). Bureau d'étude intégré, fabrication certifiée EN 1090, service ASSISTEO.",
-  path: "/a-propos",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("a-propos");
+  return generatePageMetadata({
+    title: seo?.title || "À propos | Expert en construction métallique sur mesure",
+    description:
+      seo?.description ||
+      "IEF & CO : concepteur et fabricant de solutions métalliques à Groslay (95). Bureau d'étude intégré, fabrication certifiée EN 1090, service ASSISTEO.",
+    path: "/a-propos",
+    image: seo?.ogImageUrl,
+  });
+}
 
 const values = [
   { title: "Rigueur technique", description: "Chaque solution est pensée, calculée et contrôlée." },

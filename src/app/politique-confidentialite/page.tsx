@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
 import { generatePageMetadata } from "@/lib/seo";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Politique de confidentialité",
-  description: "Politique de confidentialité du site IEF & CO — données collectées, durée, droits RGPD, cookies.",
-  path: "/politique-confidentialite",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("politique-confidentialite");
+  return generatePageMetadata({
+    title: seo?.title || "Politique de confidentialité",
+    description:
+      seo?.description ||
+      "Politique de confidentialité du site IEF & CO — données collectées, durée, droits RGPD, cookies.",
+    path: "/politique-confidentialite",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function PolitiqueConfidentialite() {
   return (

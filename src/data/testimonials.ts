@@ -4,6 +4,8 @@ export interface Testimonial {
   company: string;
   text: string;
   rating: number;
+  /** Optional avatar uploaded from the BO (testimonials.photoMediaId). */
+  photoUrl?: string;
 }
 
 export const testimonials: Testimonial[] = [

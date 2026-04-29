@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
 import { generatePageMetadata } from "@/lib/seo";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Mentions légales",
-  description: "Mentions légales du site IEF & CO — éditeur, hébergement, propriété intellectuelle.",
-  path: "/mentions-legales",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("mentions-legales");
+  return generatePageMetadata({
+    title: seo?.title || "Mentions légales",
+    description:
+      seo?.description ||
+      "Mentions légales du site IEF & CO — éditeur, hébergement, propriété intellectuelle.",
+    path: "/mentions-legales",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function MentionsLegales() {
   return (

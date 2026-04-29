@@ -7,13 +7,19 @@ import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Dépannage urgent métallerie Île-de-France — IEF & CO",
-  description:
-    "Dépannage d'urgence porte sectionnelle, rideau métallique, portail, coupe-feu, porte rapide. Intervention dans les 8 départements IDF. Stock pièces permanent, toutes marques.",
-  path: "/depannage",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("depannage-index");
+  return generatePageMetadata({
+    title: seo?.title || "Dépannage urgent métallerie Île-de-France",
+    description:
+      seo?.description ||
+      "Dépannage d'urgence porte sectionnelle, rideau métallique, portail, coupe-feu, porte rapide. Intervention dans les 8 départements IDF. Stock pièces permanent, toutes marques.",
+    path: "/depannage",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function DepannageIndexPage() {
   return (

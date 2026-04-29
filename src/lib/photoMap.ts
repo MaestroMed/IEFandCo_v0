@@ -1,6 +1,19 @@
 /**
  * Slug → photo path mappings for content sections.
  *
+ * **FALLBACK ONLY** — used when no `coverMediaId` has been uploaded for the
+ * entity from the BO. The order of precedence in public components :
+ *
+ *   1. `entity.coverUrl` (DB) — uploaded via /admin/{services,projects,blog}/[id]
+ *      → served from Supabase Storage in prod, /public/uploads in dev
+ *   2. `getServicePhoto(slug)` / `getRealisationPhoto(slug, category)` /
+ *      `getBlogPhoto(category)` — these static defaults below
+ *
+ * Don't add new mappings here — upload via the BO instead. Once every
+ * entity has a `coverMediaId` set, this file can be deleted (the helper
+ * functions can be no-ops returning empty strings, components already
+ * gracefully handle that via `coverUrl || photoMapFallback`).
+ *
  * Photos live in /public/images/photos/ — sourced from Unsplash (free for
  * commercial use, no attribution required). Each map provides a sensible
  * default fallback when a slug isn't explicitly mapped.

@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getServiceBySlug } from "@/data/services";
+import { getServiceBySlug } from "@/lib/content";
 
 export const alt = "IEF & CO — Service métallerie";
 export const size = { width: 1200, height: 630 };
@@ -7,13 +7,19 @@ export const contentType = "image/png";
 
 export default async function OG({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
 
   const title = service?.title ?? "IEF & CO";
   const subtitle =
     service?.shortDescription ??
     "Bureau d'étude — Atelier — Pose. Métallerie & serrurerie en Île-de-France.";
   const accent = service?.accentColor ?? "196, 133, 92";
+  const photoBg =
+    service?.coverUrl &&
+    !service.coverMime?.startsWith("video/") &&
+    service.coverUrl.startsWith("http")
+      ? service.coverUrl
+      : null;
 
   return new ImageResponse(
     (
@@ -30,30 +36,62 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
           fontFamily: "sans-serif",
         }}
       >
-        {/* Living gradient — service accent top-right */}
-        <div
-          style={{
-            position: "absolute",
-            top: -200,
-            right: -200,
-            width: 900,
-            height: 900,
-            background: `radial-gradient(circle, rgba(${accent}, 0.32) 0%, transparent 60%)`,
-            display: "flex",
-          }}
-        />
-        {/* Living gradient — red bottom-left */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: -300,
-            left: -100,
-            width: 700,
-            height: 700,
-            background: "radial-gradient(circle, rgba(225, 16, 33, 0.18) 0%, transparent 60%)",
-            display: "flex",
-          }}
-        />
+        {photoBg && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photoBg}
+            alt=""
+            width={1200}
+            height={630}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "flex",
+            }}
+          />
+        )}
+        {photoBg && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(135deg, rgba(5,5,8,0.92) 0%, rgba(5,5,8,0.55) 50%, rgba(5,5,8,0.85) 100%)",
+              display: "flex",
+            }}
+          />
+        )}
+        {/* Living gradient — service accent top-right (only when no photo) */}
+        {!photoBg && (
+          <div
+            style={{
+              position: "absolute",
+              top: -200,
+              right: -200,
+              width: 900,
+              height: 900,
+              background: `radial-gradient(circle, rgba(${accent}, 0.32) 0%, transparent 60%)`,
+              display: "flex",
+            }}
+          />
+        )}
+        {/* Living gradient — red bottom-left (only when no photo) */}
+        {!photoBg && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: -300,
+              left: -100,
+              width: 700,
+              height: 700,
+              background: "radial-gradient(circle, rgba(225, 16, 33, 0.18) 0%, transparent 60%)",
+              display: "flex",
+            }}
+          />
+        )}
 
         {/* Top accent rule */}
         <div

@@ -3,13 +3,19 @@ import Link from "next/link";
 import { glossary, getTermsByCategory } from "@/data/glossary";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Glossaire technique métallerie & fermetures industrielles",
-  description:
-    "Glossaire complet des termes techniques de la métallerie : EN 1090, EI 60, ressort de torsion, motorisation tubulaire, ATEX, HACCP... 50+ définitions par les experts IEF & CO.",
-  path: "/glossaire",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("glossaire-index");
+  return generatePageMetadata({
+    title: seo?.title || "Glossaire technique métallerie & fermetures industrielles",
+    description:
+      seo?.description ||
+      "Glossaire complet des termes techniques de la métallerie : EN 1090, EI 60, ressort de torsion, motorisation tubulaire, ATEX, HACCP... 50+ définitions par les experts IEF & CO.",
+    path: "/glossaire",
+    image: seo?.ogImageUrl,
+  });
+}
 
 const categoryOrder = ["Norme", "Réglementation", "Composant", "Technique", "Méthode", "Sécurité"];
 

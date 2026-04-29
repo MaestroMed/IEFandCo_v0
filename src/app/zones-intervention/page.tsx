@@ -5,13 +5,19 @@ import { Button } from "@/components/ui/Button";
 import ZonesMapClient from "@/components/ui/ZonesMapClient";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Zones d'intervention IEF & CO — Île-de-France complète",
-  description:
-    "IEF & CO intervient sur l'ensemble de l'Île-de-France : Paris (75), Hauts-de-Seine (92), Seine-Saint-Denis (93), Val-de-Marne (94), Val-d'Oise (95), Yvelines (78), Seine-et-Marne (77), Essonne (91). Délais d'intervention garantis sous contrat.",
-  path: "/zones-intervention",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("zones-intervention");
+  return generatePageMetadata({
+    title: seo?.title || "Zones d'intervention — Île-de-France complète",
+    description:
+      seo?.description ||
+      "IEF & CO intervient sur l'ensemble de l'Île-de-France : Paris (75), Hauts-de-Seine (92), Seine-Saint-Denis (93), Val-de-Marne (94), Val-d'Oise (95), Yvelines (78), Seine-et-Marne (77), Essonne (91). Délais d'intervention garantis sous contrat.",
+    path: "/zones-intervention",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function ZonesInterventionPage() {
   return (

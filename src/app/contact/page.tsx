@@ -3,13 +3,19 @@ import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
+import { getPageSeo } from "@/lib/content";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Contact | Parlons de votre projet métallique",
-  description:
-    "Contactez IEF & CO pour vos projets de métallerie en Île-de-France. Devis gratuit, étude technique, intervention rapide. Tel : 01 34 05 87 03.",
-  path: "/contact",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("contact");
+  return generatePageMetadata({
+    title: seo?.title || "Contact | Parlons de votre projet métallique",
+    description:
+      seo?.description ||
+      "Contactez IEF & CO pour vos projets de métallerie en Île-de-France. Devis gratuit, étude technique, intervention rapide. Tel : 01 34 05 87 03.",
+    path: "/contact",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default function ContactPage() {
   const breadcrumbSchema = generateBreadcrumbSchema([
