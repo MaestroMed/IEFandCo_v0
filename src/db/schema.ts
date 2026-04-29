@@ -168,6 +168,8 @@ export const services = pgTable("services", {
   fullDescription: text("full_description"),
   icon: text("icon").notNull(),
   accentColor: text("accent_color"),
+  /** Cover photo / video shown on /services and /services/[slug]. */
+  coverMediaId: text("cover_media_id").references(() => media.id, { onDelete: "set null" }),
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
   orderIdx: integer("order_idx").notNull().default(0),
@@ -344,6 +346,191 @@ export const rateLimits = pgTable("rate_limits", {
   windowIdx: index("rate_limits_window_idx").on(t.windowStart),
 }));
 
+/* ─────────── Homepage Hero (singleton) ─────────── */
+
+export const homepageHero = pgTable("homepage_hero", {
+  id: text("id").primaryKey(), // single row with id="default"
+  enabled: boolean("enabled").notNull().default(false), // when false, fallback to coded HeroSection
+  eyebrow: text("eyebrow"), // small label above title (e.g. "Bureau d'étude — Atelier — Pose")
+  title: text("title"), // multiline allowed
+  subtitle: text("subtitle"),
+  ctaPrimaryLabel: text("cta_primary_label"),
+  ctaPrimaryHref: text("cta_primary_href"),
+  ctaSecondaryLabel: text("cta_secondary_label"),
+  ctaSecondaryHref: text("cta_secondary_href"),
+  /** Background media : image (jpg/webp) or video (mp4/webm). */
+  mediaId: text("media_id").references(() => media.id, { onDelete: "set null" }),
+  /** Optional poster for video media (showed before video plays). */
+  posterMediaId: text("poster_media_id").references(() => media.id, { onDelete: "set null" }),
+  overlayOpacity: integer("overlay_opacity").notNull().default(50), // 0-100
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
+/* ─────────── Page SEO (static landing/index pages) ─────────── */
+
+export const pageSeo = pgTable("page_seo", {
+  /** Stable key like "home", "services-index", "about", "contact", "devis"... */
+  key: text("key").primaryKey(),
+  title: text("title"),
+  description: text("description"),
+  /** Optional OG image override (else Next.js convention opengraph-image.tsx is used). */
+  ogMediaId: text("og_media_id").references(() => media.id, { onDelete: "set null" }),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
+/* ─────────── Glossary ─────────── */
+
+export const glossaryTerms = pgTable("glossary_terms", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  term: text("term").notNull(),
+  category: text("category", { enum: ["Norme", "Technique", "Composant", "Réglementation", "Méthode", "Sécurité"] }).notNull(),
+  shortDef: text("short_def").notNull(),
+  fullDef: text("full_def").notNull(),
+  /** Comma-separated slugs of related glossary terms. */
+  relatedSlugs: text("related_slugs"),
+  /** Comma-separated slugs of related services. */
+  relatedServices: text("related_services"),
+  visible: boolean("visible").notNull().default(true),
+  orderIdx: integer("order_idx").notNull().default(0),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
+/* ─────────── Zones d'intervention ─────────── */
+
+export const zones = pgTable("zones", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  code: text("code").notNull(), // 75, 92, 93...
+  region: text("region").notNull().default("Île-de-France"),
+  tagline: text("tagline").notNull(),
+  intro: text("intro").notNull(),
+  /** Comma-separated city list (display only). */
+  cities: text("cities"),
+  slaUrgence: text("sla_urgence").notNull(),
+  slaStandard: text("sla_standard").notNull(),
+  /** Comma-separated hub list. */
+  hubs: text("hubs"),
+  /** JSON array of {value,label,sub}. */
+  kpisJson: text("kpis_json"),
+  /** JSON object {author, company, quote} or null. */
+  testimonialJson: text("testimonial_json"),
+  /** JSON array of {question, answer}. */
+  faqJson: text("faq_json"),
+  centerLat: text("center_lat"),
+  centerLng: text("center_lng"),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  coverMediaId: text("cover_media_id").references(() => media.id, { onDelete: "set null" }),
+  visible: boolean("visible").notNull().default(true),
+  orderIdx: integer("order_idx").notNull().default(0),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
+/* ─────────── Maintenance brands ─────────── */
+
+export const maintenanceBrands = pgTable("maintenance_brands", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  tagline: text("tagline").notNull(),
+  intro: text("intro").notNull(),
+  /** JSON array of product names. */
+  productsJson: text("products_json"),
+  /** JSON array of common failures. */
+  failuresJson: text("failures_json"),
+  /** JSON array of strengths. */
+  strengthsJson: text("strengths_json"),
+  /** JSON array of {question, answer}. */
+  faqJson: text("faq_json"),
+  searchVolume: text("search_volume"), // "14k searches/mois"
+  accentColor: text("accent_color"), // RGB triplet
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  logoMediaId: text("logo_media_id").references(() => media.id, { onDelete: "set null" }),
+  coverMediaId: text("cover_media_id").references(() => media.id, { onDelete: "set null" }),
+  visible: boolean("visible").notNull().default(true),
+  orderIdx: integer("order_idx").notNull().default(0),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
+/* ─────────── Comparators (X vs Y) ─────────── */
+
+export const comparators = pgTable("comparators", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  optionAName: text("option_a_name").notNull(),
+  optionBName: text("option_b_name").notNull(),
+  tagline: text("tagline").notNull(),
+  intro: text("intro").notNull(),
+  verdict: text("verdict").notNull(),
+  /** category for illustration: industrielles | portails | structures | menuiserie | coupe-feu | automatismes | maintenance */
+  category: text("category").notNull(),
+  /** RGB triplet "196, 133, 92" */
+  accent: text("accent").notNull(),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  visible: boolean("visible").notNull().default(true),
+  orderIdx: integer("order_idx").notNull().default(0),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
+export const comparatorRows = pgTable("comparator_rows", {
+  id: text("id").primaryKey(),
+  comparatorId: text("comparator_id").notNull().references(() => comparators.id, { onDelete: "cascade" }),
+  criterion: text("criterion").notNull(),
+  optionA: text("option_a").notNull(),
+  optionB: text("option_b").notNull(),
+  /** "A" | "B" | "tie" */
+  winner: text("winner", { enum: ["A", "B", "tie"] }).notNull(),
+  orderIdx: integer("order_idx").notNull().default(0),
+});
+
+export const comparatorUseCases = pgTable("comparator_use_cases", {
+  id: text("id").primaryKey(),
+  comparatorId: text("comparator_id").notNull().references(() => comparators.id, { onDelete: "cascade" }),
+  scenario: text("scenario").notNull(),
+  /** "A" | "B" */
+  recommendation: text("recommendation", { enum: ["A", "B"] }).notNull(),
+  reason: text("reason").notNull(),
+  orderIdx: integer("order_idx").notNull().default(0),
+});
+
+export const comparatorFaqs = pgTable("comparator_faqs", {
+  id: text("id").primaryKey(),
+  comparatorId: text("comparator_id").notNull().references(() => comparators.id, { onDelete: "cascade" }),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  orderIdx: integer("order_idx").notNull().default(0),
+});
+
+/* ─────────── Dépannage services (urgence) ─────────── */
+
+export const depannageServices = pgTable("depannage_services", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  label: text("label").notNull(),
+  tagline: text("tagline").notNull(),
+  intro: text("intro").notNull(),
+  businessImpact: text("business_impact").notNull(),
+  accentColor: text("accent_color").notNull(), // RGB triplet
+  /** Comma-separated brand names supported. */
+  brands: text("brands"),
+  /** JSON array of {title, symptom, fix, avgDuration}. */
+  failuresJson: text("failures_json"),
+  /** Comma-separated list of in-stock parts. */
+  partsInStock: text("parts_in_stock"),
+  /** Comma-separated related service slugs (for illustration). */
+  relatedServices: text("related_services"),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  visible: boolean("visible").notNull().default(true),
+  orderIdx: integer("order_idx").notNull().default(0),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
 /* ─────────── Settings & Audit ─────────── */
 
 export const settings = pgTable("settings", {
@@ -390,3 +577,13 @@ export type EmailTemplate = typeof emailTemplates.$inferSelect;
 export type EmailLogEntry = typeof emailLog.$inferSelect;
 export type Redirect = typeof redirects.$inferSelect;
 export type RateLimitRow = typeof rateLimits.$inferSelect;
+export type HomepageHero = typeof homepageHero.$inferSelect;
+export type PageSeo = typeof pageSeo.$inferSelect;
+export type GlossaryTermRow = typeof glossaryTerms.$inferSelect;
+export type ZoneRow = typeof zones.$inferSelect;
+export type MaintenanceBrandRow = typeof maintenanceBrands.$inferSelect;
+export type ComparatorRow = typeof comparators.$inferSelect;
+export type ComparatorTableRow = typeof comparatorRows.$inferSelect;
+export type ComparatorUseCase = typeof comparatorUseCases.$inferSelect;
+export type ComparatorFaq = typeof comparatorFaqs.$inferSelect;
+export type DepannageServiceRow = typeof depannageServices.$inferSelect;

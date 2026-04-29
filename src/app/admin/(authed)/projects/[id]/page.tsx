@@ -1,14 +1,29 @@
 import { Topbar } from "@/components/admin/Topbar";
 import { db, schema } from "@/db";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { ProjectForm } from "../ProjectForm";
+import { ProjectGallery } from "../ProjectGallery";
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const rows = await db.select().from(schema.projects).where(eq(schema.projects.id, id)).limit(1);
   if (rows.length === 0) notFound();
   const project = rows[0];
+
+  const gallery = await db
+    .select({
+      id: schema.projectImages.id,
+      mediaId: schema.projectImages.mediaId,
+      caption: schema.projectImages.caption,
+      orderIdx: schema.projectImages.orderIdx,
+      url: schema.media.url,
+      filename: schema.media.filename,
+    })
+    .from(schema.projectImages)
+    .leftJoin(schema.media, eq(schema.media.id, schema.projectImages.mediaId))
+    .where(eq(schema.projectImages.projectId, id))
+    .orderBy(asc(schema.projectImages.orderIdx));
 
   return (
     <>
@@ -20,7 +35,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
           { label: project.title },
         ]}
       />
-      <div className="p-8">
+      <div className="p-8 space-y-6">
         <ProjectForm
           projectId={project.id}
           initial={{
@@ -42,6 +57,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
             seoDescription: project.seoDescription || "",
           }}
         />
+        <ProjectGallery projectId={project.id} rows={gallery} />
       </div>
     </>
   );

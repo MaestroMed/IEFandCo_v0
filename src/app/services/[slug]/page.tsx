@@ -9,6 +9,7 @@ import {
 } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
+import { Media } from "@/components/ui/Media";
 import { FAQAccordion } from "./FAQAccordion";
 import {
   generatePageMetadata,
@@ -135,11 +136,27 @@ export default async function ServicePage({
                   boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(${accent}, 0.18)`,
                 }}
               >
-                <ProjectIllustration
-                  category={service.slug}
-                  accentColor={accent}
-                  hideTitle
-                />
+                {service.coverUrl ? (
+                  <div className="aspect-[4/3] relative">
+                    <Media
+                      url={service.coverUrl}
+                      mime={service.coverMime}
+                      alt={service.coverAlt || service.title}
+                      fill
+                      autoPlay
+                      muted
+                      loop
+                      sizes="(max-width: 1024px) 100vw, 600px"
+                      objectFit="cover"
+                    />
+                  </div>
+                ) : (
+                  <ProjectIllustration
+                    category={service.slug}
+                    accentColor={accent}
+                    hideTitle
+                  />
+                )}
 
                 {/* Corner brackets — service-color tint */}
                 <svg className="absolute top-3 left-3 h-5 w-5 pointer-events-none z-10" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2 8V2h6" stroke={`rgb(${accent})`} strokeWidth="1.4" /></svg>

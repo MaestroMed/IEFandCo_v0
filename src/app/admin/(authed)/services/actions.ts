@@ -21,6 +21,7 @@ type ServiceInput = {
   visible: boolean;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  coverMediaId?: string | null;
 };
 
 export async function updateService(serviceId: string, input: ServiceInput) {
@@ -39,6 +40,7 @@ export async function updateService(serviceId: string, input: ServiceInput) {
         visible: input.visible,
         seoTitle: input.seoTitle || null,
         seoDescription: input.seoDescription || null,
+        coverMediaId: input.coverMediaId || null,
         updatedAt: new Date(),
       })
       .where(eq(schema.services.id, serviceId));

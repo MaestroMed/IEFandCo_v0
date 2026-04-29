@@ -78,10 +78,14 @@ export default async function RealisationsPage() {
                   boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
                 }}
               >
-                {/* Real photo with Forged Light treatment */}
+                {/* Real photo with Forged Light treatment — DB cover takes precedence */}
                 <Photo
-                  src={getRealisationPhoto(project.slug, project.category)}
-                  alt={project.title}
+                  src={
+                    project.coverUrl && !project.coverMime?.startsWith("video/")
+                      ? project.coverUrl
+                      : getRealisationPhoto(project.slug, project.category)
+                  }
+                  alt={project.coverAlt || project.title}
                   aspect={aspects[i % aspects.length]}
                   brackets
                   caption={`${project.year} · ${project.category}`}

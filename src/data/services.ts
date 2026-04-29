@@ -23,6 +23,10 @@ export interface Service {
     title: string;
     description: string;
   };
+  /** BO-uploaded cover (image or video). Falls back to photoMap.ts if absent. */
+  coverUrl?: string;
+  coverMime?: string;
+  coverAlt?: string;
 }
 
 export const services: Service[] = [

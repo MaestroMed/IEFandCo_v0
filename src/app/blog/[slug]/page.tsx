@@ -5,6 +5,7 @@ import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { getBlogPosts, getBlogPostBySlug, getStaticBlogSlugs } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Photo } from "@/components/ui/Photo";
+import { Media } from "@/components/ui/Media";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { getBlogPhoto } from "@/lib/photoMap";
 
@@ -21,9 +22,10 @@ export async function generateMetadata({
   const post = await getBlogPostBySlug(slug);
   if (!post) return {};
   return generatePageMetadata({
-    title: post.title,
-    description: post.excerpt,
+    title: post.seoTitle || post.title,
+    description: post.seoDescription || post.excerpt,
     path: `/blog/${post.slug}`,
+    image: post.coverUrl,
   });
 }
 
@@ -51,6 +53,7 @@ export default async function BlogArticle({
     headline: post.title,
     description: post.excerpt,
     datePublished: post.dateISO,
+    image: post.coverUrl ? [post.coverUrl] : undefined,
     author: { "@type": "Organization", name: post.author },
     publisher: {
       "@type": "Organization",
@@ -58,6 +61,9 @@ export default async function BlogArticle({
       logo: { "@type": "ImageObject", url: "https://iefandco.com/logo.png" },
     },
   };
+
+  const heroImage = post.coverUrl || getBlogPhoto(post.category);
+  const heroIsVideo = !!post.coverMime?.startsWith("video/");
 
   const related = blogPosts.filter((p) => p.slug !== post.slug && p.category === post.category).slice(0, 2);
 
@@ -99,25 +105,38 @@ export default async function BlogArticle({
           </p>
         </div>
 
-        {/* Hero illustration — hangs over into next section */}
+        {/* Hero illustration — hangs over into next section. Polymorphic. */}
         <div className="relative z-10 mx-auto max-w-4xl px-6 mt-16 -mb-24">
           <div
-            className="relative overflow-hidden rounded-2xl"
+            className="relative overflow-hidden rounded-2xl aspect-[16/9]"
             style={{
               border: "1px solid var(--border-strong)",
               boxShadow: "0 30px 80px rgba(0,0,0,0.5)",
             }}
           >
-            <Photo
-              src={getBlogPhoto(post.category)}
-              alt={post.title}
-              aspect="aspect-[16/9]"
-              treatment="default"
-              brackets
-              priority
-              hoverZoom={false}
-              sizes="(max-width: 1024px) 100vw, 1024px"
-            />
+            {heroIsVideo ? (
+              <Media
+                url={heroImage}
+                mime={post.coverMime}
+                alt={post.coverAlt || post.title}
+                fill
+                autoPlay
+                muted
+                loop
+                objectFit="cover"
+              />
+            ) : (
+              <Photo
+                src={heroImage}
+                alt={post.coverAlt || post.title}
+                aspect="aspect-[16/9]"
+                treatment="default"
+                brackets
+                priority
+                hoverZoom={false}
+                sizes="(max-width: 1024px) 100vw, 1024px"
+              />
+            )}
           </div>
         </div>
       </section>

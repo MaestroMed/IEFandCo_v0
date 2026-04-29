@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { brands, getBrandBySlug } from "@/data/brands";
+import { brands as staticBrands } from "@/data/brands";
+import { getBrands, getBrandBySlug } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
@@ -15,7 +16,7 @@ const BRAND_ILLUSTRATION: Record<string, "industrielles" | "automatismes" | "por
 };
 
 export function generateStaticParams() {
-  return brands.map((b) => ({ brand: b.slug }));
+  return staticBrands.map((b) => ({ brand: b.slug }));
 }
 
 export async function generateMetadata({
@@ -24,7 +25,7 @@ export async function generateMetadata({
   params: Promise<{ brand: string }>;
 }): Promise<Metadata> {
   const { brand } = await params;
-  const b = getBrandBySlug(brand);
+  const b = await getBrandBySlug(brand);
   if (!b) return {};
   return generatePageMetadata({
     title: b.seo.title,
@@ -39,7 +40,10 @@ export default async function BrandMaintenancePage({
   params: Promise<{ brand: string }>;
 }) {
   const { brand: brandSlug } = await params;
-  const brand = getBrandBySlug(brandSlug);
+  const [brand, brands] = await Promise.all([
+    getBrandBySlug(brandSlug),
+    getBrands(),
+  ]);
   if (!brand) notFound();
 
   const breadcrumb = generateBreadcrumbSchema([

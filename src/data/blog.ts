@@ -10,6 +10,13 @@ export interface BlogPost {
   author: string;
   readingMinutes: number;
   sections: BlogSection[];
+  /** BO-uploaded cover (image or video). Falls back to photoMap.ts if absent. */
+  coverUrl?: string;
+  coverMime?: string;
+  coverAlt?: string;
+  /** SEO overrides edited from the admin. Optional — title/excerpt fallback. */
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface BlogSection {

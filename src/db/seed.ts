@@ -4,7 +4,26 @@
  */
 
 import { db } from "./index";
-import { users, services, subServices, serviceFaqs, blogPosts, testimonials, clients, teamMembers, projects, emailTemplates } from "./schema";
+import {
+  users,
+  services,
+  subServices,
+  serviceFaqs,
+  blogPosts,
+  testimonials,
+  clients,
+  teamMembers,
+  projects,
+  emailTemplates,
+  glossaryTerms,
+  zones,
+  maintenanceBrands,
+  comparators,
+  comparatorRows,
+  comparatorUseCases,
+  comparatorFaqs,
+  depannageServices,
+} from "./schema";
 import { eq } from "drizzle-orm";
 import { services as staticServices } from "../data/services";
 import { blogPosts as staticBlog } from "../data/blog";
@@ -12,6 +31,11 @@ import { testimonials as staticTestimonials } from "../data/testimonials";
 import { clients as staticClients } from "../data/clients";
 import { realisations as staticProjects } from "../data/realisations";
 import { homepageFAQ } from "../data/faq";
+import { glossary as staticGlossary } from "../data/glossary";
+import { zones as staticZones } from "../data/zones";
+import { brands as staticBrands } from "../data/brands";
+import { comparatifs as staticComparators } from "../data/comparatifs";
+import { depannageServices as staticDepannage } from "../data/depannage";
 import { hash } from "@node-rs/argon2";
 import { randomUUID } from "node:crypto";
 
@@ -258,6 +282,163 @@ async function main() {
       await db.insert(emailTemplates).values({ id: cuid(), ...t });
     }
     console.log(`   ✓ Seeded ${templates.length} email templates`);
+  }
+
+  // ── Glossary ──
+  const existingGloss = await db.select().from(glossaryTerms).limit(1);
+  if (existingGloss.length === 0) {
+    for (let i = 0; i < staticGlossary.length; i++) {
+      const t = staticGlossary[i];
+      await db.insert(glossaryTerms).values({
+        id: cuid(),
+        slug: t.slug,
+        term: t.term,
+        category: t.category,
+        shortDef: t.shortDef,
+        fullDef: t.fullDef,
+        relatedSlugs: t.related ? t.related.join(",") : null,
+        relatedServices: t.relatedServices ? t.relatedServices.join(",") : null,
+        orderIdx: i,
+      });
+    }
+    console.log(`   ✓ Seeded ${staticGlossary.length} glossary terms`);
+  }
+
+  // ── Zones ──
+  const existingZones = await db.select().from(zones).limit(1);
+  if (existingZones.length === 0) {
+    for (let i = 0; i < staticZones.length; i++) {
+      const z = staticZones[i];
+      await db.insert(zones).values({
+        id: cuid(),
+        slug: z.slug,
+        name: z.name,
+        code: z.code,
+        region: z.region,
+        tagline: z.tagline,
+        intro: z.intro,
+        cities: z.cities.join(","),
+        slaUrgence: z.slaUrgence,
+        slaStandard: z.slaStandard,
+        hubs: z.hubs.join(","),
+        kpisJson: JSON.stringify(z.kpis),
+        testimonialJson: z.testimonial ? JSON.stringify(z.testimonial) : null,
+        faqJson: JSON.stringify(z.faq),
+        centerLat: String(z.center.lat),
+        centerLng: String(z.center.lng),
+        seoTitle: z.seo.title,
+        seoDescription: z.seo.description,
+        orderIdx: i,
+      });
+    }
+    console.log(`   ✓ Seeded ${staticZones.length} zones`);
+  }
+
+  // ── Maintenance brands ──
+  const existingBrands = await db.select().from(maintenanceBrands).limit(1);
+  if (existingBrands.length === 0) {
+    for (let i = 0; i < staticBrands.length; i++) {
+      const b = staticBrands[i];
+      await db.insert(maintenanceBrands).values({
+        id: cuid(),
+        slug: b.slug,
+        name: b.name,
+        tagline: b.tagline,
+        intro: b.intro,
+        productsJson: JSON.stringify(b.products),
+        failuresJson: JSON.stringify(b.commonFailures),
+        strengthsJson: JSON.stringify(b.advantages),
+        faqJson: JSON.stringify(b.faq),
+        accentColor: b.accentColor,
+        seoTitle: b.seo.title,
+        seoDescription: b.seo.description,
+        orderIdx: i,
+      });
+    }
+    console.log(`   ✓ Seeded ${staticBrands.length} maintenance brands`);
+  }
+
+  // ── Comparators (+ rows, use cases, faqs) ──
+  const existingComps = await db.select().from(comparators).limit(1);
+  if (existingComps.length === 0) {
+    for (let i = 0; i < staticComparators.length; i++) {
+      const c = staticComparators[i];
+      const compId = cuid();
+      await db.insert(comparators).values({
+        id: compId,
+        slug: c.slug,
+        title: c.title,
+        optionAName: c.optionAName,
+        optionBName: c.optionBName,
+        tagline: c.tagline,
+        intro: c.intro,
+        verdict: c.verdict,
+        category: c.category,
+        accent: c.accent,
+        seoTitle: c.seo.title,
+        seoDescription: c.seo.description,
+        orderIdx: i,
+      });
+      for (let j = 0; j < c.rows.length; j++) {
+        const r = c.rows[j];
+        await db.insert(comparatorRows).values({
+          id: cuid(),
+          comparatorId: compId,
+          criterion: r.criterion,
+          optionA: r.optionA,
+          optionB: r.optionB,
+          winner: r.winner,
+          orderIdx: j,
+        });
+      }
+      for (let j = 0; j < c.useCases.length; j++) {
+        const u = c.useCases[j];
+        await db.insert(comparatorUseCases).values({
+          id: cuid(),
+          comparatorId: compId,
+          scenario: u.scenario,
+          recommendation: u.recommendation,
+          reason: u.reason,
+          orderIdx: j,
+        });
+      }
+      for (let j = 0; j < c.faq.length; j++) {
+        const f = c.faq[j];
+        await db.insert(comparatorFaqs).values({
+          id: cuid(),
+          comparatorId: compId,
+          question: f.question,
+          answer: f.answer,
+          orderIdx: j,
+        });
+      }
+    }
+    console.log(`   ✓ Seeded ${staticComparators.length} comparators (+ rows + useCases + faqs)`);
+  }
+
+  // ── Dépannage services ──
+  const existingDep = await db.select().from(depannageServices).limit(1);
+  if (existingDep.length === 0) {
+    for (let i = 0; i < staticDepannage.length; i++) {
+      const d = staticDepannage[i];
+      await db.insert(depannageServices).values({
+        id: cuid(),
+        slug: d.slug,
+        label: d.label,
+        tagline: d.tagline,
+        intro: d.intro,
+        businessImpact: d.businessImpact,
+        accentColor: d.accentColor,
+        brands: d.brands.join(","),
+        failuresJson: JSON.stringify(d.commonFailures),
+        partsInStock: d.partsInStock.join(","),
+        relatedServices: d.relatedServices.join(","),
+        seoTitle: d.seo.title,
+        seoDescription: d.seo.description,
+        orderIdx: i,
+      });
+    }
+    console.log(`   ✓ Seeded ${staticDepannage.length} dépannage services`);
   }
 
   console.log("✅ Seed complete.");

@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { zones, getZoneBySlug } from "@/data/zones";
+import { zones as staticZones } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
-import { getServices } from "@/lib/content";
+import { getServices, getZones, getZoneBySlug } from "@/lib/content";
 
 export function generateStaticParams() {
-  return zones.map((z) => ({ slug: z.slug }));
+  return staticZones.map((z) => ({ slug: z.slug }));
 }
 
 export async function generateMetadata({
@@ -18,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const zone = getZoneBySlug(slug);
+  const zone = await getZoneBySlug(slug);
   if (!zone) return {};
   return generatePageMetadata({
     title: zone.seo.title,
@@ -33,10 +33,12 @@ export default async function ZonePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const zone = getZoneBySlug(slug);
+  const [zone, services, zones] = await Promise.all([
+    getZoneBySlug(slug),
+    getServices(),
+    getZones(),
+  ]);
   if (!zone) notFound();
-
-  const services = await getServices();
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Accueil", url: "/" },

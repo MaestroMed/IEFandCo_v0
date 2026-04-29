@@ -2,7 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { slugify } from "@/lib/admin/slug";
@@ -116,6 +116,90 @@ export async function deleteProject(projectId: string) {
   } catch (e) {
     return { ok: false as const, error: (e as Error).message };
   }
+}
+
+/* ─────────── Project gallery (project_images) ─────────── */
+
+export async function addProjectImage(projectId: string, mediaId: string, caption?: string | null) {
+  await requireAdmin();
+  try {
+    const existing = await db
+      .select({ idx: schema.projectImages.orderIdx })
+      .from(schema.projectImages)
+      .where(eq(schema.projectImages.projectId, projectId));
+    const maxIdx = existing.reduce((acc, r) => Math.max(acc, r.idx), -1);
+    const newId = id();
+    await db.insert(schema.projectImages).values({
+      id: newId,
+      projectId,
+      mediaId,
+      caption: caption || null,
+      orderIdx: maxIdx + 1,
+    });
+    revalidatePath(`/admin/projects/${projectId}`);
+    return { ok: true as const, id: newId };
+  } catch (e) {
+    return { ok: false as const, error: (e as Error).message };
+  }
+}
+
+export async function updateProjectImage(imageId: string, projectId: string, input: { caption?: string | null; mediaId?: string }) {
+  await requireAdmin();
+  try {
+    const setVals: { caption?: string | null; mediaId?: string } = {};
+    if (typeof input.caption !== "undefined") setVals.caption = input.caption || null;
+    if (typeof input.mediaId === "string" && input.mediaId) setVals.mediaId = input.mediaId;
+    if (Object.keys(setVals).length === 0) return { ok: true as const };
+    await db.update(schema.projectImages).set(setVals).where(eq(schema.projectImages.id, imageId));
+    revalidatePath(`/admin/projects/${projectId}`);
+    return { ok: true as const };
+  } catch (e) {
+    return { ok: false as const, error: (e as Error).message };
+  }
+}
+
+export async function deleteProjectImage(imageId: string, projectId: string) {
+  await requireAdmin();
+  try {
+    await db.delete(schema.projectImages).where(eq(schema.projectImages.id, imageId));
+    revalidatePath(`/admin/projects/${projectId}`);
+    return { ok: true as const };
+  } catch (e) {
+    return { ok: false as const, error: (e as Error).message };
+  }
+}
+
+export async function reorderProjectImages(projectId: string, ordered: string[]) {
+  await requireAdmin();
+  try {
+    for (let i = 0; i < ordered.length; i++) {
+      await db
+        .update(schema.projectImages)
+        .set({ orderIdx: i })
+        .where(eq(schema.projectImages.id, ordered[i]));
+    }
+    revalidatePath(`/admin/projects/${projectId}`);
+    return { ok: true as const };
+  } catch (e) {
+    return { ok: false as const, error: (e as Error).message };
+  }
+}
+
+export async function listProjectImages(projectId: string) {
+  await requireAdmin();
+  return db
+    .select({
+      id: schema.projectImages.id,
+      mediaId: schema.projectImages.mediaId,
+      caption: schema.projectImages.caption,
+      orderIdx: schema.projectImages.orderIdx,
+      url: schema.media.url,
+      filename: schema.media.filename,
+    })
+    .from(schema.projectImages)
+    .leftJoin(schema.media, eq(schema.media.id, schema.projectImages.mediaId))
+    .where(eq(schema.projectImages.projectId, projectId))
+    .orderBy(asc(schema.projectImages.orderIdx));
 }
 
 export async function duplicateProject(projectId: string) {

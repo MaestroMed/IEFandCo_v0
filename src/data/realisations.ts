@@ -41,6 +41,10 @@ export interface Realisation {
   /** Mot-clé SEO principal visé */
   seoTitle?: string;
   seoDescription?: string;
+  /** BO-uploaded cover (image or video). Falls back to photoMap.ts if absent. */
+  coverUrl?: string;
+  coverMime?: string;
+  coverAlt?: string;
 }
 
 export const realisations: Realisation[] = [

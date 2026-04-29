@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { depannageServices, getDepannageService } from "@/data/depannage";
-import { zones, getZoneBySlug } from "@/data/zones";
+import { depannageServices as staticDepannage } from "@/data/depannage";
+import { zones as staticZones } from "@/data/zones";
+import {
+  getDepannageServices,
+  getDepannageService,
+  getZones,
+  getZoneBySlug,
+} from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
@@ -10,8 +16,8 @@ import { companyInfo } from "@/data/navigation";
 
 export function generateStaticParams() {
   const params: Array<{ service: string; zone: string }> = [];
-  for (const service of depannageServices) {
-    for (const zone of zones) {
+  for (const service of staticDepannage) {
+    for (const zone of staticZones) {
       params.push({ service: service.slug, zone: zone.slug });
     }
   }
@@ -24,8 +30,7 @@ export async function generateMetadata({
   params: Promise<{ service: string; zone: string }>;
 }): Promise<Metadata> {
   const { service, zone } = await params;
-  const s = getDepannageService(service);
-  const z = getZoneBySlug(zone);
+  const [s, z] = await Promise.all([getDepannageService(service), getZoneBySlug(zone)]);
   if (!s || !z) return {};
   return generatePageMetadata({
     title: `Dépannage ${s.label} dans le ${z.code} (${z.name})`,
@@ -40,8 +45,12 @@ export default async function DepannageComboPage({
   params: Promise<{ service: string; zone: string }>;
 }) {
   const { service, zone } = await params;
-  const s = getDepannageService(service);
-  const z = getZoneBySlug(zone);
+  const [s, z, depannageServices, zones] = await Promise.all([
+    getDepannageService(service),
+    getZoneBySlug(zone),
+    getDepannageServices(),
+    getZones(),
+  ]);
   if (!s || !z) notFound();
 
   const breadcrumb = generateBreadcrumbSchema([

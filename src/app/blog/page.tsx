@@ -71,8 +71,12 @@ export default async function BlogPage() {
             >
               <div className="lg:col-span-3 aspect-[16/10] lg:aspect-auto overflow-hidden relative">
                 <Photo
-                  src={getBlogPhoto(featured.category)}
-                  alt={featured.title}
+                  src={
+                    featured.coverUrl && !featured.coverMime?.startsWith("video/")
+                      ? featured.coverUrl
+                      : getBlogPhoto(featured.category)
+                  }
+                  alt={featured.coverAlt || featured.title}
                   treatment="default"
                   hoverZoom
                   sizes="(max-width: 1024px) 100vw, 60vw"
@@ -128,8 +132,12 @@ export default async function BlogPage() {
                   }}
                 >
                   <Photo
-                    src={getBlogPhoto(post.category)}
-                    alt={post.title}
+                    src={
+                      post.coverUrl && !post.coverMime?.startsWith("video/")
+                        ? post.coverUrl
+                        : getBlogPhoto(post.category)
+                    }
+                    alt={post.coverAlt || post.title}
                     aspect="aspect-[16/10]"
                     treatment="default"
                     hoverZoom
