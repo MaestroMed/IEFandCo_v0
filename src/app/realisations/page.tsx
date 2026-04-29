@@ -4,15 +4,20 @@ import { generatePageMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { Photo } from "@/components/ui/Photo";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
-import { getRealisations } from "@/lib/content";
+import { getRealisations, getPageSeo } from "@/lib/content";
 import { getRealisationPhoto } from "@/lib/photoMap";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Nos Réalisations | Portfolio métallerie",
-  description:
-    "Découvrez les réalisations d'IEF & CO : charpentes, façades, portails, fermetures industrielles. Projets en Île-de-France pour l'industrie et le tertiaire.",
-  path: "/realisations",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("realisations-index");
+  return generatePageMetadata({
+    title: seo?.title || "Nos Réalisations | Portfolio métallerie",
+    description:
+      seo?.description ||
+      "Découvrez les réalisations d'IEF & CO : charpentes, façades, portails, fermetures industrielles. Projets en Île-de-France pour l'industrie et le tertiaire.",
+    path: "/realisations",
+    image: seo?.ogImageUrl,
+  });
+}
 
 // Masonry aspect ratios per index — creates rhythm
 const aspects = [

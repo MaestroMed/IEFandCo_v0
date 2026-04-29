@@ -3,15 +3,20 @@ import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo";
 import { Photo } from "@/components/ui/Photo";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
-import { getBlogPosts } from "@/lib/content";
+import { getBlogPosts, getPageSeo } from "@/lib/content";
 import { getBlogPhoto } from "@/lib/photoMap";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Blog | Actualités métallerie & serrurerie",
-  description:
-    "Articles techniques, guides et actualités sur la métallerie, les fermetures industrielles et la maintenance. Blog IEF & CO.",
-  path: "/blog",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("blog-index");
+  return generatePageMetadata({
+    title: seo?.title || "Blog | Actualités métallerie & serrurerie",
+    description:
+      seo?.description ||
+      "Articles techniques, guides et actualités sur la métallerie, les fermetures industrielles et la maintenance. Blog IEF & CO.",
+    path: "/blog",
+    image: seo?.ogImageUrl,
+  });
+}
 
 export default async function BlogPage() {
   const blogPosts = await getBlogPosts();
