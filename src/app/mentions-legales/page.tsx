@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generatePageMetadata({
   title: "Mentions légales",
-  description: "Mentions légales du site IEF & CO.",
-};
+  description: "Mentions légales du site IEF & CO — éditeur, hébergement, propriété intellectuelle.",
+  path: "/mentions-legales",
+});
 
 export default function MentionsLegales() {
   return (

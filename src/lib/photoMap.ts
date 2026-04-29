@@ -41,7 +41,7 @@ const servicePhotos: Record<string, string> = {
   "fermetures-industrielles": `${PHOTO_BASE}/service-industrielles.jpg`,
   "portails-clotures": `${PHOTO_BASE}/service-portails.jpg`,
   "structures-metalliques": `${PHOTO_BASE}/service-structures.jpg`,
-  "menuiserie-metallique": `${PHOTO_BASE}/service-menuiserie.jpg`,
+  "menuiserie-vitrerie": `${PHOTO_BASE}/service-menuiserie.jpg`,
   "portes-coupe-feu": `${PHOTO_BASE}/service-coupe-feu.jpg`,
   automatismes: `${PHOTO_BASE}/realisation-portail-noir.jpg`,
   maintenance: `${PHOTO_BASE}/service-maintenance.jpg`,

@@ -10,9 +10,11 @@ import { MobileMenu } from "./MobileMenu";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 
-function ServicesDropdown({ items }: { items: NavItem[] }) {
+function ServicesDropdown({ items, menuId }: { items: NavItem[]; menuId: string }) {
   return (
     <motion.div
+      id={menuId}
+      role="group"
       initial={{ opacity: 0, y: 10, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 6, scale: 0.97 }}
@@ -292,16 +294,26 @@ export function Navbar() {
             {navigation.map((item) => {
               const active = isActive(item.href);
               const isOpen = openDropdown === item.href;
+              const menuId = `nav-menu-${item.href.replace(/[^a-z0-9]+/gi, "-")}`;
               return item.children ? (
                 <div
                   key={item.href}
                   className="relative"
                   onMouseEnter={() => handleDropdownEnter(item.href)}
                   onMouseLeave={handleDropdownLeave}
+                  onFocus={() => handleDropdownEnter(item.href)}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                      handleDropdownLeave();
+                    }
+                  }}
                 >
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={isOpen}
+                    aria-controls={menuId}
                     className="group/nav relative px-4 py-2 text-[13px] font-semibold tracking-[0.01em] transition-colors duration-[var(--dur-md)] hover:text-[var(--color-primary)]"
                     style={{ color: active ? navTextPrimary : navTextSecondary }}
                   >
@@ -318,7 +330,7 @@ export function Navbar() {
                       }}
                     />
                   </Link>
-                  <AnimatePresence>{isOpen && <ServicesDropdown items={item.children} />}</AnimatePresence>
+                  <AnimatePresence>{isOpen && <ServicesDropdown items={item.children} menuId={menuId} />}</AnimatePresence>
                 </div>
               ) : (
                 <Link

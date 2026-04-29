@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { sendEmail, escapeHtml } from "@/lib/email";
+import { rateLimit, checkOrigin } from "@/lib/rate-limit";
 
 /**
  * POST /api/newsletter
@@ -10,6 +11,17 @@ import { sendEmail, escapeHtml } from "@/lib/email";
  * Can be upgraded to direct Resend Audiences API later.
  */
 export async function POST(req: Request) {
+  if (!checkOrigin(req)) {
+    return NextResponse.json({ error: "Origine non autorisée" }, { status: 403 });
+  }
+  const rl = await rateLimit(req, "newsletter", { max: 5, windowSec: 60 });
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Trop de tentatives. Réessayez dans une minute." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter || 60) } }
+    );
+  }
+
   try {
     const body = await req.json();
     const email = String(body?.email || "").trim().toLowerCase();

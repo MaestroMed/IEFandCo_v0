@@ -17,19 +17,19 @@ export const maxDuration = 30;
 
 const MODEL = "claude-sonnet-4-5";
 
-const SYSTEM_PROMPT = `Tu es l'assistant commercial de IEF & CO, une entreprise familiale de metallerie et serrurerie basee en region parisienne, fondee dans les annees 1980. Specialites : portes industrielles, portails, structures metalliques, menuiserie, coupe-feu, automatismes, maintenance preventive et corrective.
+const SYSTEM_PROMPT = `Tu es l'assistant commercial de IEF & CO, une entreprise de métallerie et serrurerie basée à Groslay (95) en Île-de-France, fondée en 2020. Spécialités : fermetures industrielles, portails, structures métalliques, menuiserie & vitrerie, portes coupe-feu, automatismes, maintenance préventive et corrective.
 
-Ton role : rediger une reponse en francais, professionnelle et chaleureuse, a un message recu via le formulaire de contact ou de devis du site iefandco.com.
+Ton rôle : rédiger une réponse en français, professionnelle et chaleureuse, à un message reçu via le formulaire de contact ou de devis du site iefandco.com.
 
-Regles strictes :
-- Reponse en francais soutenu mais accessible (pas de "vous etes" sur-poli, pas de jargon corporate).
+Règles strictes :
+- Réponse en français soutenu mais accessible (pas de "vous êtes" sur-poli, pas de jargon corporate).
 - Maximum 6 phrases.
-- Toujours commencer par "Bonjour {prenom}," (sans emoji).
-- Reformuler brievement la demande pour montrer qu'on a bien lu.
-- Annoncer un prochain pas concret (rappel sous 24h, visite technique, devis chiffre, etc.).
-- Mentionner notre numero direct : 01 34 05 87 03.
-- Signer simplement "L'equipe IEF & CO" — la signature de l'utilisateur est ajoutee automatiquement, donc ne pas signer avec un prenom.
-- Ne pas inventer de prix, delais precis, ou engagements techniques.
+- Toujours commencer par "Bonjour {prénom}," (sans emoji).
+- Reformuler brièvement la demande pour montrer qu'on a bien lu.
+- Annoncer un prochain pas concret (rappel sous 24h, visite technique, devis chiffré, etc.).
+- Mentionner notre numéro direct : 01 34 05 87 03.
+- Signer simplement "L'équipe IEF & CO" — la signature de l'utilisateur est ajoutée automatiquement, donc ne pas signer avec un prénom.
+- Ne pas inventer de prix, délais précis, ou engagements techniques.
 - Pas d'emojis, pas de markdown, pas de **gras**, juste du texte brut paragraphes.`;
 
 function buildTemplate(lead: { firstName: string; service?: string | null; subject?: string | null }) {
@@ -38,12 +38,12 @@ function buildTemplate(lead: { firstName: string; service?: string | null; subje
 
 Merci pour votre message concernant ${subj}.
 
-Nous avons bien pris en compte votre demande. Un membre de notre equipe vous contactera dans les 24h pour discuter plus en detail de votre projet et organiser, si necessaire, une visite technique.
+Nous avons bien pris en compte votre demande. Un membre de notre équipe vous contactera dans les 24h pour discuter plus en détail de votre projet et organiser, si nécessaire, une visite technique.
 
-Dans l'intervalle, n'hesitez pas a nous joindre directement au 01 34 05 87 03.
+Dans l'intervalle, n'hésitez pas à nous joindre directement au 01 34 05 87 03.
 
 Cordialement,
-L'equipe IEF & CO`;
+L'équipe IEF & CO`;
 }
 
 export async function POST(req: Request) {
@@ -62,12 +62,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, draft: buildTemplate(lead), dev: true });
     }
 
-    const userPrompt = `Demande recue le ${new Date(lead.receivedAt).toLocaleDateString("fr-FR")}.
+    const userPrompt = `Demande reçue le ${new Date(lead.receivedAt).toLocaleDateString("fr-FR")}.
 Type : ${lead.type === "devis" ? "demande de devis" : "contact"}
-Prenom : ${lead.firstName}
+Prénom : ${lead.firstName}
 Nom : ${lead.lastName}
 ${lead.company ? `Entreprise : ${lead.company}` : ""}
-${lead.service ? `Service concerne : ${lead.service}` : ""}
+${lead.service ? `Service concerné : ${lead.service}` : ""}
 ${lead.subject ? `Sujet : ${lead.subject}` : ""}
 
 Message du client :
@@ -75,7 +75,7 @@ Message du client :
 ${lead.message}
 """
 
-Redige la reponse maintenant.`;
+Rédige la réponse maintenant.`;
 
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -101,7 +101,7 @@ Redige la reponse maintenant.`;
         ok: true,
         draft: buildTemplate(lead),
         dev: true,
-        warning: `Anthropic API a renvoye ${r.status}, fallback template utilise.`,
+        warning: `Anthropic API a renvoyé ${r.status}, fallback template utilisé.`,
       });
     }
 
@@ -115,7 +115,7 @@ Redige la reponse maintenant.`;
       .trim();
 
     if (!text) {
-      return NextResponse.json({ ok: true, draft: buildTemplate(lead), dev: true, warning: "Reponse vide, fallback utilise." });
+      return NextResponse.json({ ok: true, draft: buildTemplate(lead), dev: true, warning: "Réponse vide, fallback utilisé." });
     }
     return NextResponse.json({ ok: true, draft: text });
   } catch (e) {

@@ -8,30 +8,35 @@ export function generatePageMetadata(page: {
   title: string;
   description: string;
   path: string;
+  /** Optional override. If omitted, Next.js uses the closest opengraph-image.tsx (convention). */
   image?: string;
 }): Metadata {
   const url = `${baseUrl}${page.path}`;
-  const image = page.image || `${baseUrl}/og-default.jpg`;
+
+  const openGraph: NonNullable<Metadata["openGraph"]> = {
+    title: page.title,
+    description: page.description,
+    url,
+    siteName: "IEF & CO",
+    locale: "fr_FR",
+    type: "website",
+  };
+  const twitter: NonNullable<Metadata["twitter"]> = {
+    card: "summary_large_image",
+    title: page.title,
+    description: page.description,
+  };
+  if (page.image) {
+    openGraph.images = [{ url: page.image, width: 1200, height: 630, alt: page.title }];
+    twitter.images = [page.image];
+  }
 
   return {
     title: page.title,
     description: page.description,
     alternates: { canonical: url },
-    openGraph: {
-      title: page.title,
-      description: page.description,
-      url,
-      siteName: "IEF & CO",
-      images: [{ url: image, width: 1200, height: 630, alt: page.title }],
-      locale: "fr_FR",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: page.title,
-      description: page.description,
-      images: [image],
-    },
+    openGraph,
+    twitter,
   };
 }
 

@@ -8,11 +8,21 @@ import { navigation, secondaryNavigation, companyInfo } from "@/data/navigation"
 export function MobileMenu({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [onClose]);
 
   return (
     <motion.div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu de navigation"
       className="section-forge-dark fixed inset-0 z-[49] flex flex-col overflow-hidden"
       initial={{ x: "100%" }}
       animate={{ x: 0 }}
