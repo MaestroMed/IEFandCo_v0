@@ -19,14 +19,14 @@ export async function sendEmail({ subject, html, replyTo }: EmailPayload): Promi
   const toEmail = process.env.CONTACT_TO_EMAIL || "contact@iefandco.com";
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "noreply@iefandco.com";
 
-  // Dev fallback: log instead of sending
+  // Dev fallback: log metadata only (never PII / full HTML body)
   if (!apiKey) {
     console.log("[EMAIL — DEV MODE (no RESEND_API_KEY)]", {
       to: toEmail,
       from: fromEmail,
       replyTo,
       subject,
-      html,
+      htmlBytes: html.length,
     });
     return { ok: true };
   }

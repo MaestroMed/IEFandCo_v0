@@ -1,50 +1,74 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import * as schema from "./schema";
-import path from "node:path";
-import fs from "node:fs";
-
 /**
- * SQLite DB client.
+ * PostgreSQL DB client (Drizzle + postgres-js).
  *
- * - Local dev : writes to `.data/iefandco.db`
- * - Vercel serverless : writes to `/tmp/iefandco.db` (ephemeral — data lost on cold start)
- * - Vercel prod with real DB : set DATABASE_URL to `file:/tmp/...` or migrate to Turso/Postgres
+ * - Local dev : set DATABASE_URL to a Postgres URL (Supabase dev project,
+ *   local Docker, or any reachable Postgres).
+ * - Vercel prod : set DATABASE_URL to the Supabase prod connection string
+ *   (use the *Pooler* URL for serverless — port 6543, ?pgbouncer=true).
  *
- * The lazy init catches all filesystem errors so the build never crashes.
- * Queries will throw at runtime if the DB is unavailable, which is caught
- * by the content adapter (falls back to static data) for public pages.
+ * Lazy init : if DATABASE_URL is missing, queries throw at runtime. The
+ * content adapter (`src/lib/content.ts`) catches DB errors on public pages
+ * and falls back to static `src/data/*.ts` content, so the site keeps
+ * rendering even without a DB. Admin routes will surface the error.
  */
 
-function resolveDbPath(): string {
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+import * as schema from "./schema";
+
+type DrizzleClient = ReturnType<typeof drizzle<typeof schema>>;
+
+let _db: DrizzleClient | null = null;
+let _warned = false;
+
+function buildClient(): DrizzleClient {
   const url = process.env.DATABASE_URL;
-  if (url?.startsWith("file:")) return url.slice(5);
-
-  // On Vercel, cwd is read-only — use /tmp which is writable
-  const isVercel = !!process.env.VERCEL;
-  const baseDir = isVercel
-    ? "/tmp"
-    : path.join(process.cwd(), ".data");
-
-  return path.join(baseDir, "iefandco.db");
-}
-
-function initDb() {
-  const dbPath = resolveDbPath();
-  try {
-    const dir = path.dirname(dbPath);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    const sqlite = new Database(dbPath);
-    sqlite.pragma("journal_mode = WAL");
-    sqlite.pragma("foreign_keys = ON");
-    return drizzle(sqlite, { schema });
-  } catch (err) {
-    console.warn(`[db] Failed to initialize SQLite at ${dbPath}:`, err instanceof Error ? err.message : err);
-    // Return a proxy that throws on any query — the content adapter catches this
-    // and falls back to static data. Admin routes will show errors.
-    return drizzle(new Database(":memory:"), { schema });
+  if (!url) {
+    if (!_warned) {
+      console.warn(
+        "[db] DATABASE_URL is not set — DB queries will fail. Public pages fall back to src/data/*."
+      );
+      _warned = true;
+    }
+    throw new Error("DATABASE_URL is not configured");
   }
+
+  // Supabase pooled connection: PgBouncer requires `prepare: false`.
+  const isPooler = url.includes("pgbouncer=true") || url.includes(":6543");
+
+  const client = postgres(url, {
+    max: isPooler ? 1 : 5,
+    prepare: !isPooler,
+    idle_timeout: 20,
+    connect_timeout: 10,
+  });
+
+  return drizzle(client, { schema });
 }
 
-export const db = initDb();
+function getDb(): DrizzleClient {
+  if (_db) return _db;
+  _db = buildClient();
+  return _db;
+}
+
+/**
+ * Lazy proxy : `db.insert(...)` etc. forward to the real client only on
+ * first use. This keeps `import { db }` cheap at module-init time even
+ * when DATABASE_URL is missing (build, dev without DB, etc.).
+ */
+export const db = new Proxy({} as DrizzleClient, {
+  get(_target, prop, receiver) {
+    const client = getDb() as unknown as Record<string | symbol, unknown>;
+    const value = Reflect.get(client, prop, receiver);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
+
+/** True when DATABASE_URL is set. Use this in content adapters to skip DB
+ *  queries entirely when no DB is configured (avoids log noise in dev). */
+export function isDbConfigured(): boolean {
+  return !!process.env.DATABASE_URL;
+}
+
 export { schema };

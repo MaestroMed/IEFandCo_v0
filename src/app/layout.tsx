@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: {
     default:
       "IEF & CO | Métallerie Serrurerie Île-de-France — Groslay (95)",
-    template: "%s | IEF & CO — Métallerie Serrurerie",
+    template: "%s | IEF & CO",
   },
   description:
     "IEF & CO, expert en métallerie et serrurerie à Groslay (95). Fermetures industrielles, portails, structures métalliques, menuiserie, portes coupe-feu, automatismes et maintenance 24/7 en Île-de-France.",

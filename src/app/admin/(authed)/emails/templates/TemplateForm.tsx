@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Loader2, Trash2 } from "lucide-react";
+import DOMPurify from "isomorphic-dompurify";
 import { createTemplate, deleteTemplate, updateTemplate } from "../actions";
 import { DEFAULT_TEMPLATE_VARIABLES } from "../constants";
 
@@ -60,7 +61,10 @@ export function TemplateForm({ templateId, initial }: TemplateFormProps) {
   }, [form.variables]);
 
   const renderedSubject = useMemo(() => renderTemplate(form.subject, previewVars), [form.subject, previewVars]);
-  const renderedBody = useMemo(() => renderTemplate(form.bodyHtml, previewVars), [form.bodyHtml, previewVars]);
+  const renderedBody = useMemo(() => {
+    const raw = renderTemplate(form.bodyHtml, previewVars);
+    return DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
+  }, [form.bodyHtml, previewVars]);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();

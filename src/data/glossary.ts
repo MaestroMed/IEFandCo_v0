@@ -327,7 +327,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "L'inox 304 (X5CrNi18-10) est l'inox le plus courant en métallerie : composition 18% chrome + 8% nickel, excellente résistance à la corrosion atmosphérique et aux acides faibles. Utilisations : agroalimentaire général, mobilier urbain, garde-corps, ferronnerie d'art. L'inox 316 (X5CrNiMo17-12-2) ajoute 2-3% de molybdène, ce qui améliore considérablement la résistance à la corrosion par les chlorures (eau de mer, sels). Utilisations : milieu marin, piscines, agroalimentaire avec produits chlorés (charcuterie, fromage), industries chimiques. Coût : inox 316 environ +25% vs 304. En métallerie B2B, on utilise majoritairement le 304 sauf cas spécifique justifiant le 316.",
     related: ["haccp"],
-    relatedServices: ["menuiserie-metallique", "structures-metalliques"],
+    relatedServices: ["menuiserie-vitrerie", "structures-metalliques"],
   },
   {
     slug: "galvanisation",
@@ -357,7 +357,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "Le procédé TIG (Tungsten Inert Gas, ou GTAW) utilise une électrode non fusible en tungstène sous protection d'argon. Le métal d'apport est ajouté manuellement par l'opérateur via une baguette. Avantages : qualité de soudure exceptionnelle (aspect, étanchéité), précision sur faibles épaisseurs (0.5-5 mm), idéal pour inox et aluminium. Limites : productivité plus faible que MAG (3-5x plus lent), demande des soudeurs très qualifiés. En métallerie B2B, le TIG est utilisé sur : ferronnerie d'art, garde-corps inox, cuves agroalimentaires, ouvrages où l'esthétique de la soudure compte. Nos soudeurs TIG qualifiés EN ISO 9606 réalisent les ouvrages exigeants en finition inox.",
     related: ["wpqr", "soudure-mag"],
-    relatedServices: ["menuiserie-metallique", "structures-metalliques"],
+    relatedServices: ["menuiserie-vitrerie", "structures-metalliques"],
   },
   {
     slug: "garde-corps",
@@ -367,7 +367,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "Le garde-corps est un dispositif de protection collective imposé en bord de tout vide à plus de 1m de hauteur (escalier, mezzanine, terrasse, balcon). Norme française NF P01-012 : hauteur minimale 1m, charge horizontale résistible 60 daN/ml en privé (170 daN/ml en ERP), barreaudage vertical avec espacement <11 cm (anti-escalade enfants). Matériaux courants : acier galvanisé peint, acier laqué, aluminium, inox, verre feuilleté. Pour les ERP recevant des enfants, des règles renforcées s'appliquent (hauteur >1.20m, anti-escalade strict). En milieu industriel, la norme NF E85-015 régit les garde-corps techniques (mezzanines de production, passerelles).",
     related: ["inox-304-316"],
-    relatedServices: ["menuiserie-metallique", "structures-metalliques"],
+    relatedServices: ["menuiserie-vitrerie", "structures-metalliques"],
   },
   {
     slug: "auvent-metallique",
@@ -377,7 +377,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "L'auvent métallique est une toiture débordante (sans appui au sol côté extérieur) protégeant une entrée de bâtiment, un quai de chargement, une terrasse. Structure : poutres métalliques en porte-à-faux ou suspendues par tirants. Couverture : tôle ondulée, plaques polycarbonate, verre feuilleté trempé, panneaux composites. Dimensionnement Eurocode 1 (charges de neige selon zone) + Eurocode 3 (acier). Les auvents grande dimension (>5m de débord) nécessitent une note de calcul stabilité au vent. Application B2B : entrée principale tertiaire, quai de chargement protégé, zone fumeurs.",
     related: ["eurocode-3"],
-    relatedServices: ["structures-metalliques", "menuiserie-metallique"],
+    relatedServices: ["structures-metalliques", "menuiserie-vitrerie"],
   },
   {
     slug: "cles-organigrammees",
@@ -387,7 +387,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "Un organigramme de clés est une organisation hiérarchique permettant à une clé maîtresse d'ouvrir un ensemble de serrures, à des clés intermédiaires d'ouvrir des sous-ensembles, et à des clés individuelles de n'ouvrir que leur serrure dédiée. Très utilisé en B2B pour bâtiments tertiaires : la clé du DG ouvre tout, la clé d'un chef de service ouvre tous les bureaux de son service, chaque collaborateur n'a que sa clé personnelle. Conception sur plan, avec carte de propriété pour reproduction sécurisée des clés. Marques de référence : Vachette, Bricard, Heracles, Mul-T-Lock. Une refonte d'organigramme (suite à perte clé maîtresse) implique le remplacement de TOUS les cylindres — d'où l'importance de bien conserver les clés maîtresses.",
     related: [],
-    relatedServices: ["menuiserie-metallique"],
+    relatedServices: ["menuiserie-vitrerie"],
   },
   {
     slug: "verrouillage-electromecanique",
@@ -397,7 +397,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "Un verrouillage électromécanique est une serrure dont le pêne est commandé par un moteur électrique, ce qui permet son déverrouillage à distance via badge, code, lecteur biométrique ou bouton-poussoir. Types principaux : ventouses électromagnétiques (200-500 kg de force, fail-safe = ouvre en cas de coupure), serrures motorisées (gâche électrique avec sortie tournante), serrures à pêne dormant motorisé (plus sécurisé, fail-secure = reste fermé en cas de coupure). En contrôle d'accès B2B, on combine généralement avec un lecteur RFID (badge) et une centrale d'accès qui gère les droits par utilisateur et par horaire. Fail-safe pour les ERP (issue de secours), fail-secure pour les locaux sensibles (serveurs, archives).",
     related: ["fail-safe-fail-secure"],
-    relatedServices: ["menuiserie-metallique", "automatismes"],
+    relatedServices: ["menuiserie-vitrerie", "automatismes"],
   },
   {
     slug: "fail-safe-fail-secure",
@@ -407,7 +407,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "Fail-safe et fail-secure définissent le comportement par défaut d'une serrure électrique en cas de coupure d'alimentation. Fail-safe (sécurité positive) : la serrure s'ouvre automatiquement en cas de coupure — utilisé pour les issues de secours, où la priorité est la sortie en cas d'incendie. Fail-secure (sécurité négative) : la serrure reste verrouillée en cas de coupure — utilisé pour les locaux sensibles (serveurs, coffres, archives) où la priorité est la sécurité physique des biens. Le choix dépend du contexte : un ERP doit être en fail-safe sur les chemins d'évacuation (réglementation incendie), tandis qu'un local serveur doit être en fail-secure (politique de sécurité IT). Tout système électronique d'accès doit être doublé d'un système mécanique de secours.",
     related: ["verrouillage-electromecanique"],
-    relatedServices: ["menuiserie-metallique"],
+    relatedServices: ["menuiserie-vitrerie"],
   },
   {
     slug: "porte-blindee",
@@ -417,7 +417,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "Une porte blindée est conçue pour résister aux tentatives d'effraction : ouvrant en acier renforcé (3-4 mm d'épaisseur), serrure multipoints (3 à 7 points), cylindre haute sécurité, dormant renforcé scellé dans la maçonnerie. Classifications : A2P (norme française, niveaux BP1 / BP2 / BP3 selon temps de résistance), EN 1627 (norme européenne, classes RC1 à RC6). En B2B, les portes blindées sont utilisées pour : locaux serveurs / archives, postes de transformation EDF, coffres entreprises, locaux sensibles. Le marquage A2P ou RC est obligatoire pour la couverture d'assurance vol. Fournisseurs principaux : Fichet, Picard, Vachette, Bricard.",
     related: [],
-    relatedServices: ["menuiserie-metallique"],
+    relatedServices: ["menuiserie-vitrerie"],
   },
   {
     slug: "menuiserie-metallique",
@@ -427,7 +427,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "La menuiserie métallique regroupe l'ensemble des ouvrages métalliques de finition d'un bâtiment, par opposition à la grosse œuvre (charpente). Cela inclut : portes intérieures et extérieures (vitrées, pleines, blindées), fenêtres et baies, vérandas, garde-corps, mains courantes, vitrines, façades légères. Matériaux : acier (robustesse, économie), aluminium (légèreté, élégance, durée de vie), inox (haut de gamme, milieux corrosifs). Profilés courants : Schüco, Technal, Wicona pour aluminium ; Jansen, Forster pour acier (notamment coupe-feu). Notre activité menuiserie métallique chez IEF & CO porte principalement sur les portes professionnelles, vitrines commerciales, garde-corps tertiaires et clôtures architecturales.",
     related: ["inox-304-316", "garde-corps"],
-    relatedServices: ["menuiserie-metallique"],
+    relatedServices: ["menuiserie-vitrerie"],
   },
   {
     slug: "ferronnerie",
@@ -437,7 +437,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "La ferronnerie d'art est le travail artistique du fer (et plus largement de l'acier) pour créer des ouvrages décoratifs ou architecturaux : grilles, rampes d'escalier, balcons, marquises, enseignes, garde-corps, portails ouvragés. Techniques traditionnelles : forge à chaud, repoussage, ciselure, soudure à l'arc. La ferronnerie d'art est particulièrement présente dans la restauration de bâtiments anciens (immeubles haussmanniens, hôtels particuliers, monuments historiques). En zone classée Architecte des Bâtiments de France (ABF), les ouvrages de ferronnerie doivent respecter le caractère historique du bâtiment — les plans et matériaux sont validés par l'ABF avant réalisation. IEF & CO réalise des ouvrages de ferronnerie sur mesure pour la restauration patrimoniale parisienne et versaillaise.",
     related: [],
-    relatedServices: ["menuiserie-metallique"],
+    relatedServices: ["menuiserie-vitrerie"],
   },
   {
     slug: "controles-acces",
@@ -547,7 +547,7 @@ export const glossary: GlossaryTerm[] = [
     fullDef:
       "La garantie décennale est une obligation légale française (articles 1792 et suivants du Code civil) : tout constructeur d'ouvrage est responsable pendant 10 ans après réception des travaux des dommages compromettant la solidité de l'ouvrage ou le rendant impropre à sa destination. Elle s'applique aux structures métalliques, aux portes industrielles, aux ouvrages de menuiserie métallique du bâtiment. Toute entreprise du bâtiment doit souscrire une assurance décennale (RC Décennale) avant tout chantier. L'attestation d'assurance décennale doit être remise au client. IEF & CO dispose d'une RC Décennale couvrant l'ensemble de nos activités métallerie, attestation à jour disponible sur simple demande.",
     related: [],
-    relatedServices: ["structures-metalliques", "menuiserie-metallique"],
+    relatedServices: ["structures-metalliques", "menuiserie-vitrerie"],
   },
   {
     slug: "rgpd",

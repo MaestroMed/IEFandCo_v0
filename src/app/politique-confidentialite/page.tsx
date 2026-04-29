@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generatePageMetadata({
   title: "Politique de confidentialité",
-  description: "Politique de confidentialité du site IEF & CO.",
-};
+  description: "Politique de confidentialité du site IEF & CO — données collectées, durée, droits RGPD, cookies.",
+  path: "/politique-confidentialite",
+});
 
 export default function PolitiqueConfidentialite() {
   return (

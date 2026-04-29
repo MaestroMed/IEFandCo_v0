@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db, schema } from "@/db";
 import { sendEmail, escapeHtml } from "@/lib/email";
+import { rateLimit, checkOrigin } from "@/lib/rate-limit";
 import { randomBytes } from "node:crypto";
 
 interface ContactPayload {
@@ -18,6 +19,17 @@ function cuid() {
 }
 
 export async function POST(req: Request) {
+  if (!checkOrigin(req)) {
+    return NextResponse.json({ ok: false, error: "Origine non autorisée" }, { status: 403 });
+  }
+  const rl = await rateLimit(req, "contact", { max: 5, windowSec: 60 });
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { ok: false, error: "Trop de tentatives. Réessayez dans une minute." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter || 60) } }
+    );
+  }
+
   try {
     const body = (await req.json()) as ContactPayload;
 

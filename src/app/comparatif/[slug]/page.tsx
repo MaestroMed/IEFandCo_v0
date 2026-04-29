@@ -286,9 +286,15 @@ export default async function ComparatorPage({
               boxShadow: "var(--card-shadow-hover)",
             }}
           >
-            <p className="text-base md:text-lg leading-[1.7]" style={{ color: "var(--text)" }}
-               dangerouslySetInnerHTML={{ __html: comp.verdict.replace(/\*\*(.*?)\*\*/g, '<strong style="color: var(--color-primary)">$1</strong>') }}
-            />
+            <p className="text-base md:text-lg leading-[1.7]" style={{ color: "var(--text)" }}>
+              {comp.verdict.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+                part.startsWith("**") && part.endsWith("**") ? (
+                  <strong key={i} style={{ color: "var(--color-primary)" }}>{part.slice(2, -2)}</strong>
+                ) : (
+                  <span key={i}>{part}</span>
+                )
+              )}
+            </p>
           </div>
         </div>
       </section>

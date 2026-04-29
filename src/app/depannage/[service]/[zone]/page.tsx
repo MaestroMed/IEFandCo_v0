@@ -28,7 +28,7 @@ export async function generateMetadata({
   const z = getZoneBySlug(zone);
   if (!s || !z) return {};
   return generatePageMetadata({
-    title: `Dépannage ${s.label.toLowerCase()} ${z.name} (${z.code}) — SLA ${z.slaUrgence}`,
+    title: `Dépannage ${s.label} dans le ${z.code} (${z.name})`,
     description: `Dépannage d'urgence ${s.label.toLowerCase()} dans le ${z.code} sous contrat IEF & CO : intervention sous ${z.slaUrgence}, stock pièces permanent, toutes marques. Devis gratuit.`,
     path: `/depannage/${s.slug}/${z.slug}`,
   });

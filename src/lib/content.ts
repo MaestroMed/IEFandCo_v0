@@ -10,7 +10,7 @@
  */
 
 import "server-only";
-import { db, schema } from "@/db";
+import { db, schema, isDbConfigured } from "@/db";
 import { eq, asc, desc } from "drizzle-orm";
 
 import { services as staticServices, type Service } from "@/data/services";
@@ -36,6 +36,7 @@ async function getMediaUrlMap(mediaIds: (string | null | undefined)[]): Promise<
 /* ─────────── Services ─────────── */
 
 export async function getServices(): Promise<Service[]> {
+  if (!isDbConfigured()) return staticServices;
   try {
     const dbRows = await db
       .select()
@@ -106,6 +107,7 @@ export async function getRelatedServices(slug: string, limit = 3): Promise<Servi
 /* ─────────── Testimonials ─────────── */
 
 export async function getTestimonials(): Promise<Testimonial[]> {
+  if (!isDbConfigured()) return staticTestimonials;
   try {
     const rows = await db
       .select()
@@ -131,6 +133,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 /* ─────────── Clients ─────────── */
 
 export async function getClients(): Promise<Client[]> {
+  if (!isDbConfigured()) return staticClients;
   try {
     const rows = await db
       .select()
@@ -155,6 +158,7 @@ export async function getClients(): Promise<Client[]> {
 /* ─────────── Homepage FAQ ─────────── */
 
 export async function getHomepageFAQ(): Promise<FAQItem[]> {
+  if (!isDbConfigured()) return staticHomepageFAQ;
   try {
     const rows = await db
       .select()
@@ -189,6 +193,7 @@ const staticTeam: TeamMember[] = [
 ];
 
 export async function getTeam(): Promise<TeamMember[]> {
+  if (!isDbConfigured()) return staticTeam;
   try {
     const rows = await db
       .select()
@@ -242,6 +247,7 @@ function fmtDateFr(d: Date): string {
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
+  if (!isDbConfigured()) return staticBlogPosts;
   try {
     const rows = await db
       .select()
@@ -281,6 +287,7 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefi
 /* ─────────── Realisations / Projects ─────────── */
 
 export async function getRealisations(): Promise<Realisation[]> {
+  if (!isDbConfigured()) return staticRealisations;
   try {
     const rows = await db
       .select()
