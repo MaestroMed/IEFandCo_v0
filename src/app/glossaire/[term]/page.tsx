@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { glossary, getTermBySlug } from "@/data/glossary";
+import { glossary as staticGlossary } from "@/data/glossary";
 import { services } from "@/data/services";
+import { getGlossary, getGlossaryTermBySlug } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export function generateStaticParams() {
-  return glossary.map((t) => ({ term: t.slug }));
+  return staticGlossary.map((t) => ({ term: t.slug }));
 }
 
 export async function generateMetadata({
@@ -17,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ term: string }>;
 }): Promise<Metadata> {
   const { term } = await params;
-  const t = getTermBySlug(term);
+  const t = await getGlossaryTermBySlug(term);
   if (!t) return {};
   return generatePageMetadata({
     title: `${t.term} — définition métallerie`,
@@ -32,7 +33,10 @@ export default async function GlossaryTermPage({
   params: Promise<{ term: string }>;
 }) {
   const { term } = await params;
-  const t = getTermBySlug(term);
+  const [t, glossary] = await Promise.all([
+    getGlossaryTermBySlug(term),
+    getGlossary(),
+  ]);
   if (!t) notFound();
 
   const breadcrumb = generateBreadcrumbSchema([
@@ -56,7 +60,7 @@ export default async function GlossaryTermPage({
 
   // Get related terms
   const relatedTerms = (t.related || [])
-    .map((slug) => getTermBySlug(slug))
+    .map((slug) => glossary.find((x) => x.slug === slug))
     .filter((x): x is NonNullable<typeof x> => Boolean(x));
 
   return (

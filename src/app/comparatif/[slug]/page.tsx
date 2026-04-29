@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { comparatifs, getComparatorBySlug } from "@/data/comparatifs";
+import { comparatifs as staticComparatifs } from "@/data/comparatifs";
+import { getComparators, getComparatorBySlug } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export function generateStaticParams() {
-  return comparatifs.map((c) => ({ slug: c.slug }));
+  return staticComparatifs.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({
@@ -17,7 +18,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const c = getComparatorBySlug(slug);
+  const c = await getComparatorBySlug(slug);
   if (!c) return {};
   return generatePageMetadata({
     title: c.seo.title,
@@ -32,7 +33,10 @@ export default async function ComparatorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const comp = getComparatorBySlug(slug);
+  const [comp, comparatifs] = await Promise.all([
+    getComparatorBySlug(slug),
+    getComparators(),
+  ]);
   if (!comp) notFound();
 
   const breadcrumb = generateBreadcrumbSchema([

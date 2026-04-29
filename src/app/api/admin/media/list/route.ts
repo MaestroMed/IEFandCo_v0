@@ -45,7 +45,14 @@ export async function GET(req: Request) {
     );
   }
   if (mimeFilter) {
-    filters.push(like(schema.media.mime, `${mimeFilter}%`));
+    // mimeFilter can be a single prefix ("image/") or comma-separated list
+    // ("image/,video/"). Match any.
+    const prefixes = mimeFilter.split(",").map((s) => s.trim()).filter(Boolean);
+    if (prefixes.length === 1) {
+      filters.push(like(schema.media.mime, `${prefixes[0]}%`));
+    } else if (prefixes.length > 1) {
+      filters.push(or(...prefixes.map((p) => like(schema.media.mime, `${p}%`))));
+    }
   }
 
   const rows = await db

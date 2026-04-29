@@ -11,7 +11,7 @@
 
 import "server-only";
 import { db, schema, isDbConfigured } from "@/db";
-import { eq, asc, desc } from "drizzle-orm";
+import { eq, asc, desc, inArray } from "drizzle-orm";
 
 import { services as staticServices, type Service } from "@/data/services";
 import { testimonials as staticTestimonials, type Testimonial } from "@/data/testimonials";
@@ -19,6 +19,11 @@ import { clients as staticClients, type Client } from "@/data/clients";
 import { homepageFAQ as staticHomepageFAQ, type FAQItem } from "@/data/faq";
 import { blogPosts as staticBlogPosts, type BlogPost } from "@/data/blog";
 import { realisations as staticRealisations, type Realisation } from "@/data/realisations";
+import { glossary as staticGlossary, type GlossaryTerm } from "@/data/glossary";
+import { zones as staticZones, type Zone } from "@/data/zones";
+import { brands as staticBrands, type Brand } from "@/data/brands";
+import { comparatifs as staticComparatifs, type Comparator } from "@/data/comparatifs";
+import { depannageServices as staticDepannageServices, type DepannageService } from "@/data/depannage";
 
 /* ─────────── Helpers ─────────── */
 
@@ -28,6 +33,31 @@ async function getMediaUrlMap(mediaIds: (string | null | undefined)[]): Promise<
   try {
     const rows = await db.select({ id: schema.media.id, url: schema.media.url }).from(schema.media);
     return new Map(rows.filter((r) => ids.includes(r.id)).map((r) => [r.id, r.url]));
+  } catch {
+    return new Map();
+  }
+}
+
+interface MediaMeta {
+  url: string;
+  mime: string;
+  alt: string | null;
+  width: number | null;
+  height: number | null;
+  caption?: string | null;
+}
+
+async function getMediaMetaMap(mediaIds: (string | null | undefined)[]): Promise<Map<string, MediaMeta>> {
+  const ids = Array.from(new Set(mediaIds.filter((id): id is string => Boolean(id))));
+  if (ids.length === 0) return new Map();
+  try {
+    const rows = await db.select().from(schema.media).where(inArray(schema.media.id, ids));
+    return new Map(
+      rows.map((r) => [
+        r.id,
+        { url: r.url, mime: r.mime, alt: r.alt, width: r.width, height: r.height },
+      ]),
+    );
   } catch {
     return new Map();
   }
@@ -51,6 +81,7 @@ export async function getServices(): Promise<Service[]> {
       .select()
       .from(schema.serviceFaqs)
       .where(eq(schema.serviceFaqs.scope, "service"));
+    const mediaMap = await getMediaMetaMap(dbRows.map((r) => r.coverMediaId));
 
     return dbRows.map((s) => {
       const fallback = staticServices.find((x) => x.slug === s.slug);
@@ -62,6 +93,7 @@ export async function getServices(): Promise<Service[]> {
         .filter((f) => f.serviceId === s.id)
         .sort((a, b) => a.orderIdx - b.orderIdx)
         .map(({ question, answer }) => ({ question, answer }));
+      const cover = s.coverMediaId ? mediaMap.get(s.coverMediaId) : undefined;
 
       return {
         slug: s.slug,
@@ -74,6 +106,9 @@ export async function getServices(): Promise<Service[]> {
         subServices: subs.length > 0 ? subs : (fallback?.subServices || []),
         faq: faqs.length > 0 ? faqs : (fallback?.faq || []),
         relatedSlugs: fallback?.relatedSlugs || [],
+        coverUrl: cover?.url,
+        coverMime: cover?.mime,
+        coverAlt: cover?.alt || s.title,
         seo: {
           title: s.seoTitle || fallback?.seo.title || s.title,
           description: s.seoDescription || fallback?.seo.description || s.shortDescription,
@@ -257,10 +292,13 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 
     if (rows.length === 0) return staticBlogPosts;
 
+    const mediaMap = await getMediaMetaMap(rows.map((r) => r.coverMediaId));
+
     return rows.map((r) => {
       const fallback = staticBlogPosts.find((p) => p.slug === r.slug);
       const date = r.publishedAt || new Date();
       const html = r.contentHtml || "";
+      const cover = r.coverMediaId ? mediaMap.get(r.coverMediaId) : undefined;
       return {
         slug: r.slug,
         title: r.title,
@@ -271,6 +309,11 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
         author: "IEF & CO",
         readingMinutes: r.readingMinutes || 5,
         sections: html ? htmlToSections(html) : (fallback?.sections || []),
+        coverUrl: cover?.url,
+        coverMime: cover?.mime,
+        coverAlt: cover?.alt || r.title,
+        seoTitle: r.seoTitle || fallback?.seoTitle,
+        seoDescription: r.seoDescription || fallback?.seoDescription,
       };
     });
   } catch (err) {
@@ -297,23 +340,410 @@ export async function getRealisations(): Promise<Realisation[]> {
 
     if (rows.length === 0) return staticRealisations;
 
+    const mediaMap = await getMediaMetaMap(rows.map((r) => r.coverMediaId));
+
     return rows.map((r) => {
       const fallback = staticRealisations.find((p) => p.slug === r.slug);
+      const cover = r.coverMediaId ? mediaMap.get(r.coverMediaId) : undefined;
       return {
         slug: r.slug,
         title: r.title,
-        category: (r.category as Realisation["category"]) || "structures",
+        category: (r.category as Realisation["category"]) || fallback?.category || "structures",
         client: r.clientName || fallback?.client || "—",
         year: r.year || fallback?.year || new Date().getFullYear(),
         location: r.location || fallback?.location || "Île-de-France",
         description: r.description || fallback?.description || "",
         highlight: r.highlight || fallback?.highlight || "",
+        // Rich case-study fields fall back to static (until projects schema gains them)
+        tagline: fallback?.tagline,
+        challenge: r.challenge || fallback?.challenge,
+        solution: r.solution || fallback?.solution,
+        result: r.result || fallback?.result,
+        kpis: fallback?.kpis,
+        phases: fallback?.phases,
+        specs: fallback?.specs,
+        standards: fallback?.standards,
+        testimonial: fallback?.testimonial,
+        seoTitle: r.seoTitle || fallback?.seoTitle,
+        seoDescription: r.seoDescription || fallback?.seoDescription,
+        coverUrl: cover?.url,
+        coverMime: cover?.mime,
+        coverAlt: cover?.alt || r.title,
       };
     });
   } catch (err) {
     console.warn("[content] getRealisations failed, falling back to static:", err);
     return staticRealisations;
   }
+}
+
+export async function getRealisationBySlug(slug: string): Promise<Realisation | undefined> {
+  const all = await getRealisations();
+  return all.find((p) => p.slug === slug);
+}
+
+/**
+ * Returns the gallery (multi-image) for a project, in order. Used in
+ * /realisations/[slug]. Falls back to empty array if the project has no
+ * extra images.
+ */
+export async function getProjectGallery(projectSlug: string): Promise<MediaMeta[]> {
+  if (!isDbConfigured()) return [];
+  try {
+    const project = (
+      await db.select().from(schema.projects).where(eq(schema.projects.slug, projectSlug)).limit(1)
+    )[0];
+    if (!project) return [];
+
+    const imgRows = await db
+      .select()
+      .from(schema.projectImages)
+      .where(eq(schema.projectImages.projectId, project.id))
+      .orderBy(asc(schema.projectImages.orderIdx));
+    if (imgRows.length === 0) return [];
+
+    const mediaMap = await getMediaMetaMap(imgRows.map((i) => i.mediaId));
+    const out: MediaMeta[] = [];
+    for (const i of imgRows) {
+      const m = mediaMap.get(i.mediaId);
+      if (!m) continue;
+      out.push({ ...m, caption: i.caption });
+    }
+    return out;
+  } catch (err) {
+    console.warn("[content] getProjectGallery failed:", err);
+    return [];
+  }
+}
+
+/* ─────────── Homepage Hero (singleton) ─────────── */
+
+export interface HeroConfig {
+  enabled: boolean;
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  ctaPrimaryLabel?: string;
+  ctaPrimaryHref?: string;
+  ctaSecondaryLabel?: string;
+  ctaSecondaryHref?: string;
+  mediaUrl?: string;
+  mediaMime?: string;
+  posterUrl?: string;
+  overlayOpacity: number;
+}
+
+export async function getHomepageHero(): Promise<HeroConfig | null> {
+  if (!isDbConfigured()) return null;
+  try {
+    const row = (
+      await db.select().from(schema.homepageHero).where(eq(schema.homepageHero.id, "default")).limit(1)
+    )[0];
+    if (!row || !row.enabled) return null;
+
+    const ids = [row.mediaId, row.posterMediaId].filter((x): x is string => Boolean(x));
+    const mediaMap = ids.length > 0 ? await getMediaMetaMap(ids) : new Map<string, MediaMeta>();
+    const main = row.mediaId ? mediaMap.get(row.mediaId) : undefined;
+    const poster = row.posterMediaId ? mediaMap.get(row.posterMediaId) : undefined;
+
+    return {
+      enabled: true,
+      eyebrow: row.eyebrow ?? undefined,
+      title: row.title ?? undefined,
+      subtitle: row.subtitle ?? undefined,
+      ctaPrimaryLabel: row.ctaPrimaryLabel ?? undefined,
+      ctaPrimaryHref: row.ctaPrimaryHref ?? undefined,
+      ctaSecondaryLabel: row.ctaSecondaryLabel ?? undefined,
+      ctaSecondaryHref: row.ctaSecondaryHref ?? undefined,
+      mediaUrl: main?.url,
+      mediaMime: main?.mime,
+      posterUrl: poster?.url,
+      overlayOpacity: row.overlayOpacity ?? 50,
+    };
+  } catch (err) {
+    console.warn("[content] getHomepageHero failed:", err);
+    return null;
+  }
+}
+
+/* ─────────── Page SEO (per-page overrides for static pages) ─────────── */
+
+export interface PageSeoOverride {
+  title?: string;
+  description?: string;
+  ogImageUrl?: string;
+}
+
+export async function getPageSeo(key: string): Promise<PageSeoOverride | null> {
+  if (!isDbConfigured()) return null;
+  try {
+    const row = (
+      await db.select().from(schema.pageSeo).where(eq(schema.pageSeo.key, key)).limit(1)
+    )[0];
+    if (!row) return null;
+    let ogImageUrl: string | undefined;
+    if (row.ogMediaId) {
+      const m = await getMediaMetaMap([row.ogMediaId]);
+      ogImageUrl = m.get(row.ogMediaId)?.url;
+    }
+    return {
+      title: row.title || undefined,
+      description: row.description || undefined,
+      ogImageUrl,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* ─────────── Glossary ─────────── */
+
+export async function getGlossary(): Promise<GlossaryTerm[]> {
+  if (!isDbConfigured()) return staticGlossary;
+  try {
+    const rows = await db
+      .select()
+      .from(schema.glossaryTerms)
+      .where(eq(schema.glossaryTerms.visible, true))
+      .orderBy(asc(schema.glossaryTerms.orderIdx), asc(schema.glossaryTerms.term));
+    if (rows.length === 0) return staticGlossary;
+    return rows.map((r) => ({
+      slug: r.slug,
+      term: r.term,
+      category: r.category,
+      shortDef: r.shortDef,
+      fullDef: r.fullDef,
+      related: r.relatedSlugs ? r.relatedSlugs.split(",").map((s) => s.trim()).filter(Boolean) : undefined,
+      relatedServices: r.relatedServices
+        ? r.relatedServices.split(",").map((s) => s.trim()).filter(Boolean)
+        : undefined,
+    }));
+  } catch (err) {
+    console.warn("[content] getGlossary failed:", err);
+    return staticGlossary;
+  }
+}
+
+export async function getGlossaryTermBySlug(slug: string): Promise<GlossaryTerm | undefined> {
+  const all = await getGlossary();
+  return all.find((t) => t.slug === slug);
+}
+
+/* ─────────── Zones ─────────── */
+
+export async function getZones(): Promise<Zone[]> {
+  if (!isDbConfigured()) return staticZones;
+  try {
+    const rows = await db
+      .select()
+      .from(schema.zones)
+      .where(eq(schema.zones.visible, true))
+      .orderBy(asc(schema.zones.orderIdx));
+    if (rows.length === 0) return staticZones;
+    return rows.map((r) => {
+      const fallback = staticZones.find((z) => z.slug === r.slug);
+      const parseJson = <T>(s: string | null, fb: T): T => {
+        if (!s) return fb;
+        try {
+          return JSON.parse(s) as T;
+        } catch {
+          return fb;
+        }
+      };
+      return {
+        slug: r.slug,
+        name: r.name,
+        code: r.code,
+        region: r.region,
+        tagline: r.tagline,
+        intro: r.intro,
+        cities: r.cities ? r.cities.split(",").map((s) => s.trim()).filter(Boolean) : (fallback?.cities ?? []),
+        slaUrgence: r.slaUrgence,
+        slaStandard: r.slaStandard,
+        hubs: r.hubs ? r.hubs.split(",").map((s) => s.trim()).filter(Boolean) : (fallback?.hubs ?? []),
+        kpis: parseJson(r.kpisJson, fallback?.kpis ?? []),
+        testimonial: parseJson(r.testimonialJson, fallback?.testimonial),
+        faq: parseJson(r.faqJson, fallback?.faq ?? []),
+        center: {
+          lat: r.centerLat ? Number(r.centerLat) : (fallback?.center.lat ?? 48.8566),
+          lng: r.centerLng ? Number(r.centerLng) : (fallback?.center.lng ?? 2.3522),
+        },
+        seo: {
+          title: r.seoTitle || fallback?.seo.title || `${r.name} (${r.code}) — IEF & CO`,
+          description: r.seoDescription || fallback?.seo.description || r.tagline,
+        },
+      };
+    });
+  } catch (err) {
+    console.warn("[content] getZones failed:", err);
+    return staticZones;
+  }
+}
+
+export async function getZoneBySlug(slug: string): Promise<Zone | undefined> {
+  const all = await getZones();
+  return all.find((z) => z.slug === slug);
+}
+
+/* ─────────── Maintenance brands ─────────── */
+
+export async function getBrands(): Promise<Brand[]> {
+  if (!isDbConfigured()) return staticBrands;
+  try {
+    const rows = await db
+      .select()
+      .from(schema.maintenanceBrands)
+      .where(eq(schema.maintenanceBrands.visible, true))
+      .orderBy(asc(schema.maintenanceBrands.orderIdx));
+    if (rows.length === 0) return staticBrands;
+    const parseJson = <T>(s: string | null, fb: T): T => {
+      if (!s) return fb;
+      try {
+        return JSON.parse(s) as T;
+      } catch {
+        return fb;
+      }
+    };
+    return rows.map((r) => {
+      const fallback = staticBrands.find((b) => b.slug === r.slug);
+      return {
+        slug: r.slug,
+        name: r.name,
+        tagline: r.tagline,
+        intro: r.intro,
+        products: parseJson(r.productsJson, fallback?.products ?? []),
+        commonFailures: parseJson(r.failuresJson, fallback?.commonFailures ?? []),
+        advantages: parseJson(r.strengthsJson, fallback?.advantages ?? []),
+        partsInStock: fallback?.partsInStock ?? [],
+        faq: parseJson(r.faqJson, fallback?.faq ?? []),
+        accentColor: r.accentColor || fallback?.accentColor || "196, 133, 92",
+        seo: {
+          title: r.seoTitle || fallback?.seo.title || `Maintenance ${r.name} — IEF & CO`,
+          description: r.seoDescription || fallback?.seo.description || r.tagline,
+        },
+      };
+    });
+  } catch (err) {
+    console.warn("[content] getBrands failed:", err);
+    return staticBrands;
+  }
+}
+
+export async function getBrandBySlug(slug: string): Promise<Brand | undefined> {
+  const all = await getBrands();
+  return all.find((b) => b.slug === slug);
+}
+
+/* ─────────── Comparators ─────────── */
+
+export async function getComparators(): Promise<Comparator[]> {
+  if (!isDbConfigured()) return staticComparatifs;
+  try {
+    const rows = await db
+      .select()
+      .from(schema.comparators)
+      .where(eq(schema.comparators.visible, true))
+      .orderBy(asc(schema.comparators.orderIdx));
+    if (rows.length === 0) return staticComparatifs;
+
+    const ids = rows.map((r) => r.id);
+    const allRowsT = await db.select().from(schema.comparatorRows).where(inArray(schema.comparatorRows.comparatorId, ids));
+    const allUseCases = await db.select().from(schema.comparatorUseCases).where(inArray(schema.comparatorUseCases.comparatorId, ids));
+    const allFaqs = await db.select().from(schema.comparatorFaqs).where(inArray(schema.comparatorFaqs.comparatorId, ids));
+
+    return rows.map((r) => {
+      const fallback = staticComparatifs.find((c) => c.slug === r.slug);
+      return {
+        slug: r.slug,
+        title: r.title,
+        optionAName: r.optionAName,
+        optionBName: r.optionBName,
+        tagline: r.tagline,
+        intro: r.intro,
+        verdict: r.verdict,
+        category: r.category as Comparator["category"],
+        accent: r.accent,
+        rows: allRowsT
+          .filter((x) => x.comparatorId === r.id)
+          .sort((a, b) => a.orderIdx - b.orderIdx)
+          .map((x) => ({ criterion: x.criterion, optionA: x.optionA, optionB: x.optionB, winner: x.winner })),
+        useCases: allUseCases
+          .filter((x) => x.comparatorId === r.id)
+          .sort((a, b) => a.orderIdx - b.orderIdx)
+          .map((x) => ({ scenario: x.scenario, recommendation: x.recommendation, reason: x.reason })),
+        faq: allFaqs
+          .filter((x) => x.comparatorId === r.id)
+          .sort((a, b) => a.orderIdx - b.orderIdx)
+          .map((x) => ({ question: x.question, answer: x.answer })),
+        seo: {
+          title: r.seoTitle || fallback?.seo.title || r.title,
+          description: r.seoDescription || fallback?.seo.description || r.tagline,
+        },
+      };
+    });
+  } catch (err) {
+    console.warn("[content] getComparators failed:", err);
+    return staticComparatifs;
+  }
+}
+
+export async function getComparatorBySlug(slug: string): Promise<Comparator | undefined> {
+  const all = await getComparators();
+  return all.find((c) => c.slug === slug);
+}
+
+/* ─────────── Dépannage services ─────────── */
+
+export async function getDepannageServices(): Promise<DepannageService[]> {
+  if (!isDbConfigured()) return staticDepannageServices;
+  try {
+    const rows = await db
+      .select()
+      .from(schema.depannageServices)
+      .where(eq(schema.depannageServices.visible, true))
+      .orderBy(asc(schema.depannageServices.orderIdx));
+    if (rows.length === 0) return staticDepannageServices;
+    const parseJson = <T>(s: string | null, fb: T): T => {
+      if (!s) return fb;
+      try {
+        return JSON.parse(s) as T;
+      } catch {
+        return fb;
+      }
+    };
+    return rows.map((r) => {
+      const fallback = staticDepannageServices.find((d) => d.slug === r.slug);
+      return {
+        slug: r.slug,
+        label: r.label,
+        title: fallback?.title || `Dépannage ${r.label} industrielle`,
+        tagline: r.tagline,
+        intro: r.intro,
+        businessImpact: r.businessImpact,
+        accentColor: r.accentColor,
+        brands: r.brands ? r.brands.split(",").map((s) => s.trim()).filter(Boolean) : (fallback?.brands ?? []),
+        commonFailures: parseJson(r.failuresJson, fallback?.commonFailures ?? []),
+        partsInStock: r.partsInStock
+          ? r.partsInStock.split(",").map((s) => s.trim()).filter(Boolean)
+          : (fallback?.partsInStock ?? []),
+        relatedServices: r.relatedServices
+          ? r.relatedServices.split(",").map((s) => s.trim()).filter(Boolean)
+          : (fallback?.relatedServices ?? []),
+        seo: {
+          title: r.seoTitle || fallback?.seo.title || `Dépannage ${r.label} — IEF & CO`,
+          description: r.seoDescription || fallback?.seo.description || r.tagline,
+        },
+      };
+    });
+  } catch (err) {
+    console.warn("[content] getDepannageServices failed:", err);
+    return staticDepannageServices;
+  }
+}
+
+export async function getDepannageService(slug: string): Promise<DepannageService | undefined> {
+  const all = await getDepannageServices();
+  return all.find((d) => d.slug === slug);
 }
 
 /* ─────────── Static slugs (for generateStaticParams at build) ─────────── */

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/home/HeroSection";
+import { ConfiguredHero } from "@/components/home/ConfiguredHero";
 import { TrustStrip } from "@/components/home/TrustStrip";
 import { ServicesGrid } from "@/components/home/ServicesGrid";
 import { BureauEtude } from "@/components/home/BureauEtude";
@@ -10,7 +11,7 @@ import { GoogleReviews } from "@/components/home/GoogleReviews";
 import { FAQSection } from "@/components/home/FAQSection";
 import { Newsletter } from "@/components/home/Newsletter";
 import { ContactCTA } from "@/components/home/ContactCTA";
-import { getServices, getTestimonials, getClients, getHomepageFAQ } from "@/lib/content";
+import { getServices, getTestimonials, getClients, getHomepageFAQ, getHomepageHero } from "@/lib/content";
 
 const HOME_TITLE = "IEF & CO | Métallerie Serrurerie Île-de-France — Groslay (95)";
 const HOME_DESCRIPTION =
@@ -38,16 +39,17 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [services, testimonials, clients, homepageFAQ] = await Promise.all([
+  const [services, testimonials, clients, homepageFAQ, hero] = await Promise.all([
     getServices(),
     getTestimonials(),
     getClients(),
     getHomepageFAQ(),
+    getHomepageHero(),
   ]);
 
   return (
     <>
-      <HeroSection />
+      {hero ? <ConfiguredHero {...hero} /> : <HeroSection />}
       <TrustStrip />
       <ServicesGrid services={services} />
       <BureauEtude />

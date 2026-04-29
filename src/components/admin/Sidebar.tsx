@@ -8,7 +8,7 @@ import {
   Users, MessageSquare, Building2, Image as ImageIcon,
   Calendar, Mail,
   Search, Settings, UserCog, History,
-  LogOut,
+  LogOut, Layers, BookOpen, MapPin, Award, Scale, Zap,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -37,6 +37,19 @@ const nav = [
   { href: "/admin/settings", icon: Settings, label: "Parametres" },
   { href: "/admin/users", icon: UserCog, label: "Utilisateurs" },
   { href: "/admin/audit", icon: History, label: "Audit" },
+];
+
+const siteNav = [
+  { href: "/admin/site/hero", icon: Layers, label: "Hero" },
+  { href: "/admin/site/page-seo", icon: Settings, label: "SEO pages" },
+];
+
+const seoContentNav = [
+  { href: "/admin/content/glossary", icon: BookOpen, label: "Glossaire" },
+  { href: "/admin/content/zones", icon: MapPin, label: "Zones" },
+  { href: "/admin/content/brands", icon: Award, label: "Marques" },
+  { href: "/admin/content/comparators", icon: Scale, label: "Comparatifs" },
+  { href: "/admin/content/depannage", icon: Zap, label: "Depannage" },
 ];
 
 export function Sidebar({ userName, userRole }: SidebarProps) {
@@ -110,6 +123,56 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
           {nav.slice(7, 11).map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+                  style={{
+                    background: active ? "var(--bg-muted)" : "transparent",
+                    color: active ? "var(--text)" : "var(--text-secondary)",
+                  }}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="mt-6 mb-2 px-2 font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
+          Site
+        </div>
+        <ul className="space-y-0.5">
+          {siteNav.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href || pathname.startsWith(item.href);
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+                  style={{
+                    background: active ? "var(--bg-muted)" : "transparent",
+                    color: active ? "var(--text)" : "var(--text-secondary)",
+                  }}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="mt-6 mb-2 px-2 font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
+          Contenu SEO
+        </div>
+        <ul className="space-y-0.5">
+          {seoContentNav.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href || pathname.startsWith(item.href);
             return (
               <li key={item.href}>
                 <Link

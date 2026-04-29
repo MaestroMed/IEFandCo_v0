@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Check, Loader2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SeoPreview } from "@/components/admin/SeoPreview";
+import { MediaPicker } from "@/components/admin/MediaPicker";
 import {
   updateService,
   addSubService,
@@ -31,6 +32,7 @@ type Service = {
   visible: boolean;
   seoTitle: string | null;
   seoDescription: string | null;
+  coverMediaId: string | null;
 };
 
 type SubServiceRow = { id: string; title: string; description: string; orderIdx: number };
@@ -55,6 +57,7 @@ const contentSchema = z.object({
   accentColor: z.string().optional(),
   orderIdx: z.string().optional(),
   visible: z.boolean().optional(),
+  coverMediaId: z.string().optional(),
 });
 
 const seoSchema = z.object({
@@ -111,7 +114,7 @@ function ContentTab({ service }: { service: Service }) {
   const [pending, start] = useTransition();
   const [saved, setSaved] = useState(false);
   type V = z.infer<typeof contentSchema>;
-  const { register, handleSubmit, formState: { errors } } = useForm<V>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<V>({
     resolver: zodResolver(contentSchema),
     defaultValues: {
       title: service.title,
@@ -122,6 +125,7 @@ function ContentTab({ service }: { service: Service }) {
       accentColor: service.accentColor || "",
       orderIdx: String(service.orderIdx),
       visible: service.visible,
+      coverMediaId: service.coverMediaId || "",
     },
   });
 
@@ -133,6 +137,7 @@ function ContentTab({ service }: { service: Service }) {
         visible: !!values.visible,
         seoTitle: service.seoTitle,
         seoDescription: service.seoDescription,
+        coverMediaId: values.coverMediaId || null,
       });
       if (res.ok) {
         toast.success("Enregistre");
@@ -196,6 +201,24 @@ function ContentTab({ service }: { service: Service }) {
           <input type="checkbox" {...register("visible")} />
           <span className="text-sm" style={{ color: "var(--text)" }}>Visible sur le site</span>
         </label>
+      </section>
+
+      <section className="rounded-xl p-6 space-y-3" style={{ background: "var(--card-bg)", border: "1px solid var(--border)" }}>
+        <h3 className="font-display font-semibold text-sm" style={{ color: "var(--text)" }}>Media de couverture</h3>
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+          Image ou video affichee sur la fiche service et la liste /services.
+        </p>
+        <Controller
+          control={control}
+          name="coverMediaId"
+          render={({ field }) => (
+            <MediaPicker
+              value={field.value || null}
+              onChange={(id) => field.onChange(id || "")}
+              mimeFilter={["image/", "video/"]}
+            />
+          )}
+        />
       </section>
 
       <div className="flex items-center justify-between">
@@ -447,6 +470,7 @@ function SeoTab({ service }: { service: Service }) {
         visible: service.visible,
         seoTitle: values.seoTitle,
         seoDescription: values.seoDescription,
+        coverMediaId: service.coverMediaId,
       });
       if (res.ok) {
         toast.success("Enregistre");

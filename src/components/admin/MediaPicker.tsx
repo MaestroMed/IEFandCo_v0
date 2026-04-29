@@ -20,8 +20,20 @@ interface MediaItem {
 interface MediaPickerProps {
   value: string | null;
   onChange: (id: string | null) => void;
-  mimeFilter?: string; // e.g. "image/"
+  /** Accepted MIME prefix(es). String : single prefix (e.g. "image/").
+   *  Array : multiple prefixes (e.g. ["image/", "video/"]). */
+  mimeFilter?: string | string[];
   triggerLabel?: string;
+}
+
+function asPrefixList(filter: string | string[] | undefined): string[] {
+  if (!filter) return [];
+  return Array.isArray(filter) ? filter : [filter];
+}
+
+function matchesAnyPrefix(mime: string, prefixes: string[]): boolean {
+  if (prefixes.length === 0) return true;
+  return prefixes.some((p) => mime.startsWith(p));
 }
 
 function humanBytes(b: number | null): string {
@@ -62,12 +74,15 @@ export function MediaPicker({ value, onChange, mimeFilter, triggerLabel }: Media
     return () => { cancelled = true; };
   }, [value]);
 
+  const prefixes = asPrefixList(mimeFilter);
+  const prefixesKey = prefixes.join(",");
+
   const loadItems = useCallback(async (q: string) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (q) params.set("q", q);
-      if (mimeFilter) params.set("mime", mimeFilter);
+      if (prefixesKey) params.set("mime", prefixesKey);
       const r = await fetch(`/api/admin/media/list?${params.toString()}`);
       if (r.ok) {
         const d = await r.json();
@@ -76,7 +91,7 @@ export function MediaPicker({ value, onChange, mimeFilter, triggerLabel }: Media
     } finally {
       setLoading(false);
     }
-  }, [mimeFilter]);
+  }, [prefixesKey]);
 
   useEffect(() => {
     if (!open) return;
@@ -101,8 +116,8 @@ export function MediaPicker({ value, onChange, mimeFilter, triggerLabel }: Media
   }, [open]);
 
   async function uploadFile(file: File) {
-    if (mimeFilter && !file.type.startsWith(mimeFilter)) {
-      toast.error(`Type non supporte. Attendu : ${mimeFilter}*`);
+    if (prefixes.length > 0 && !matchesAnyPrefix(file.type, prefixes)) {
+      toast.error(`Type non supporté. Attendu : ${prefixes.join(", ")}*`);
       return null;
     }
     setUploading(true);
@@ -286,6 +301,15 @@ export function MediaPicker({ value, onChange, mimeFilter, triggerLabel }: Media
                               {isImg ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={it.url} alt={it.alt || it.filename} className="h-full w-full object-cover" />
+                              ) : it.mime.startsWith("video/") ? (
+                                <video
+                                  src={it.url}
+                                  className="h-full w-full object-cover"
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                                  aria-label={it.alt || it.filename}
+                                />
                               ) : (
                                 <div className="h-full w-full flex items-center justify-center">
                                   <FileText className="h-6 w-6" style={{ color: "var(--text-muted)" }} />
@@ -330,7 +354,9 @@ export function MediaPicker({ value, onChange, mimeFilter, triggerLabel }: Media
                     Glissez-deposez vos fichiers ici
                   </p>
                   <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
-                    {mimeFilter ? `Type accepte : ${mimeFilter}*` : "Tous types acceptes"}
+                    {prefixes.length > 0
+                      ? `Types acceptés : ${prefixes.map((p) => `${p}*`).join(", ")}`
+                      : "Tous types acceptés"}
                   </p>
                   <button
                     type="button"
@@ -345,7 +371,7 @@ export function MediaPicker({ value, onChange, mimeFilter, triggerLabel }: Media
                     ref={fileInputRef}
                     type="file"
                     className="hidden"
-                    accept={mimeFilter ? `${mimeFilter}*` : undefined}
+                    accept={prefixes.length > 0 ? prefixes.map((p) => `${p}*`).join(",") : undefined}
                     onChange={(e) => handleFiles(e.target.files)}
                   />
                 </div>

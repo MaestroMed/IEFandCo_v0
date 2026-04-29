@@ -14,27 +14,36 @@ Guide pas-à-pas pour passer le site en production sur `iefandco.com`.
 
 ---
 
-## 1. Supabase — création de la base
+## 1. Supabase — création de la base + Storage
 
 1. Crée un projet Supabase (région `eu-west-3 / Paris` pour la latence FR).
 2. Dans **Project Settings → Database → Connection Pooling** copie l'URL **Pooler** (port 6543, `?pgbouncer=true`).  
    Format : `postgres://postgres.xxxx:PASSWORD@aws-0-eu-west-3.pooler.supabase.com:6543/postgres?pgbouncer=true`
 3. Note aussi l'URL **Direct connection** (port 5432) → utile pour `drizzle-kit push` qui ne supporte pas PgBouncer.
+4. Dans **Project Settings → API** copie :
+   - `Project URL` → `SUPABASE_URL`
+   - `service_role secret` → `SUPABASE_SERVICE_ROLE_KEY` (⚠️ NE PAS confondre avec anon key — le service role bypass RLS, requis pour upload depuis server actions)
+5. Dans **Storage** :
+   - Crée un bucket `media`
+   - Active **Public** (les médias sont publiquement servis depuis `https://<projet>.supabase.co/storage/v1/object/public/media/...`)
+   - Policies : laisse les défauts (public read OK, le service role gère l'écrit)
 
-### Pousser le schéma
+### Pousser le schéma + seed
 
 Depuis ton poste local :
 
 ```bash
-# Direct URL pour les migrations (pas pooler)
+# Direct URL pour les migrations (pas pooler) — accepte port 5432
 export DATABASE_URL="postgres://postgres.xxxx:PASSWORD@aws-0-eu-west-3.pooler.supabase.com:5432/postgres"
 
-npx drizzle-kit push        # crée toutes les tables
-npx tsx src/db/seed.ts      # seed admin + services + FAQ + blog + clients + team + projects
+npx drizzle-kit push        # crée toutes les tables (incluant homepage_hero, page_seo, glossary_terms, zones, comparators, brands, depannage_services)
+npx tsx src/db/seed.ts      # seed admin + services + FAQ + blog + clients + team + projects + glossaire + zones + brands + comparatifs + dépannage
 npx tsx src/db/seed-emails.ts  # seed 4 templates email
 ```
 
 Login admin par défaut : `admin@iefandco.com` / `admin1234` — **change le mot de passe immédiatement** depuis `/admin/users`.
+
+**Le seed idempotent** : il vérifie chaque table avant insert. Tu peux le relancer sans risque de doublons.
 
 ---
 
@@ -64,6 +73,9 @@ Login admin par défaut : `admin@iefandco.com` / `admin1234` — **change le mot
 | Variable | Valeur | Scope |
 |---|---|---|
 | `DATABASE_URL` | URL Pooler Supabase (port 6543) | Production + Preview |
+| `SUPABASE_URL` | URL projet Supabase | Production + Preview |
+| `SUPABASE_SERVICE_ROLE_KEY` | service_role secret (PAS anon) | Production + Preview |
+| `SUPABASE_STORAGE_BUCKET` | `media` (default) | Production |
 | `RESEND_API_KEY` | ta clé Resend | Production |
 | `CONTACT_TO_EMAIL` | `contact@iefandco.com` | Production |
 | `CONTACT_FROM_EMAIL` | `noreply@iefandco.com` | Production |
@@ -148,7 +160,40 @@ Le token public Mapbox est exposé côté navigateur. Restreins-le par domaine :
 
 ---
 
-## 7. Smoke test post-deploy
+## 7. Backoffice — premier setup contenu
+
+Une fois Vercel + Supabase + DNS opérationnels, login admin et configure le contenu :
+
+### Hero homepage configurable
+- `/admin/site/hero` — active le hero éditable
+- Upload une vidéo MP4 (recommandé < 8 MB) ou une photo HD
+- Configure : eyebrow, titre (multi-ligne supporté), sous-titre, 2 CTAs, opacité de l'overlay
+- L'image/vidéo passe automatiquement en plein écran avec overlay sombre — preview fidèle au rendu prod
+
+### Photos par service
+- `/admin/services` — chaque service peut avoir son cover (image ou vidéo) qui remplace l'illustration blueprint dans le hero de `/services/[slug]`
+
+### Galerie projets
+- `/admin/projects/[id]` — section "Galerie projet" : ajoute autant de photos que tu veux, dans l'ordre. Elles apparaissent dans une grille 3 colonnes après la timeline du projet.
+
+### Cover blog
+- `/admin/blog/[id]` — `coverMediaId` : photo ou vidéo qui remplace la photo générique par catégorie
+
+### SEO pages statiques
+- `/admin/site/page-seo` — override le titre, description, OG image pour les pages `home`, `services-index`, `realisations-index`, `blog-index`, `glossaire-index`, `zones-intervention`, `a-propos`, `contact`, etc.
+
+### Contenu SEO migrable depuis BO
+- `/admin/content/glossary` — 44 termes glossaire
+- `/admin/content/zones` — 8 départements IDF
+- `/admin/content/brands` — 4 marques maintenance (Hörmann, Crawford, Maviflex, Came)
+- `/admin/content/comparators` — 5 comparatifs (porte sectionnelle vs rideau, etc.)
+- `/admin/content/depannage` — 8 services dépannage (génère 40 combos × 8 zones)
+
+Le site retombera sur `src/data/*.ts` si une table est vide — donc tu peux migrer progressivement.
+
+---
+
+## 8. Smoke test post-deploy
 
 Checklist à valider après mise en ligne :
 
@@ -166,7 +211,7 @@ Checklist à valider après mise en ligne :
 
 ---
 
-## 8. Backup régulier
+## 9. Backup régulier
 
 Supabase fait des backups automatiques toutes les 24h sur le free tier (rétention 7 jours). Pour un backup manuel :
 
@@ -178,7 +223,7 @@ pg_dump "$DATABASE_URL" > backup-$(date +%F).sql
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 **"DATABASE_URL not configured"** dans les logs Vercel → la var n'est pas set sur l'env Production. Re-vérifie dans Vercel Settings.
 

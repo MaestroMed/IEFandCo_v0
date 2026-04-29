@@ -1,0 +1,18 @@
+export const PAGE_SEO_KEYS: { key: string; label: string; description: string }[] = [
+  { key: "home", label: "Home", description: "/" },
+  { key: "services-index", label: "Services (index)", description: "/services" },
+  { key: "realisations-index", label: "Realisations (index)", description: "/realisations" },
+  { key: "blog-index", label: "Blog (index)", description: "/blog" },
+  { key: "glossaire-index", label: "Glossaire", description: "/glossaire" },
+  { key: "zones-intervention", label: "Zones d'intervention", description: "/zones-intervention" },
+  { key: "comparatifs-index", label: "Comparatifs (index)", description: "/comparatifs" },
+  { key: "depannage-index", label: "Depannage (index)", description: "/depannage" },
+  { key: "a-propos", label: "A propos", description: "/a-propos" },
+  { key: "contact", label: "Contact", description: "/contact" },
+  { key: "devis", label: "Devis", description: "/devis" },
+  { key: "assisteo", label: "Assisteo", description: "/assisteo" },
+  { key: "mentions-legales", label: "Mentions legales", description: "/mentions-legales" },
+  { key: "politique-confidentialite", label: "Politique confidentialite", description: "/politique-confidentialite" },
+  { key: "maintenance-contrats", label: "Contrats de maintenance", description: "/maintenance/contrats" },
+  { key: "estimateur", label: "Estimateur", description: "/estimateur" },
+];

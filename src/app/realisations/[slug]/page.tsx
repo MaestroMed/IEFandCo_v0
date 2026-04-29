@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { realisations, getRealisationBySlug, type Realisation } from "@/data/realisations";
+import { realisations as staticRealisations, type Realisation } from "@/data/realisations";
+import { getRealisations, getRealisationBySlug, getProjectGallery } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { Photo } from "@/components/ui/Photo";
+import { Media } from "@/components/ui/Media";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { getRealisationPhoto } from "@/lib/photoMap";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
@@ -21,7 +23,9 @@ const CATEGORY_ACCENT: Record<Realisation["category"], string> = {
 };
 
 export function generateStaticParams() {
-  return realisations.map((r) => ({ slug: r.slug }));
+  // Build-time : static slugs (DATABASE_URL is unset). Runtime new slugs are
+  // rendered on-demand (Next dynamicParams default = true).
+  return staticRealisations.map((r) => ({ slug: r.slug }));
 }
 
 export async function generateMetadata({
@@ -30,12 +34,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const r = getRealisationBySlug(slug);
+  const r = await getRealisationBySlug(slug);
   if (!r) return {};
   return generatePageMetadata({
     title: r.seoTitle || r.title,
     description: r.seoDescription || r.description,
     path: `/realisations/${r.slug}`,
+    image: r.coverUrl,
   });
 }
 
@@ -45,10 +50,17 @@ export default async function RealisationDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const r = getRealisationBySlug(slug);
+  const [r, allRealisations, gallery] = await Promise.all([
+    getRealisationBySlug(slug),
+    getRealisations(),
+    getProjectGallery(slug),
+  ]);
   if (!r) notFound();
 
-  const photo = getRealisationPhoto(r.slug, r.category);
+  // Cover : DB upload (r.coverUrl) when admin set it, else photoMap fallback
+  const photo = r.coverUrl || getRealisationPhoto(r.slug, r.category);
+  const coverMime = r.coverMime;
+  const coverIsVideo = !!coverMime?.startsWith("video/");
 
   const breadcrumb = generateBreadcrumbSchema([
     { name: "Accueil", url: "/" },
@@ -63,6 +75,7 @@ export default async function RealisationDetailPage({
     headline: r.title,
     description: r.description,
     datePublished: `${r.year}-01-01`,
+    image: r.coverUrl ? [r.coverUrl] : undefined,
     author: { "@type": "Organization", name: "IEF & CO" },
     publisher: {
       "@type": "Organization",
@@ -76,9 +89,9 @@ export default async function RealisationDetailPage({
   };
 
   // Other realisations for "suivant / précédent"
-  const currentIdx = realisations.findIndex((x) => x.slug === r.slug);
-  const prev = currentIdx > 0 ? realisations[currentIdx - 1] : null;
-  const next = currentIdx < realisations.length - 1 ? realisations[currentIdx + 1] : null;
+  const currentIdx = allRealisations.findIndex((x) => x.slug === r.slug);
+  const prev = currentIdx > 0 ? allRealisations[currentIdx - 1] : null;
+  const next = currentIdx < allRealisations.length - 1 ? allRealisations[currentIdx + 1] : null;
 
   return (
     <>
@@ -126,26 +139,39 @@ export default async function RealisationDetailPage({
           )}
         </div>
 
-        {/* Big photo — hangs over into next section */}
+        {/* Big photo — hangs over into next section. Polymorphic : video or image. */}
         <div className="relative z-10 mx-auto max-w-6xl px-6 mt-12 -mb-32 md:-mb-40">
           <div
-            className="relative overflow-hidden rounded-3xl"
+            className="relative overflow-hidden rounded-3xl aspect-[16/9]"
             style={{
               border: "1px solid var(--border-strong)",
               boxShadow: "0 40px 100px rgba(0,0,0,0.5)",
             }}
           >
-            <Photo
-              src={photo}
-              alt={r.title}
-              aspect="aspect-[16/9]"
-              treatment="default"
-              brackets
-              caption={`${r.year} · ${r.category}`}
-              priority
-              hoverZoom={false}
-              sizes="(max-width: 1280px) 100vw, 1280px"
-            />
+            {coverIsVideo ? (
+              <Media
+                url={photo}
+                mime={coverMime}
+                alt={r.coverAlt || r.title}
+                fill
+                autoPlay
+                muted
+                loop
+                objectFit="cover"
+              />
+            ) : (
+              <Photo
+                src={photo}
+                alt={r.coverAlt || r.title}
+                aspect="aspect-[16/9]"
+                treatment="default"
+                brackets
+                caption={`${r.year} · ${r.category}`}
+                priority
+                hoverZoom={false}
+                sizes="(max-width: 1280px) 100vw, 1280px"
+              />
+            )}
           </div>
         </div>
       </section>
@@ -348,6 +374,54 @@ export default async function RealisationDetailPage({
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════ GALERIE PROJET (BO-uploaded) ═══════════ */}
+      {gallery.length > 0 && (
+        <section className="section-forge-light relative overflow-hidden py-24 md:py-32">
+          <div className="relative z-10 mx-auto max-w-6xl px-6">
+            <div className="mb-12">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="h-px w-8" style={{ background: "var(--color-copper)" }} />
+                <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
+                  Galerie du projet · {gallery.length} {gallery.length === 1 ? "média" : "médias"}
+                </span>
+              </div>
+              <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl leading-[1.1]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
+                Le projet en images
+              </h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {gallery.map((img, i) => (
+                <figure
+                  key={i}
+                  className="relative overflow-hidden rounded-2xl aspect-[4/3]"
+                  style={{ background: "var(--bg-muted)", border: "1px solid var(--border)" }}
+                >
+                  <Media
+                    url={img.url}
+                    mime={img.mime}
+                    alt={img.alt || img.caption || `${r.title} — vue ${i + 1}`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    objectFit="cover"
+                  />
+                  {img.caption && (
+                    <figcaption
+                      className="absolute bottom-0 left-0 right-0 px-4 py-2 text-xs font-mono"
+                      style={{
+                        background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
+                        color: "white",
+                      }}
+                    >
+                      {img.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              ))}
             </div>
           </div>
         </section>
