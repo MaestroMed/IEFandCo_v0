@@ -24,7 +24,10 @@ export function ConfiguredHero({
   posterUrl,
   overlayOpacity,
 }: HeroConfig) {
-  const overlay = Math.max(0, Math.min(100, overlayOpacity)) / 100;
+  // Enforce minimum 50% overlay so that white text always meets WCAG AA
+  // contrast (4.5:1) over any photo / video background. Admin can push it
+  // higher for dimmer mood, never below.
+  const overlay = Math.max(50, Math.min(100, overlayOpacity)) / 100;
 
   return (
     <section className="section-forge-dark relative flex min-h-screen items-center overflow-hidden">

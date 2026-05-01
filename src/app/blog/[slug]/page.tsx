@@ -25,7 +25,10 @@ export async function generateMetadata({
     title: post.seoTitle || post.title,
     description: post.seoDescription || post.excerpt,
     path: `/blog/${post.slug}`,
-    image: post.coverUrl,
+    // OG / Twitter previews need an IMAGE URL — skip when the cover is a video
+    // (Twitter/LinkedIn won't render <video> in social cards). Falls back to
+    // the convention-based opengraph-image.tsx route.
+    image: post.coverMime?.startsWith("video/") ? undefined : post.coverUrl,
   });
 }
 
@@ -53,7 +56,10 @@ export default async function BlogArticle({
     headline: post.title,
     description: post.excerpt,
     datePublished: post.dateISO,
-    image: post.coverUrl ? [post.coverUrl] : undefined,
+    image:
+      post.coverUrl && !post.coverMime?.startsWith("video/")
+        ? [post.coverUrl]
+        : undefined,
     author: { "@type": "Organization", name: post.author },
     publisher: {
       "@type": "Organization",

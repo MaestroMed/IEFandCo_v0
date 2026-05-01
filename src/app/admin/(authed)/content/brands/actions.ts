@@ -6,23 +6,24 @@ import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { slugify } from "@/lib/admin/slug";
+import { jsonStringField } from "@/lib/admin/validation";
 import { z } from "zod";
 
 const brandSchema = z.object({
-  slug: z.string().optional(),
-  name: z.string().min(1),
-  tagline: z.string().min(1),
-  intro: z.string().min(1),
-  productsJson: z.string().optional(),
-  failuresJson: z.string().optional(),
-  strengthsJson: z.string().optional(),
-  faqJson: z.string().optional(),
-  searchVolume: z.string().optional(),
-  accentColor: z.string().optional(),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
-  logoMediaId: z.string().optional(),
-  coverMediaId: z.string().optional(),
+  slug: z.string().max(120).optional(),
+  name: z.string().min(1).max(120),
+  tagline: z.string().min(1).max(280),
+  intro: z.string().min(1).max(8000),
+  productsJson: jsonStringField({ max: 30000 }),
+  failuresJson: jsonStringField({ max: 30000 }),
+  strengthsJson: jsonStringField({ max: 10000 }),
+  faqJson: jsonStringField({ max: 30000 }),
+  searchVolume: z.string().max(80).optional(),
+  accentColor: z.string().max(40).optional(),
+  seoTitle: z.string().max(200).optional(),
+  seoDescription: z.string().max(400).optional(),
+  logoMediaId: z.string().max(64).optional(),
+  coverMediaId: z.string().max(64).optional(),
   visible: z.boolean().optional(),
   orderIdx: z.number().int().optional(),
 });

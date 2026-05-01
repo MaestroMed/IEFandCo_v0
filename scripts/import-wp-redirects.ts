@@ -87,7 +87,6 @@ async function main() {
   console.log(`   ${rows.length} redirects parsed.`);
 
   let inserted = 0;
-  let updated = 0;
   for (const r of rows) {
     const result = await db
       .insert(schema.redirects)

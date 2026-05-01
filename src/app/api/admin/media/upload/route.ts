@@ -9,7 +9,7 @@
 import { NextResponse } from "next/server";
 import { db, schema } from "@/db";
 import { getSession } from "@/lib/admin/auth";
-import { uploadMedia } from "@/lib/storage";
+import { uploadMedia, detectMimeFromMagicBytes, declaredMimeMatchesMagic } from "@/lib/storage";
 import { randomBytes } from "node:crypto";
 
 export const dynamic = "force-dynamic";
@@ -52,19 +52,56 @@ export async function POST(req: Request) {
     }
 
     const bytes = Buffer.from(await file.arrayBuffer());
-    const { url } = await uploadMedia({ bytes, filename: file.name, mime });
+
+    // Magic-byte validation : refuse files whose declared MIME doesn't match
+    // the actual file signature (defends against `.exe` renamed `.jpg`).
+    // PDFs and the well-known image/video families are checked. Unknown
+    // signatures fall through (we keep the declared MIME but reject if the
+    // declared MIME is in a checked family yet the bytes don't confirm).
+    const detected = detectMimeFromMagicBytes(bytes);
+    if (detected && !declaredMimeMatchesMagic(mime, detected)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `Le contenu du fichier (${detected}) ne correspond pas au type déclaré (${mime}).`,
+        },
+        { status: 415 },
+      );
+    }
+    // For PDF and image/video declared types, require a known signature
+    const declaredFamily = mime.startsWith("image/")
+      ? "image"
+      : mime.startsWith("video/")
+        ? "video"
+        : mime === "application/pdf"
+          ? "pdf"
+          : null;
+    if (declaredFamily && !detected) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `Le fichier ne contient pas une signature ${declaredFamily} valide.`,
+        },
+        { status: 415 },
+      );
+    }
+
+    // Use the detected MIME when known (more trustworthy than browser-reported)
+    const finalMime = detected ?? mime;
+
+    const { url } = await uploadMedia({ bytes, filename: file.name, mime: finalMime });
 
     const newId = randomBytes(16).toString("hex");
     await db.insert(schema.media).values({
       id: newId,
       filename: file.name,
       url,
-      mime,
+      mime: finalMime,
       bytes: file.size,
       uploadedBy: session.user.id,
     });
 
-    return NextResponse.json({ ok: true, mediaId: newId, url, filename: file.name, mime });
+    return NextResponse.json({ ok: true, mediaId: newId, url, filename: file.name, mime: finalMime });
   } catch (e) {
     console.error("[media upload]", e);
     return NextResponse.json({ ok: false, error: (e as Error).message }, { status: 500 });

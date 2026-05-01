@@ -46,10 +46,21 @@ export function generateLocalBusinessSchema() {
     "@type": "LocalBusiness",
     "@id": `${baseUrl}/#organization`,
     name: companyInfo.name,
+    legalName: companyInfo.fullName,
     description: companyInfo.description,
     url: baseUrl,
+    logo: `${baseUrl}/icon.svg`,
+    image: [
+      `${baseUrl}/opengraph-image`,
+      `${baseUrl}/images/photos/hero-welder-dark.jpg`,
+    ],
     telephone: companyInfo.phone,
     email: companyInfo.email,
+    foundingDate: "2020",
+    founder: {
+      "@type": "Person",
+      name: companyInfo.president,
+    },
     address: {
       "@type": "PostalAddress",
       streetAddress: companyInfo.address.street,
@@ -68,8 +79,31 @@ export function generateLocalBusinessSchema() {
       name: area,
     })),
     priceRange: "€€€",
+    paymentAccepted: "Carte bancaire, Virement, Chèque",
+    currenciesAccepted: "EUR",
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "08:00",
+        closes: "18:00",
+      },
+    ],
+    knowsAbout: [
+      "Métallerie",
+      "Serrurerie",
+      "Fermetures industrielles",
+      "Portails",
+      "Structures métalliques",
+      "Portes coupe-feu",
+      "Maintenance préventive",
+    ],
     sameAs: Object.values(companyInfo.social),
-    image: `${baseUrl}/images/og-default.jpg`,
+    identifier: {
+      "@type": "PropertyValue",
+      propertyID: "SIREN",
+      value: companyInfo.siren,
+    },
   };
 }
 
@@ -77,13 +111,17 @@ export function generateServiceSchema(service: {
   title: string;
   description: string;
   slug: string;
+  imageUrl?: string;
 }) {
-  return {
+  const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${baseUrl}/services/${service.slug}#service`,
     name: service.title,
     description: service.description,
     url: `${baseUrl}/services/${service.slug}`,
+    serviceType: service.title,
+    category: "Métallerie & Serrurerie",
     provider: {
       "@type": "LocalBusiness",
       "@id": `${baseUrl}/#organization`,
@@ -93,6 +131,44 @@ export function generateServiceSchema(service: {
       "@type": "AdministrativeArea",
       name: "Île-de-France",
     },
+    audience: {
+      "@type": "BusinessAudience",
+      name: "Entreprises B2B (logistique, tertiaire, ICPE, ERP)",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `${baseUrl}/devis`,
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      areaServed: { "@type": "AdministrativeArea", name: "Île-de-France" },
+    },
+  };
+  if (service.imageUrl) {
+    schema.image = service.imageUrl;
+  }
+  return schema;
+}
+
+/**
+ * DefinedTerm schema for glossary entries — improves rich snippet eligibility.
+ */
+export function generateDefinedTermSchema(term: {
+  term: string;
+  shortDef: string;
+  fullDef: string;
+  slug: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "DefinedTerm",
+    name: term.term,
+    description: term.shortDef,
+    inDefinedTermSet: {
+      "@type": "DefinedTermSet",
+      name: "Glossaire IEF & CO",
+      url: `${baseUrl}/glossaire`,
+    },
+    url: `${baseUrl}/glossaire/${term.slug}`,
   };
 }
 
