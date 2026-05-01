@@ -118,6 +118,14 @@ vercel
 
 ---
 
+## Tests
+
+- `npm run test` — Vitest unit tests
+- `npm run e2e` — Playwright E2E (lance le dev server auto)
+- `npm run e2e:ui` — Playwright avec UI mode
+
+---
+
 ## Performance
 
 - **173 routes SSG** compilées en ~30s
