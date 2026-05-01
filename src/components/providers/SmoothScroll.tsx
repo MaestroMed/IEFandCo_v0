@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
+  // Lenis is a public-site flourish — disable in the admin where dense
+  // dashboard scroll is more practical without inertia.
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
+    if (isAdminRoute) return;
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -48,7 +54,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       lenis.destroy();
       lenisRef.current = null;
     };
-  }, []);
+  }, [isAdminRoute]);
 
   return <>{children}</>;
 }

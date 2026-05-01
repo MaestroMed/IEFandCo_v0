@@ -11,6 +11,8 @@ import { PageProgress } from "@/components/layout/PageProgress";
 import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
 import { CookieBanner } from "@/components/layout/CookieBanner";
 import { Analytics } from "@/components/layout/Analytics";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { generateLocalBusinessSchema } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import "./globals.css";
@@ -106,6 +108,10 @@ export default function RootLayout({
           <CookieBanner />
         </SmoothScroll>
         <Analytics />
+        {/* Vercel Web Vitals (Core Web Vitals in real time) — no-op if NEXT_PUBLIC_VERCEL_ENV not set */}
+        <SpeedInsights />
+        {/* Vercel Analytics — pageviews + custom events. Respect cookie consent via Analytics layer above. */}
+        <VercelAnalytics />
       </body>
     </html>
   );
