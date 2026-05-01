@@ -9,6 +9,7 @@
  */
 
 import Image from "next/image";
+import { MediaVideo } from "./MediaVideo";
 
 export interface MediaProps {
   url: string;
@@ -67,26 +68,24 @@ export function Media({
   const video = isVideo(mime, url);
 
   if (video) {
+    // Delegated to a client component so that `prefers-reduced-motion` can
+    // be honoured (autoplay/loop disabled, controls exposed). See WCAG 2.3.3.
     return (
-      <video
-        src={url}
-        poster={posterUrl}
+      <MediaVideo
+        url={url}
+        alt={alt}
+        className={className}
+        fill={fill}
+        width={width}
+        height={height}
+        posterUrl={posterUrl}
         autoPlay={autoPlay}
         muted={muted}
         loop={loop}
-        playsInline
         controls={controls}
-        preload="metadata"
-        aria-label={alt || undefined}
-        className={className}
-        style={{
-          ...(fill ? { position: "absolute", inset: 0, width: "100%", height: "100%" } : {}),
-          ...(width && !fill ? { width } : {}),
-          ...(height && !fill ? { height } : {}),
-          objectFit,
-          objectPosition,
-          ...style,
-        }}
+        objectFit={objectFit}
+        objectPosition={objectPosition}
+        style={style}
       />
     );
   }

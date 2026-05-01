@@ -6,27 +6,28 @@ import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { slugify } from "@/lib/admin/slug";
+import { jsonStringField } from "@/lib/admin/validation";
 import { z } from "zod";
 
 const zoneSchema = z.object({
-  slug: z.string().optional(),
-  name: z.string().min(1),
-  code: z.string().min(1),
-  region: z.string().min(1),
-  tagline: z.string().min(1),
-  intro: z.string().min(1),
-  cities: z.string().optional(),
-  slaUrgence: z.string().min(1),
-  slaStandard: z.string().min(1),
-  hubs: z.string().optional(),
-  kpisJson: z.string().optional(),
-  testimonialJson: z.string().optional(),
-  faqJson: z.string().optional(),
-  centerLat: z.string().optional(),
-  centerLng: z.string().optional(),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
-  coverMediaId: z.string().optional(),
+  slug: z.string().max(120).optional(),
+  name: z.string().min(1).max(120),
+  code: z.string().min(1).max(8),
+  region: z.string().min(1).max(120),
+  tagline: z.string().min(1).max(280),
+  intro: z.string().min(1).max(8000),
+  cities: z.string().max(2000).optional(),
+  slaUrgence: z.string().min(1).max(80),
+  slaStandard: z.string().min(1).max(80),
+  hubs: z.string().max(2000).optional(),
+  kpisJson: jsonStringField(),
+  testimonialJson: jsonStringField({ max: 4000 }),
+  faqJson: jsonStringField({ max: 30000 }),
+  centerLat: z.string().max(20).optional(),
+  centerLng: z.string().max(20).optional(),
+  seoTitle: z.string().max(200).optional(),
+  seoDescription: z.string().max(400).optional(),
+  coverMediaId: z.string().max(64).optional(),
   visible: z.boolean().optional(),
   orderIdx: z.number().int().optional(),
 });

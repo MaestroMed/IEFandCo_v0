@@ -40,7 +40,9 @@ export async function generateMetadata({
     title: r.seoTitle || r.title,
     description: r.seoDescription || r.description,
     path: `/realisations/${r.slug}`,
-    image: r.coverUrl,
+    // OG / Twitter previews need an IMAGE URL — skip when the cover is a video.
+    // Falls back to the convention-based opengraph-image.tsx route.
+    image: r.coverMime?.startsWith("video/") ? undefined : r.coverUrl,
   });
 }
 
@@ -75,7 +77,7 @@ export default async function RealisationDetailPage({
     headline: r.title,
     description: r.description,
     datePublished: `${r.year}-01-01`,
-    image: r.coverUrl ? [r.coverUrl] : undefined,
+    image: r.coverUrl && !r.coverMime?.startsWith("video/") ? [r.coverUrl] : undefined,
     author: { "@type": "Organization", name: "IEF & CO" },
     publisher: {
       "@type": "Organization",

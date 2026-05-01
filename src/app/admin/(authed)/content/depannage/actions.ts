@@ -6,21 +6,22 @@ import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { slugify } from "@/lib/admin/slug";
+import { jsonStringField } from "@/lib/admin/validation";
 import { z } from "zod";
 
 const depannageSchema = z.object({
-  slug: z.string().optional(),
-  label: z.string().min(1),
-  tagline: z.string().min(1),
-  intro: z.string().min(1),
-  businessImpact: z.string().min(1),
-  accentColor: z.string().min(1),
-  brands: z.string().optional(),
-  failuresJson: z.string().optional(),
-  partsInStock: z.string().optional(),
-  relatedServices: z.string().optional(),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
+  slug: z.string().max(120).optional(),
+  label: z.string().min(1).max(120),
+  tagline: z.string().min(1).max(280),
+  intro: z.string().min(1).max(8000),
+  businessImpact: z.string().min(1).max(2000),
+  accentColor: z.string().min(1).max(40),
+  brands: z.string().max(2000).optional(),
+  failuresJson: jsonStringField({ max: 30000 }),
+  partsInStock: z.string().max(4000).optional(),
+  relatedServices: z.string().max(400).optional(),
+  seoTitle: z.string().max(200).optional(),
+  seoDescription: z.string().max(400).optional(),
   visible: z.boolean().optional(),
   orderIdx: z.number().int().optional(),
 });

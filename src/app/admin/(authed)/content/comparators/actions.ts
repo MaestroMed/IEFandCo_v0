@@ -9,17 +9,17 @@ import { slugify } from "@/lib/admin/slug";
 import { z } from "zod";
 
 const comparatorSchema = z.object({
-  slug: z.string().optional(),
-  title: z.string().min(1),
-  optionAName: z.string().min(1),
-  optionBName: z.string().min(1),
-  tagline: z.string().min(1),
-  intro: z.string().min(1),
-  verdict: z.string().min(1),
-  category: z.string().min(1),
-  accent: z.string().min(1),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
+  slug: z.string().max(120).optional(),
+  title: z.string().min(1).max(280),
+  optionAName: z.string().min(1).max(120),
+  optionBName: z.string().min(1).max(120),
+  tagline: z.string().min(1).max(280),
+  intro: z.string().min(1).max(8000),
+  verdict: z.string().min(1).max(8000),
+  category: z.string().min(1).max(60),
+  accent: z.string().min(1).max(40),
+  seoTitle: z.string().max(200).optional(),
+  seoDescription: z.string().max(400).optional(),
   visible: z.boolean().optional(),
   orderIdx: z.number().int().optional(),
 });

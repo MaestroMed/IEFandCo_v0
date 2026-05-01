@@ -12,6 +12,34 @@ import { NextResponse, type NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
 import { db, schema, isDbConfigured } from "@/db";
 
+/**
+ * Hosts allowed as absolute redirect targets (defends against open-redirect
+ * attacks where an admin would accidentally — or maliciously — register a
+ * redirect pointing at an external phishing domain).
+ *
+ * Defaults to the configured site URL host. Can be extended via the
+ * `ALLOWED_REDIRECT_HOSTS` env var (comma-separated list of hosts).
+ */
+function allowedRedirectHosts(): Set<string> {
+  const hosts = new Set<string>();
+  const envSite = process.env.NEXT_PUBLIC_SITE_URL;
+  if (envSite) {
+    try {
+      hosts.add(new URL(envSite).host);
+    } catch {
+      /* ignore */
+    }
+  } else {
+    hosts.add("iefandco.com");
+    hosts.add("www.iefandco.com");
+  }
+  const extra = process.env.ALLOWED_REDIRECT_HOSTS;
+  if (extra) {
+    for (const h of extra.split(",").map((s) => s.trim()).filter(Boolean)) hosts.add(h);
+  }
+  return hosts;
+}
+
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
@@ -34,10 +62,21 @@ export async function middleware(req: NextRequest) {
     if (rows[0]) {
       const url = req.nextUrl.clone();
       const target = rows[0].toPath;
-      // Allow absolute targets (rare) and relative ones (default)
+      // Absolute target : only allow when the host is whitelisted
       if (target.startsWith("http://") || target.startsWith("https://")) {
-        return NextResponse.redirect(new URL(target), rows[0].statusCode || 301);
+        try {
+          const targetUrl = new URL(target);
+          const allowed = allowedRedirectHosts();
+          if (!allowed.has(targetUrl.host)) {
+            console.warn("[middleware] blocked open redirect to", targetUrl.host);
+            return NextResponse.next();
+          }
+          return NextResponse.redirect(targetUrl, rows[0].statusCode || 301);
+        } catch {
+          return NextResponse.next();
+        }
       }
+      // Relative target : always safe (resolves on same origin)
       url.pathname = target;
       url.search = "";
       return NextResponse.redirect(url, rows[0].statusCode || 301);
