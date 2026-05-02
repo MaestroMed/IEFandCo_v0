@@ -111,15 +111,15 @@ export default function ContratsMaintenancePage() {
             className="object-cover"
             style={{
               objectPosition: "center 50%",
-              opacity: 0.75,
-              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+              opacity: 1,
+              filter: "contrast(1.08) brightness(1.05) saturate(1.1)",
             }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(110deg, #050508 25%, rgba(5, 5, 8, 0.78) 50%, rgba(5, 5, 8, 0.32) 78%, rgba(5, 5, 8, 0.15) 100%)",
+                "linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)",
             }}
           />
         </div>

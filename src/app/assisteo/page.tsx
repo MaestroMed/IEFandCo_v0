@@ -71,16 +71,16 @@ export default function AssisteoPage() {
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 35%",
-              opacity: 0.5,
-              filter: "contrast(1.05) brightness(0.85) saturate(0.9)",
+              objectPosition: "center 40%",
+              opacity: 0.95,
+              filter: "contrast(1.08) brightness(1) saturate(1)",
             }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.78) 50%, rgba(5, 5, 8, 0.35) 80%, rgba(5, 5, 8, 0.15) 100%)",
+                "linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, 0.72) 38%, rgba(5, 5, 8, 0.22) 65%, rgba(5, 5, 8, 0) 100%)",
             }}
           />
         </div>

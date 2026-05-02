@@ -56,16 +56,16 @@ export default async function AProposPage() {
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 40%",
-              opacity: 0.8,
-              filter: "contrast(1.05) brightness(0.9) saturate(1.05)",
+              objectPosition: "center 45%",
+              opacity: 1,
+              filter: "contrast(1.08) brightness(1.02) saturate(1.08)",
             }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(110deg, #050508 22%, rgba(5, 5, 8, 0.8) 45%, rgba(5, 5, 8, 0.35) 75%, rgba(5, 5, 8, 0.15) 100%)",
+                "linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
             }}
           />
         </div>

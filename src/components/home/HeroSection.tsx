@@ -161,19 +161,19 @@ export function HeroSection() {
           sizes="100vw"
           className="object-cover"
           style={{
-            objectPosition: "center 30%",
-            opacity: 0.85,
-            filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+            objectPosition: "center 35%",
+            opacity: 1,
+            filter: "contrast(1.08) brightness(1.05) saturate(1.1)",
           }}
         />
         {/* Cover with section bg color via mask gradient — keeps the photo
-           only at top-right so the title copy stays legible. Eased toward
-           the right so the welder remains visible. */}
+           only at top-right so the title copy stays legible. Tightened to
+           the left so the welder is fully visible on the right. */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(110deg, #050508 25%, rgba(5, 5, 8, 0.85) 45%, rgba(5, 5, 8, 0.4) 75%, rgba(5, 5, 8, 0.15) 100%)",
+              "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.15) 65%, rgba(5, 5, 8, 0) 100%)",
           }}
         />
       </div>
