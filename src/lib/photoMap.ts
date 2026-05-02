@@ -14,8 +14,8 @@
  * functions can be no-ops returning empty strings, components already
  * gracefully handle that via `coverUrl || photoMapFallback`).
  *
- * Photos live in /public/images/photos/ — sourced from Unsplash (free for
- * commercial use, no attribution required). Each map provides a sensible
+ * Photos live in /public/images/photos/ — generated via GPT Image 2 (May 2026)
+ * on the IEF & CO "Forged Light" preset. Each map provides a sensible
  * default fallback when a slug isn't explicitly mapped.
  */
 
@@ -25,10 +25,12 @@ const PHOTO_BASE = "/images/photos";
 const realisationDefaults: Record<string, string> = {
   "charpente-logistique-roissy": `${PHOTO_BASE}/realisation-construction.jpg`,
   "portail-autoporte-eg-group": `${PHOTO_BASE}/realisation-portail-noir.jpg`,
-  "porte-sectionnelle-eni": `${PHOTO_BASE}/service-industrielles.jpg`,
+  "porte-sectionnelle-eni": `${PHOTO_BASE}/realisation-porte-eni.jpg`,
   "mezzanine-industrielle-htds": `${PHOTO_BASE}/realisation-industrial.jpg`,
-  "garde-corps-verre-westfield": `${PHOTO_BASE}/service-menuiserie.jpg`,
+  "garde-corps-verre-westfield": `${PHOTO_BASE}/realisation-garde-corps-defense.jpg`,
+  "garde-corps-tertiaire-defense": `${PHOTO_BASE}/realisation-garde-corps-defense.jpg`,
   "maintenance-renovation-lidl": `${PHOTO_BASE}/realisation-welding-team.jpg`,
+  "porte-coupe-feu-erp": `${PHOTO_BASE}/realisation-porte-coupe-feu-erp.jpg`,
 };
 
 const realisationCategoryFallback: Record<string, string> = {
@@ -36,8 +38,8 @@ const realisationCategoryFallback: Record<string, string> = {
   portails: `${PHOTO_BASE}/service-portails.jpg`,
   industrielles: `${PHOTO_BASE}/service-industrielles.jpg`,
   menuiserie: `${PHOTO_BASE}/service-menuiserie.jpg`,
-  "coupe-feu": `${PHOTO_BASE}/service-coupe-feu.jpg`,
-  automatismes: `${PHOTO_BASE}/realisation-portail-noir.jpg`,
+  "coupe-feu": `${PHOTO_BASE}/realisation-porte-coupe-feu-erp.jpg`,
+  automatismes: `${PHOTO_BASE}/service-automatismes.jpg`,
   maintenance: `${PHOTO_BASE}/service-maintenance.jpg`,
 };
 
@@ -56,7 +58,7 @@ const servicePhotos: Record<string, string> = {
   "structures-metalliques": `${PHOTO_BASE}/service-structures.jpg`,
   "menuiserie-vitrerie": `${PHOTO_BASE}/service-menuiserie.jpg`,
   "portes-coupe-feu": `${PHOTO_BASE}/service-coupe-feu.jpg`,
-  automatismes: `${PHOTO_BASE}/realisation-portail-noir.jpg`,
+  automatismes: `${PHOTO_BASE}/service-automatismes.jpg`,
   maintenance: `${PHOTO_BASE}/service-maintenance.jpg`,
 };
 
@@ -66,14 +68,14 @@ export function getServicePhoto(slug: string): string {
 
 /* ─────── Blog ─────── */
 const blogCategoryPhotos: Record<string, string> = {
-  Guide: `${PHOTO_BASE}/blog-case-study.jpg`,
-  Normes: `${PHOTO_BASE}/realisation-industrial.jpg`,
+  Guide: `${PHOTO_BASE}/blog-guide.jpg`,
+  Normes: `${PHOTO_BASE}/blog-normes.jpg`,
   Technique: `${PHOTO_BASE}/blog-technique.jpg`,
-  "Case Study": `${PHOTO_BASE}/service-structures.jpg`,
+  "Case Study": `${PHOTO_BASE}/blog-case-study.jpg`,
 };
 
 export function getBlogPhoto(category: string): string {
-  return blogCategoryPhotos[category] || `${PHOTO_BASE}/service-structures.jpg`;
+  return blogCategoryPhotos[category] || `${PHOTO_BASE}/blog-guide.jpg`;
 }
 
 /* ─────── Atmosphere photos (fixed slots) ─────── */
@@ -82,4 +84,8 @@ export const ATMOSPHERE = {
   cta: `${PHOTO_BASE}/cta-welder-room.jpg`,
   about: `${PHOTO_BASE}/about-welder-sunset.jpg`,
   textureRebar: `${PHOTO_BASE}/texture-rebar.jpg`,
+  ogDefault: `${PHOTO_BASE}/og-default.jpg`,
+  heroAssisteo: `${PHOTO_BASE}/hero-assisteo.jpg`,
+  heroEstimateur: `${PHOTO_BASE}/hero-estimateur.jpg`,
+  heroMaintenanceContrats: `${PHOTO_BASE}/hero-maintenance-contrats.jpg`,
 } as const;
