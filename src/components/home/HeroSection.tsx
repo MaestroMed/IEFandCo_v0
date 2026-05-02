@@ -150,7 +150,8 @@ export function HeroSection() {
 
   return (
     <section className="section-forge-dark relative flex min-h-screen items-center overflow-hidden">
-      {/* Atmosphere photo — heavily desaturated welder, very low opacity bg */}
+      {/* Atmosphere photo — branded IEF & CO welder shot, kept readable while
+         still letting the title copy breathe over the dark left side. */}
       <div className="absolute inset-0 pointer-events-none">
         <Image
           src="/images/photos/hero-welder-dark.jpg"
@@ -161,16 +162,18 @@ export function HeroSection() {
           className="object-cover"
           style={{
             objectPosition: "center 30%",
-            opacity: 0.18,
-            filter: "grayscale(0.7) contrast(1.2) brightness(0.7)",
+            opacity: 0.85,
+            filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
           }}
         />
-        {/* Cover with section bg color via mask gradient — keeps the photo only at top-right */}
+        {/* Cover with section bg color via mask gradient — keeps the photo
+           only at top-right so the title copy stays legible. Eased toward
+           the right so the welder remains visible. */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(110deg, #050508 35%, rgba(5, 5, 8, 0.55) 60%, rgba(5, 5, 8, 0.85) 100%)",
+              "linear-gradient(110deg, #050508 25%, rgba(5, 5, 8, 0.85) 45%, rgba(5, 5, 8, 0.4) 75%, rgba(5, 5, 8, 0.15) 100%)",
           }}
         />
       </div>

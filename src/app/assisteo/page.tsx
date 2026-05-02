@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { AssisteoMockup } from "@/components/ui/AssisteoMockup";
 import { getPageSeo } from "@/lib/content";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("assisteo");
@@ -58,6 +60,31 @@ export default function AssisteoPage() {
     <>
       {/* ═══════════ HERO (DARK TECH) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32 min-h-[90vh] flex items-center">
+        {/* Branded background — hotliner with monitors. Sits beneath all
+           tech overlays so it tints the section with a humanised cue. */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={ATMOSPHERE.heroAssisteo}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 35%",
+              opacity: 0.5,
+              filter: "contrast(1.05) brightness(0.85) saturate(0.9)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.78) 50%, rgba(5, 5, 8, 0.35) 80%, rgba(5, 5, 8, 0.15) 100%)",
+            }}
+          />
+        </div>
+
         {/* Tech mesh gradient */}
         <div
           className="absolute inset-0 pointer-events-none"

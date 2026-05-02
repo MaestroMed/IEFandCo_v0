@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { getPageSeo } from "@/lib/content";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("maintenance-contrats");
@@ -98,6 +100,30 @@ export default function ContratsMaintenancePage() {
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
+        {/* Branded background — IEF & CO Bronze / Argent / Or contract folders */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={ATMOSPHERE.heroMaintenanceContrats}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 50%",
+              opacity: 0.75,
+              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(110deg, #050508 25%, rgba(5, 5, 8, 0.78) 50%, rgba(5, 5, 8, 0.32) 78%, rgba(5, 5, 8, 0.15) 100%)",
+            }}
+          />
+        </div>
+
         <div className="forge-gradient-dark" />
         <WorkshopAtmosphere intensity={0.5} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />

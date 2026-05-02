@@ -45,7 +45,8 @@ export default async function AProposPage() {
 
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        {/* Workshop atmosphere photo — desaturated, low opacity */}
+        {/* Workshop atmosphere photo — branded IEF & CO 3-artisans shot,
+           kept readable behind the mission copy. */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
             src={ATMOSPHERE.about}
@@ -56,15 +57,15 @@ export default async function AProposPage() {
             className="object-cover"
             style={{
               objectPosition: "center 40%",
-              opacity: 0.22,
-              filter: "grayscale(0.5) contrast(1.15) brightness(0.7)",
+              opacity: 0.8,
+              filter: "contrast(1.05) brightness(0.9) saturate(1.05)",
             }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(110deg, #050508 30%, rgba(5, 5, 8, 0.6) 65%, rgba(5, 5, 8, 0.85) 100%)",
+                "linear-gradient(110deg, #050508 22%, rgba(5, 5, 8, 0.8) 45%, rgba(5, 5, 8, 0.35) 75%, rgba(5, 5, 8, 0.15) 100%)",
             }}
           />
         </div>

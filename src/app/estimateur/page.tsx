@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { QuoteEstimator } from "@/components/forms/QuoteEstimator";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { getPageSeo } from "@/lib/content";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("estimateur");
@@ -23,6 +25,30 @@ export default function EstimateurPage() {
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-24">
+        {/* Branded background — tablet configurator + brushed steel samples */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={ATMOSPHERE.heroEstimateur}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 50%",
+              opacity: 0.7,
+              filter: "contrast(1.05) brightness(0.9) saturate(1.05)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(110deg, #050508 22%, rgba(5, 5, 8, 0.78) 50%, rgba(5, 5, 8, 0.3) 80%, rgba(5, 5, 8, 0.15) 100%)",
+            }}
+          />
+        </div>
+
         <div className="forge-gradient-dark" />
         <WorkshopAtmosphere intensity={0.5} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
