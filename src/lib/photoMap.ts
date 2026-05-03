@@ -88,4 +88,15 @@ export const ATMOSPHERE = {
   heroAssisteo: `${PHOTO_BASE}/hero-assisteo.jpg`,
   heroEstimateur: `${PHOTO_BASE}/hero-estimateur.jpg`,
   heroMaintenanceContrats: `${PHOTO_BASE}/hero-maintenance-contrats.jpg`,
+  // V2 batch (May 2 PM) — public-page heros
+  heroRealisations: `${PHOTO_BASE}/hero-realisations.jpg`,
+  heroBlog: `${PHOTO_BASE}/hero-blog.jpg`,
+  heroContact: `${PHOTO_BASE}/hero-contact.jpg`,
+  heroComparatifs: `${PHOTO_BASE}/hero-comparatifs.jpg`,
+  heroGlossaire: `${PHOTO_BASE}/hero-glossaire.jpg`,
+  heroZones: `${PHOTO_BASE}/hero-zones.jpg`,
+  // Homepage section backgrounds
+  sectionStats: `${PHOTO_BASE}/section-stats.jpg`,
+  sectionTestimonials: `${PHOTO_BASE}/section-testimonials.jpg`,
+  sectionCta: `${PHOTO_BASE}/section-cta.jpg`,
 } as const;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { brands as staticBrands } from "@/data/brands";
@@ -6,6 +7,7 @@ import { getBrands, getBrandBySlug } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
+import { getServicePhoto } from "@/lib/photoMap";
 
 // Which blueprint best represents each brand's core expertise.
 const BRAND_ILLUSTRATION: Record<string, "industrielles" | "automatismes" | "portails" | "coupe-feu"> = {
@@ -78,14 +80,41 @@ export default async function BrandMaintenancePage({
 
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
+        {/* Branded background — uses the maintenance service photo as
+           a universal fallback (TODO: replace with hero-maintenance-brand.jpg
+           once GPT Image 2 generates the universal-parts knolling, slot V2 #35) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={getServicePhoto("maintenance")}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 50%",
+              opacity: 1,
+              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.72) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)",
+            }}
+          />
+        </div>
+
+        {/* Brand-specific color wash on top of the photo */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: `radial-gradient(ellipse 60% 50% at 30% 40%, rgba(${brand.accentColor}, 0.20) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 75% 60%, rgba(${brand.accentColor}, 0.10) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 20% 90%, rgba(225, 16, 33, 0.05) 0%, transparent 50%)`,
+            background: `radial-gradient(ellipse 60% 50% at 30% 40%, rgba(${brand.accentColor}, 0.16) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 75% 60%, rgba(${brand.accentColor}, 0.08) 0%, transparent 55%)`,
           }}
         />
-        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
+        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.04 }} />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6">
           <nav className="mb-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>

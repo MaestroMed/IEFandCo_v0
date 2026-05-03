@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 import { useInView } from "@/hooks/useInView";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 const stats = [
   { value: 5, suffix: "+", label: "Années d'expérience", sub: "Depuis 2020" },
@@ -16,6 +18,29 @@ export function StatsForge() {
 
   return (
     <section className="section-forge-transition relative overflow-hidden py-28 md:py-36">
+      {/* Branded background — workshop stats atmosphere */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Image
+          src={ATMOSPHERE.sectionStats}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          style={{
+            objectPosition: "center 50%",
+            opacity: 0.45,
+            filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(5, 5, 8, 0.55) 0%, rgba(5, 5, 8, 0.85) 100%)",
+          }}
+        />
+      </div>
+
       {/* Static gradient overlay (only visible on the dark portion) */}
       <div
         className="absolute inset-0 pointer-events-none"

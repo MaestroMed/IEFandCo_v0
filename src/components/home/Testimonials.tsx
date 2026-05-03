@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { Testimonial } from "@/data/testimonials";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -31,6 +33,29 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
 
   return (
     <section className="section-forge-warm relative overflow-hidden py-28 md:py-36">
+      {/* Branded background — soft testimonial atmosphere behind quotes */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Image
+          src={ATMOSPHERE.sectionTestimonials}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          style={{
+            objectPosition: "center 50%",
+            opacity: 0.35,
+            filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(5, 5, 8, 0.55) 0%, rgba(5, 5, 8, 0.85) 100%)",
+          }}
+        />
+      </div>
+
       {/* Warm living gradient */}
       <div className="forge-gradient-warm" />
       {/* Grain overlay */}

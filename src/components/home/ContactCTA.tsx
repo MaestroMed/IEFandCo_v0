@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
 import { useInView } from "@/hooks/useInView";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 function EmberField({ count = 10 }: { count?: number }) {
   const embers = Array.from({ length: count }).map((_, i) => ({
@@ -41,6 +43,29 @@ export function ContactCTA() {
 
   return (
     <section className="section-forge-dark relative overflow-hidden py-32 md:py-44">
+      {/* Branded background — luminous corridor centered behind CTA */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Image
+          src={ATMOSPHERE.sectionCta}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          style={{
+            objectPosition: "center 50%",
+            opacity: 0.6,
+            filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(5, 5, 8, 0.55) 0%, rgba(5, 5, 8, 0.85) 100%)",
+          }}
+        />
+      </div>
+
       {/* Most dramatic living gradient */}
       <div className="forge-gradient-cta" />
 

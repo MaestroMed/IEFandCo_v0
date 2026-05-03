@@ -1,9 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getServices, getPageSeo } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
+import { ATMOSPHERE } from "@/lib/photoMap";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,10 +26,36 @@ export default async function ServicesPage() {
     <>
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        <div className="forge-gradient-dark" />
-        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
-        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.06 }} />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
+        {/* Branded background — atelier 3 artisans (TODO: replace with
+           hero-services-index.jpg once GPT Image 2 generates the multi-trade
+           workshop panorama, slot V2 #26) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={ATMOSPHERE.about}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 50%",
+              opacity: 1,
+              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+            }}
+          />
+        </div>
+
+        <div className="forge-gradient-dark" style={{ opacity: 0.5 }} />
+        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
+        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.04 }} />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6">
           <nav className="mb-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>

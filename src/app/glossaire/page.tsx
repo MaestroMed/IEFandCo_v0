@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { glossary, getTermsByCategory } from "@/data/glossary";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { getPageSeo } from "@/lib/content";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("glossaire-index");
@@ -35,10 +37,34 @@ export default function GlossairePage() {
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        <div className="forge-gradient-dark" />
-        <WorkshopAtmosphere intensity={0.45} origin="bottom" />
+        {/* Branded background — technical reference atmosphere */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={ATMOSPHERE.heroGlossaire}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 50%",
+              opacity: 1,
+              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+            }}
+          />
+        </div>
+
+        <div className="forge-gradient-dark" style={{ opacity: 0.5 }} />
+        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
 
         <div className="relative z-10 mx-auto max-w-5xl px-6">
           <nav className="mb-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>

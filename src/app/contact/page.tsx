@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { getPageSeo } from "@/lib/content";
+import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("contact");
@@ -32,9 +34,33 @@ export default function ContactPage() {
 
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-16 md:pt-40">
-        <div className="forge-gradient-dark" />
-        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
+        {/* Branded background — welcoming workshop entrance */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={ATMOSPHERE.heroContact}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 50%",
+              opacity: 1,
+              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+            }}
+          />
+        </div>
+
+        <div className="forge-gradient-dark" style={{ opacity: 0.5 }} />
+        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
         <div className="relative z-10 mx-auto max-w-7xl px-6">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import {
@@ -10,6 +11,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { Media } from "@/components/ui/Media";
+import { getServicePhoto } from "@/lib/photoMap";
 import { FAQAccordion } from "./FAQAccordion";
 import {
   generatePageMetadata,
@@ -76,18 +78,43 @@ export default async function ServicePage({
 
       {/* ═══════════════ HERO (DARK, tinted by service color) ═══════════════ */}
       <section className="section-forge-dark relative flex min-h-[70vh] items-end overflow-hidden pt-32 pb-16">
-        {/* Service-specific color wash */}
+        {/* Branded service photo — fills the right two-thirds, fades into
+           the dark on the left so the title copy stays legible. */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={getServicePhoto(service.slug)}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{
+              objectPosition: "center 45%",
+              opacity: 1,
+              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+            }}
+          />
+        </div>
+
+        {/* Service-specific color wash (kept on top of the photo) */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: `radial-gradient(ellipse 60% 50% at var(--gx) var(--gy), rgba(${accent}, 0.28) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at var(--gx2) var(--gy2), rgba(${accent}, 0.16) 0%, transparent 55%), radial-gradient(ellipse 70% 50% at 50% 100%, rgba(196, 133, 92, 0.08) 0%, transparent 55%)`,
+            background: `radial-gradient(ellipse 60% 50% at var(--gx) var(--gy), rgba(${accent}, 0.18) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at var(--gx2) var(--gy2), rgba(${accent}, 0.10) 0%, transparent 55%)`,
             animation: "gradient-breathe 22s ease-in-out infinite, gradient-breathe-alt 28s ease-in-out infinite",
           }}
         />
         {/* Blueprint grid */}
-        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
+        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.04 }} />
         {/* Grain */}
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
 
         <div className="relative mx-auto max-w-7xl px-6 w-full">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-end">
