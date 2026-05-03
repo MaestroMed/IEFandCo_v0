@@ -28,11 +28,10 @@ export default function DepannageIndexPage() {
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        {/* Branded background — workshop corridor (TODO: replace with hero-depannage.jpg
-            once GPT Image 2 generates the night intervention shot, slot V2 #32) */}
+        {/* Branded background — IEF & CO night intervention van (V3 slot #32) */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.cta}
+            src={ATMOSPHERE.heroDepannage}
             alt=""
             fill
             priority

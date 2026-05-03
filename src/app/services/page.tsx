@@ -26,12 +26,10 @@ export default async function ServicesPage() {
     <>
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        {/* Branded background — atelier 3 artisans (TODO: replace with
-           hero-services-index.jpg once GPT Image 2 generates the multi-trade
-           workshop panorama, slot V2 #26) */}
+        {/* Branded background — multi-trade atelier panorama (V3 slot #26) */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.about}
+            src={ATMOSPHERE.heroServices}
             alt=""
             fill
             priority

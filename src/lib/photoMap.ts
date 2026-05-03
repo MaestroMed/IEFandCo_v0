@@ -95,6 +95,10 @@ export const ATMOSPHERE = {
   heroComparatifs: `${PHOTO_BASE}/hero-comparatifs.jpg`,
   heroGlossaire: `${PHOTO_BASE}/hero-glossaire.jpg`,
   heroZones: `${PHOTO_BASE}/hero-zones.jpg`,
+  // V3 batch (May 3) — completes the public-page coverage
+  heroServices: `${PHOTO_BASE}/hero-services.jpg`,
+  heroDevis: `${PHOTO_BASE}/hero-devis.jpg`,
+  heroDepannage: `${PHOTO_BASE}/hero-depannage.jpg`,
   // Homepage section backgrounds
   sectionStats: `${PHOTO_BASE}/section-stats.jpg`,
   sectionTestimonials: `${PHOTO_BASE}/section-testimonials.jpg`,
