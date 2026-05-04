@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { zones } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
 import ZonesMapClient from "@/components/ui/ZonesMapClient";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { getPageSeo, getPageHero } from "@/lib/content";
-import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("zones-intervention");
@@ -23,38 +22,57 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ZonesInterventionPage() {
   const heroOverride = await getPageHero("zones-intervention");
+  const heroOpacity = (heroOverride?.opacity ?? 100) / 100;
+  const heroObjectPos = heroOverride?.objectPosition ?? "center 50%";
+  const heroOverlayLeft = (heroOverride?.overlayLeft ?? 70) / 100;
+  const heroIsVideo = heroOverride?.mediaMime?.startsWith("video/");
   return (
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        {/* Branded background — Île-de-France territory atmosphere */}
-        <div className="absolute inset-0 pointer-events-none">
-          <Image
-            src={heroOverride?.imageUrl || ATMOSPHERE.heroZones}
-            alt={heroOverride?.imageAlt || ""}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-            style={{
-              objectPosition: heroOverride?.objectPosition || "center 50%",
-              opacity: (heroOverride?.opacity ?? 100) / 100,
-              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
-            }}
-          />
-        </div>
-
-        <div className="forge-gradient-dark" style={{ opacity: 0.5 }} />
-        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
+        {heroOverride?.mediaUrl && (
+          <div className="absolute inset-0 pointer-events-none">
+            {heroIsVideo ? (
+              <video
+                src={heroOverride.mediaUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            ) : (
+              <Image
+                src={heroOverride.mediaUrl}
+                alt={heroOverride.mediaAlt ?? ""}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            )}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${heroOverlayLeft}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
+              }}
+            />
+          </div>
+        )}
+        <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6">
           <nav className="mb-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
@@ -66,14 +84,21 @@ export default async function ZonesInterventionPage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              {heroOverride?.eyebrow || "8 départements · Île-de-France complète"}
+              {heroOverride?.eyebrow ?? "8 départements · Île-de-France complète"}
             </span>
           </div>
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            {heroOverride?.title ? <>{heroOverride.title}</> : <>Présents <span className="text-gradient-metal">partout en Île-de-France</span></>}
+            {heroOverride?.title ? (
+              <>{heroOverride.title}</>
+            ) : (
+              <>Présents <span className="text-gradient-metal">partout en Île-de-France</span></>
+            )}
           </h1>
           <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {heroOverride?.intro || "Notre atelier à Groslay (95) nous place au centre du maillage francilien. Nous intervenons sur les 8 départements avec des délais garantis sous contrat."}
+            {heroOverride?.intro ?? (
+              <>Notre atelier à Groslay (95) nous place au centre du maillage francilien.
+              Nous intervenons sur les 8 départements avec des délais garantis sous contrat.</>
+            )}
           </p>
         </div>
       </section>

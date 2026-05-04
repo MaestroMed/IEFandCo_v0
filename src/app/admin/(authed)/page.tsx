@@ -22,7 +22,7 @@ async function getDashboardData() {
   }
 
   const emptyState = {
-    leads: { total: 0, unread: 0, thisWeek: 0 },
+    leads: { total: 0, unread: 0, thisWeek: 0, won: 0 },
     projects: { published: 0, draft: 0 },
     posts: { published: 0, draft: 0 },
     latestLeads: [] as Array<typeof schema.leads.$inferSelect>,
@@ -35,6 +35,7 @@ async function getDashboardData() {
       leadsTotal,
       leadsNew,
       leadsThisWeek,
+      leadsWon,
       projectsPublished,
       projectsDraft,
       postsPublished,
@@ -46,6 +47,7 @@ async function getDashboardData() {
       db.select({ c: count() }).from(schema.leads),
       db.select({ c: count() }).from(schema.leads).where(eq(schema.leads.status, "new")),
       db.select({ c: count() }).from(schema.leads).where(gte(schema.leads.receivedAt, weekAgo)),
+      db.select({ c: count() }).from(schema.leads).where(eq(schema.leads.status, "won")),
       db.select({ c: count() }).from(schema.projects).where(eq(schema.projects.status, "published")),
       db.select({ c: count() }).from(schema.projects).where(eq(schema.projects.status, "draft")),
       db.select({ c: count() }).from(schema.blogPosts).where(eq(schema.blogPosts.status, "published")),
@@ -71,7 +73,12 @@ async function getDashboardData() {
     }
 
     return {
-      leads: { total: leadsTotal[0].c, unread: leadsNew[0].c, thisWeek: leadsThisWeek[0].c },
+      leads: {
+        total: leadsTotal[0].c,
+        unread: leadsNew[0].c,
+        thisWeek: leadsThisWeek[0].c,
+        won: leadsWon[0].c,
+      },
       projects: { published: projectsPublished[0].c, draft: projectsDraft[0].c },
       posts: { published: postsPublished[0].c, draft: postsDraft[0].c },
       latestLeads,
@@ -256,6 +263,16 @@ function VisitsWidget({ visits }: { visits: { id: string; scheduledFor: Date; ty
 export default async function DashboardPage() {
   const data = await getDashboardData();
 
+  // Conversion rate = won / total (gagnés sur leads totaux). Affiche un dash si pas encore de leads.
+  const conversionRate =
+    data.leads.total > 0
+      ? `${((data.leads.won / data.leads.total) * 100).toFixed(1)}%`
+      : "—";
+  const conversionSub =
+    data.leads.total > 0
+      ? `${data.leads.won} gagné${data.leads.won > 1 ? "s" : ""} sur ${data.leads.total}`
+      : "Aucun lead pour l'instant";
+
   return (
     <>
       <Topbar title="Dashboard" breadcrumb={[{ label: "Admin" }, { label: "Overview" }]} />
@@ -318,8 +335,8 @@ export default async function DashboardPage() {
             />
             <KPICard
               label="Taux conversion"
-              value="—"
-              sub="En cours de calcul"
+              value={conversionRate}
+              sub={conversionSub}
               icon={TrendingUp}
             />
           </div>

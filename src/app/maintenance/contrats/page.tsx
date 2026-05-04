@@ -97,30 +97,51 @@ const tiers = [
 
 export default async function ContratsMaintenancePage() {
   const heroOverride = await getPageHero("maintenance-contrats");
+  const heroImage = heroOverride?.mediaUrl ?? ATMOSPHERE.heroMaintenanceContrats;
+  const heroOpacity = (heroOverride?.opacity ?? 100) / 100;
+  const heroObjectPos = heroOverride?.objectPosition ?? "center 50%";
+  const heroOverlayLeft = (heroOverride?.overlayLeft ?? 70) / 100;
+  const heroIsVideo = heroOverride?.mediaMime?.startsWith("video/");
   return (
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
         {/* Branded background — IEF & CO Bronze / Argent / Or contract folders */}
         <div className="absolute inset-0 pointer-events-none">
-          <Image
-            src={heroOverride?.imageUrl || ATMOSPHERE.heroMaintenanceContrats}
-            alt={heroOverride?.imageAlt || ""}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-            style={{
-              objectPosition: heroOverride?.objectPosition || "center 50%",
-              opacity: (heroOverride?.opacity ?? 100) / 100,
-              filter: "contrast(1.08) brightness(1.05) saturate(1.1)",
-            }}
-          />
+          {heroIsVideo ? (
+            <video
+              src={heroImage}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                objectPosition: heroObjectPos,
+                opacity: heroOpacity,
+                filter: "contrast(1.08) brightness(1.05) saturate(1.1)",
+              }}
+            />
+          ) : (
+            <Image
+              src={heroImage}
+              alt={heroOverride?.mediaAlt ?? ""}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+              style={{
+                objectPosition: heroObjectPos,
+                opacity: heroOpacity,
+                filter: "contrast(1.08) brightness(1.05) saturate(1.1)",
+              }}
+            />
+          )}
           <div
             className="absolute inset-0"
             style={{
               background:
-                `linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)`,
+                `linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, ${heroOverlayLeft}) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -142,14 +163,21 @@ export default async function ContratsMaintenancePage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              {heroOverride?.eyebrow || "3 niveaux · 100% modulables"}
+              {heroOverride?.eyebrow ?? "3 niveaux · 100% modulables"}
             </span>
           </div>
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            {heroOverride?.title ? <>{heroOverride.title}</> : <>Contrats de <span className="text-gradient-metal">maintenance</span></>}
+            {heroOverride?.title ? (
+              <>{heroOverride.title}</>
+            ) : (
+              <>Contrats de <span className="text-gradient-metal">maintenance</span></>
+            )}
           </h1>
           <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {heroOverride?.intro || "Bronze, Argent, Or. Trois niveaux d'engagement, un seul objectif : garder vos fermetures professionnelles opérationnelles, conformes et tracées."}
+            {heroOverride?.intro ?? (
+              <>Bronze, Argent, Or. Trois niveaux d&apos;engagement, un seul objectif&nbsp;: garder vos
+              fermetures professionnelles opérationnelles, conformes et tracées.</>
+            )}
           </p>
         </div>
       </section>

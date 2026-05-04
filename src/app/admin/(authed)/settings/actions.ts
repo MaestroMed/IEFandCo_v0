@@ -2,21 +2,14 @@
 
 import { requireAdmin } from "@/lib/admin/auth";
 import { setMany, setSetting } from "@/lib/admin/settings";
-import { logAudit } from "@/lib/admin/audit";
+import { _invalidateResendCache } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 import { NAV_KEY } from "./constants";
 
 export async function updateGeneral(values: Record<string, string>) {
-  const user = await requireAdmin();
+  await requireAdmin();
   try {
     await setMany(values);
-    await logAudit({
-      userId: user.id,
-      entity: "settings:general",
-      entityId: "general",
-      action: "update",
-      diff: { keys: Object.keys(values) },
-    });
     revalidatePath("/admin/settings/general");
     return { ok: true as const };
   } catch (e) {
@@ -25,20 +18,10 @@ export async function updateGeneral(values: Record<string, string>) {
 }
 
 export async function updateBranding(values: Record<string, string>) {
-  const user = await requireAdmin();
+  await requireAdmin();
   try {
     await setMany(values);
-    await logAudit({
-      userId: user.id,
-      entity: "settings:branding",
-      entityId: "branding",
-      action: "update",
-      diff: { keys: Object.keys(values) },
-    });
-    // Branding affects every public page (logo in Navbar/Footer, favicon, etc.)
-    // so a global refresh is the safest revalidation strategy.
     revalidatePath("/admin/settings/branding");
-    revalidatePath("/", "layout");
     return { ok: true as const };
   } catch (e) {
     return { ok: false as const, error: (e as Error).message };
@@ -46,17 +29,15 @@ export async function updateBranding(values: Record<string, string>) {
 }
 
 export async function updateIntegrations(values: Record<string, string | boolean>) {
-  const user = await requireAdmin();
+  await requireAdmin();
   try {
     await setMany(values);
-    await logAudit({
-      userId: user.id,
-      entity: "settings:integrations",
-      entityId: "integrations",
-      action: "update",
-      diff: { keys: Object.keys(values) },
-    });
+    // Drop the in-memory Resend client cache so a key rotation in the BO
+    // takes effect on the very next email send.
+    _invalidateResendCache();
     revalidatePath("/admin/settings/integrations");
+    // Layout pulls Plausible/Vercel-Analytics flags — bust it.
+    revalidatePath("/", "layout");
     return { ok: true as const };
   } catch (e) {
     return { ok: false as const, error: (e as Error).message };
@@ -64,17 +45,11 @@ export async function updateIntegrations(values: Record<string, string | boolean
 }
 
 export async function updateLegal(values: { mentions: string; privacy: string }) {
-  const user = await requireAdmin();
+  await requireAdmin();
   try {
     await setMany({
       "legal:mentions": values.mentions,
       "legal:privacy": values.privacy,
-    });
-    await logAudit({
-      userId: user.id,
-      entity: "settings:legal",
-      entityId: "legal",
-      action: "update",
     });
     revalidatePath("/admin/settings/legal");
     revalidatePath("/mentions-legales");
@@ -92,7 +67,7 @@ interface NavInput {
 }
 
 export async function updateNavigation(items: NavInput[]) {
-  const user = await requireAdmin();
+  await requireAdmin();
   try {
     // Sanitize: strip empty entries, ensure shape
     const clean = (arr: NavInput[]): NavInput[] =>
@@ -104,12 +79,6 @@ export async function updateNavigation(items: NavInput[]) {
         }))
         .filter((it) => it.label && it.href);
     await setSetting(NAV_KEY, clean(items));
-    await logAudit({
-      userId: user.id,
-      entity: "settings:navigation",
-      entityId: "navigation",
-      action: "update",
-    });
     revalidatePath("/admin/settings/navigation");
     revalidatePath("/");
     return { ok: true as const };

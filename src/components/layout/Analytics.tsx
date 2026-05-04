@@ -8,16 +8,26 @@ import { getConsent, type ConsentState } from "./CookieBanner";
  * Analytics — consent-gated analytics loader.
  *
  * Supports:
- *   - Plausible (NEXT_PUBLIC_PLAUSIBLE_DOMAIN) — loads regardless of consent because it's privacy-friendly (no PII)
- *   - Google Analytics 4 (NEXT_PUBLIC_GA4_ID) — requires analytics consent
+ *   - Plausible (env NEXT_PUBLIC_PLAUSIBLE_DOMAIN, or DB setting `int:plausible-domain`).
+ *     Loads regardless of consent because it's privacy-friendly (no PII).
+ *   - Google Analytics 4 (NEXT_PUBLIC_GA4_ID) — requires analytics consent.
+ *
+ * The layout passes the DB-resolved Plausible domain via prop — env still
+ * wins when set, otherwise the DB value is used. This lets the BO toggle
+ * Plausible without redeploying.
  *
  * Listens to `iefco:consent-change` to load/unload scripts dynamically.
  */
 
-const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
+const ENV_PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID;
 
-export function Analytics() {
+interface Props {
+  /** DB-stored Plausible domain (used as fallback when env is empty). */
+  plausibleDomain?: string | null;
+}
+
+export function Analytics({ plausibleDomain }: Props = {}) {
   const [consent, setConsent] = useState<ConsentState | null>(null);
 
   useEffect(() => {
@@ -31,15 +41,16 @@ export function Analytics() {
   }, []);
 
   const analyticsOk = consent?.analytics === true;
+  const resolvedPlausibleDomain = ENV_PLAUSIBLE_DOMAIN || (plausibleDomain && plausibleDomain.trim()) || null;
 
   return (
     <>
       {/* Plausible — always loads if domain set (no PII) */}
-      {PLAUSIBLE_DOMAIN && (
+      {resolvedPlausibleDomain && (
         <Script
           defer
           src="https://plausible.io/js/script.js"
-          data-domain={PLAUSIBLE_DOMAIN}
+          data-domain={resolvedPlausibleDomain}
           strategy="afterInteractive"
         />
       )}

@@ -3,9 +3,10 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { navigation, secondaryNavigation, companyInfo } from "@/data/navigation";
+import { navigation as staticNavigation, secondaryNavigation, companyInfo, type NavItem } from "@/data/navigation";
 
-export function MobileMenu({ onClose }: { onClose: () => void }) {
+export function MobileMenu({ onClose, nav }: { onClose: () => void; nav?: NavItem[] }) {
+  const navigation = nav && nav.length > 0 ? nav : staticNavigation;
   useEffect(() => {
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {

@@ -5,74 +5,132 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 function id() {
   return randomBytes(16).toString("hex");
 }
 
-/* ───────────── Sites ───────────── */
+/* ───────────── Zod schemas ───────────── */
 
-type SiteInput = {
-  clientName: string;
-  label?: string | null;
-  address: string;
-  city?: string | null;
-  postalCode?: string | null;
-  accessInstructions?: string | null;
-  contactName?: string | null;
-  contactEmail?: string | null;
-  contactPhone?: string | null;
-  notes?: string | null;
-};
+const siteSchema = z.object({
+  clientName: z.string().min(1).max(200),
+  label: z.string().max(200).nullish(),
+  address: z.string().min(1).max(500),
+  city: z.string().max(120).nullish(),
+  postalCode: z.string().max(20).nullish(),
+  accessInstructions: z.string().max(4000).nullish(),
+  contactName: z.string().max(200).nullish(),
+  contactEmail: z.string().email().max(200).nullish().or(z.literal("").transform(() => null)),
+  contactPhone: z.string().max(40).nullish(),
+  notes: z.string().max(4000).nullish(),
+});
+
+const equipmentSchema = z.object({
+  siteId: z.string().min(1).max(64),
+  type: z.string().min(1).max(120),
+  brand: z.string().max(120).nullish(),
+  model: z.string().max(200).nullish(),
+  serial: z.string().max(200).nullish(),
+  installDate: z.number().int().nullish(),
+  warrantyEnd: z.number().int().nullish(),
+  label: z.string().max(200).nullish(),
+  location: z.string().max(200).nullish(),
+  notes: z.string().max(4000).nullish(),
+  status: z.enum(["active", "faulty", "retired"]),
+});
+
+const visitSchema = z.object({
+  equipmentId: z.string().max(64).nullish(),
+  siteId: z.string().max(64).nullish(),
+  scheduledFor: z.number().int(),
+  technicianId: z.string().max(64).nullish(),
+  type: z.enum(["preventive", "curative", "audit"]),
+  status: z.enum(["scheduled", "in_progress", "done", "cancelled"]),
+  reportMd: z.string().max(20000).nullish(),
+  durationMinutes: z.number().int().min(0).max(100000).nullish(),
+  notes: z.string().max(4000).nullish(),
+});
+
+const visitPartialSchema = visitSchema.partial();
+
+const contractSchema = z.object({
+  siteId: z.string().min(1).max(64),
+  type: z.enum(["preventive", "full_service", "on_demand"]),
+  startDate: z.number().int(),
+  endDate: z.number().int().nullish(),
+  slaHours: z.number().int().min(0).max(10000).nullish(),
+  frequencyMonths: z.number().int().min(0).max(120),
+  amountHt: z.number().int().nullish(),
+  status: z.enum(["active", "expired", "pending"]),
+  notes: z.string().max(4000).nullish(),
+  generateVisits: z.boolean().optional(),
+});
+
+type SiteInput = z.infer<typeof siteSchema>;
+type EquipmentInput = z.infer<typeof equipmentSchema>;
+type VisitInput = z.infer<typeof visitSchema>;
+type ContractInput = z.infer<typeof contractSchema>;
+
+function invalidPayload(e: unknown): { ok: false; error: string } {
+  if (e instanceof z.ZodError) {
+    return { ok: false as const, error: "Donnees invalides" };
+  }
+  return { ok: false as const, error: (e as Error).message };
+}
+
+/* ───────────── Sites ───────────── */
 
 export async function createSite(input: SiteInput) {
   await requireAdmin();
   try {
+    const data = siteSchema.parse(input);
     const newId = id();
     await db.insert(schema.sites).values({
       id: newId,
-      clientName: input.clientName,
-      label: input.label || null,
-      address: input.address,
-      city: input.city || null,
-      postalCode: input.postalCode || null,
-      accessInstructions: input.accessInstructions || null,
-      contactName: input.contactName || null,
-      contactEmail: input.contactEmail || null,
-      contactPhone: input.contactPhone || null,
-      notes: input.notes || null,
+      clientName: data.clientName,
+      label: data.label || null,
+      address: data.address,
+      city: data.city || null,
+      postalCode: data.postalCode || null,
+      accessInstructions: data.accessInstructions || null,
+      contactName: data.contactName || null,
+      contactEmail: data.contactEmail || null,
+      contactPhone: data.contactPhone || null,
+      notes: data.notes || null,
     });
     revalidatePath("/admin/maintenance/sites");
     revalidatePath("/admin/maintenance");
     return { ok: true as const, id: newId };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
 export async function updateSite(siteId: string, input: SiteInput) {
   await requireAdmin();
   try {
+    const data = siteSchema.parse(input);
     await db
       .update(schema.sites)
       .set({
-        clientName: input.clientName,
-        label: input.label || null,
-        address: input.address,
-        city: input.city || null,
-        postalCode: input.postalCode || null,
-        accessInstructions: input.accessInstructions || null,
-        contactName: input.contactName || null,
-        contactEmail: input.contactEmail || null,
-        contactPhone: input.contactPhone || null,
-        notes: input.notes || null,
+        clientName: data.clientName,
+        label: data.label || null,
+        address: data.address,
+        city: data.city || null,
+        postalCode: data.postalCode || null,
+        accessInstructions: data.accessInstructions || null,
+        contactName: data.contactName || null,
+        contactEmail: data.contactEmail || null,
+        contactPhone: data.contactPhone || null,
+        notes: data.notes || null,
       })
       .where(eq(schema.sites.id, siteId));
     revalidatePath("/admin/maintenance/sites");
     revalidatePath(`/admin/maintenance/sites/${siteId}`);
     return { ok: true as const };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
@@ -90,72 +148,60 @@ export async function deleteSite(siteId: string) {
 
 /* ───────────── Equipment ───────────── */
 
-type EquipmentInput = {
-  siteId: string;
-  type: string;
-  brand?: string | null;
-  model?: string | null;
-  serial?: string | null;
-  installDate?: number | null;
-  warrantyEnd?: number | null;
-  label?: string | null;
-  location?: string | null;
-  notes?: string | null;
-  status: "active" | "faulty" | "retired";
-};
-
 export async function createEquipment(input: EquipmentInput) {
   await requireAdmin();
   try {
+    const data = equipmentSchema.parse(input);
     const newId = id();
     await db.insert(schema.equipment).values({
       id: newId,
-      siteId: input.siteId,
-      type: input.type,
-      brand: input.brand || null,
-      model: input.model || null,
-      serial: input.serial || null,
-      installDate: input.installDate ? new Date(input.installDate) : null,
-      warrantyEnd: input.warrantyEnd ? new Date(input.warrantyEnd) : null,
-      label: input.label || null,
-      location: input.location || null,
-      notes: input.notes || null,
-      status: input.status,
+      siteId: data.siteId,
+      type: data.type,
+      brand: data.brand || null,
+      model: data.model || null,
+      serial: data.serial || null,
+      installDate: data.installDate ? new Date(data.installDate) : null,
+      warrantyEnd: data.warrantyEnd ? new Date(data.warrantyEnd) : null,
+      label: data.label || null,
+      location: data.location || null,
+      notes: data.notes || null,
+      status: data.status,
     });
     revalidatePath("/admin/maintenance/equipment");
-    revalidatePath(`/admin/maintenance/sites/${input.siteId}`);
+    revalidatePath(`/admin/maintenance/sites/${data.siteId}`);
     revalidatePath("/admin/maintenance");
     return { ok: true as const, id: newId };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
 export async function updateEquipment(equipmentId: string, input: EquipmentInput) {
   await requireAdmin();
   try {
+    const data = equipmentSchema.parse(input);
     await db
       .update(schema.equipment)
       .set({
-        siteId: input.siteId,
-        type: input.type,
-        brand: input.brand || null,
-        model: input.model || null,
-        serial: input.serial || null,
-        installDate: input.installDate ? new Date(input.installDate) : null,
-        warrantyEnd: input.warrantyEnd ? new Date(input.warrantyEnd) : null,
-        label: input.label || null,
-        location: input.location || null,
-        notes: input.notes || null,
-        status: input.status,
+        siteId: data.siteId,
+        type: data.type,
+        brand: data.brand || null,
+        model: data.model || null,
+        serial: data.serial || null,
+        installDate: data.installDate ? new Date(data.installDate) : null,
+        warrantyEnd: data.warrantyEnd ? new Date(data.warrantyEnd) : null,
+        label: data.label || null,
+        location: data.location || null,
+        notes: data.notes || null,
+        status: data.status,
       })
       .where(eq(schema.equipment.id, equipmentId));
     revalidatePath("/admin/maintenance/equipment");
     revalidatePath(`/admin/maintenance/equipment/${equipmentId}`);
-    revalidatePath(`/admin/maintenance/sites/${input.siteId}`);
+    revalidatePath(`/admin/maintenance/sites/${data.siteId}`);
     return { ok: true as const };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
@@ -173,58 +219,48 @@ export async function deleteEquipment(equipmentId: string) {
 
 /* ───────────── Visits ───────────── */
 
-type VisitInput = {
-  equipmentId?: string | null;
-  siteId?: string | null;
-  scheduledFor: number;
-  technicianId?: string | null;
-  type: "preventive" | "curative" | "audit";
-  status: "scheduled" | "in_progress" | "done" | "cancelled";
-  reportMd?: string | null;
-  durationMinutes?: number | null;
-  notes?: string | null;
-};
-
 export async function createVisit(input: VisitInput) {
   await requireAdmin();
   try {
+    const data = visitSchema.parse(input);
     const newId = id();
     await db.insert(schema.maintenanceVisits).values({
       id: newId,
-      equipmentId: input.equipmentId || null,
-      siteId: input.siteId || null,
-      scheduledFor: new Date(input.scheduledFor),
-      technicianId: input.technicianId || null,
-      type: input.type,
-      status: input.status,
-      reportMd: input.reportMd || null,
-      durationMinutes: input.durationMinutes ?? null,
-      notes: input.notes || null,
+      equipmentId: data.equipmentId || null,
+      siteId: data.siteId || null,
+      scheduledFor: new Date(data.scheduledFor),
+      technicianId: data.technicianId || null,
+      type: data.type,
+      status: data.status,
+      reportMd: data.reportMd || null,
+      durationMinutes: data.durationMinutes ?? null,
+      notes: data.notes || null,
     });
     revalidatePath("/admin/maintenance/visits");
     revalidatePath("/admin/calendar");
     revalidatePath("/admin/maintenance");
-    if (input.siteId) revalidatePath(`/admin/maintenance/sites/${input.siteId}`);
-    if (input.equipmentId) revalidatePath(`/admin/maintenance/equipment/${input.equipmentId}`);
+    if (data.siteId) revalidatePath(`/admin/maintenance/sites/${data.siteId}`);
+    if (data.equipmentId) revalidatePath(`/admin/maintenance/equipment/${data.equipmentId}`);
     return { ok: true as const, id: newId };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
 export async function updateVisit(visitId: string, input: Partial<VisitInput>) {
   await requireAdmin();
   try {
+    const data = visitPartialSchema.parse(input);
     const set: Record<string, unknown> = {};
-    if (input.equipmentId !== undefined) set.equipmentId = input.equipmentId || null;
-    if (input.siteId !== undefined) set.siteId = input.siteId || null;
-    if (input.scheduledFor !== undefined) set.scheduledFor = new Date(input.scheduledFor);
-    if (input.technicianId !== undefined) set.technicianId = input.technicianId || null;
-    if (input.type !== undefined) set.type = input.type;
-    if (input.status !== undefined) set.status = input.status;
-    if (input.reportMd !== undefined) set.reportMd = input.reportMd || null;
-    if (input.durationMinutes !== undefined) set.durationMinutes = input.durationMinutes ?? null;
-    if (input.notes !== undefined) set.notes = input.notes || null;
+    if (data.equipmentId !== undefined) set.equipmentId = data.equipmentId || null;
+    if (data.siteId !== undefined) set.siteId = data.siteId || null;
+    if (data.scheduledFor !== undefined) set.scheduledFor = new Date(data.scheduledFor);
+    if (data.technicianId !== undefined) set.technicianId = data.technicianId || null;
+    if (data.type !== undefined) set.type = data.type;
+    if (data.status !== undefined) set.status = data.status;
+    if (data.reportMd !== undefined) set.reportMd = data.reportMd || null;
+    if (data.durationMinutes !== undefined) set.durationMinutes = data.durationMinutes ?? null;
+    if (data.notes !== undefined) set.notes = data.notes || null;
 
     await db.update(schema.maintenanceVisits).set(set).where(eq(schema.maintenanceVisits.id, visitId));
     revalidatePath("/admin/maintenance/visits");
@@ -233,7 +269,7 @@ export async function updateVisit(visitId: string, input: Partial<VisitInput>) {
     revalidatePath("/admin/maintenance");
     return { ok: true as const };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
@@ -244,8 +280,16 @@ export async function markVisitDone(visitId: string, durationMinutes?: number, r
       status: "done",
       doneAt: new Date(),
     };
-    if (durationMinutes !== undefined) set.durationMinutes = durationMinutes;
-    if (reportMd !== undefined) set.reportMd = reportMd;
+    if (durationMinutes !== undefined) {
+      const d = z.number().int().min(0).max(100000).safeParse(durationMinutes);
+      if (!d.success) return { ok: false as const, error: "Donnees invalides" };
+      set.durationMinutes = d.data;
+    }
+    if (reportMd !== undefined) {
+      const r = z.string().max(20000).safeParse(reportMd);
+      if (!r.success) return { ok: false as const, error: "Donnees invalides" };
+      set.reportMd = r.data;
+    }
     await db.update(schema.maintenanceVisits).set(set).where(eq(schema.maintenanceVisits.id, visitId));
     revalidatePath("/admin/maintenance/visits");
     revalidatePath(`/admin/maintenance/visits/${visitId}`);
@@ -272,86 +316,75 @@ export async function deleteVisit(visitId: string) {
 
 /* ───────────── Contracts ───────────── */
 
-type ContractInput = {
-  siteId: string;
-  type: "preventive" | "full_service" | "on_demand";
-  startDate: number;
-  endDate?: number | null;
-  slaHours?: number | null;
-  frequencyMonths: number;
-  amountHt?: number | null;
-  status: "active" | "expired" | "pending";
-  notes?: string | null;
-  generateVisits?: boolean;
-};
-
 export async function createContract(input: ContractInput) {
   await requireAdmin();
   try {
+    const data = contractSchema.parse(input);
     const newId = id();
-    const start = new Date(input.startDate);
-    const end = input.endDate ? new Date(input.endDate) : null;
+    const start = new Date(data.startDate);
+    const end = data.endDate ? new Date(data.endDate) : null;
 
     await db.insert(schema.contracts).values({
       id: newId,
-      siteId: input.siteId,
-      type: input.type,
+      siteId: data.siteId,
+      type: data.type,
       startDate: start,
       endDate: end,
-      slaHours: input.slaHours ?? null,
-      frequencyMonths: input.frequencyMonths,
-      amountHt: input.amountHt ?? null,
-      status: input.status,
-      notes: input.notes || null,
+      slaHours: data.slaHours ?? null,
+      frequencyMonths: data.frequencyMonths,
+      amountHt: data.amountHt ?? null,
+      status: data.status,
+      notes: data.notes || null,
     });
 
     // Optionally generate planned visits
-    if (input.generateVisits && input.type === "preventive" && input.frequencyMonths > 0) {
+    if (data.generateVisits && data.type === "preventive" && data.frequencyMonths > 0) {
       const limit = end || new Date(start.getTime() + 365 * 24 * 60 * 60 * 1000);
       let cur = new Date(start);
       // First visit at start + frequency
       cur = new Date(cur);
-      cur.setMonth(cur.getMonth() + input.frequencyMonths);
+      cur.setMonth(cur.getMonth() + data.frequencyMonths);
       let safeguard = 0;
       while (cur <= limit && safeguard < 100) {
         await db.insert(schema.maintenanceVisits).values({
           id: id(),
-          siteId: input.siteId,
+          siteId: data.siteId,
           scheduledFor: new Date(cur),
           type: "preventive",
           status: "scheduled",
           notes: `Visite planifiee depuis le contrat ${newId.slice(0, 8)}`,
         });
         cur = new Date(cur);
-        cur.setMonth(cur.getMonth() + input.frequencyMonths);
+        cur.setMonth(cur.getMonth() + data.frequencyMonths);
         safeguard++;
       }
     }
 
     revalidatePath("/admin/maintenance/contracts");
-    revalidatePath(`/admin/maintenance/sites/${input.siteId}`);
+    revalidatePath(`/admin/maintenance/sites/${data.siteId}`);
     revalidatePath("/admin/maintenance");
     return { ok: true as const, id: newId };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
 export async function updateContract(contractId: string, input: ContractInput) {
   await requireAdmin();
   try {
+    const data = contractSchema.parse(input);
     await db
       .update(schema.contracts)
       .set({
-        siteId: input.siteId,
-        type: input.type,
-        startDate: new Date(input.startDate),
-        endDate: input.endDate ? new Date(input.endDate) : null,
-        slaHours: input.slaHours ?? null,
-        frequencyMonths: input.frequencyMonths,
-        amountHt: input.amountHt ?? null,
-        status: input.status,
-        notes: input.notes || null,
+        siteId: data.siteId,
+        type: data.type,
+        startDate: new Date(data.startDate),
+        endDate: data.endDate ? new Date(data.endDate) : null,
+        slaHours: data.slaHours ?? null,
+        frequencyMonths: data.frequencyMonths,
+        amountHt: data.amountHt ?? null,
+        status: data.status,
+        notes: data.notes || null,
       })
       .where(eq(schema.contracts.id, contractId));
     revalidatePath("/admin/maintenance/contracts");
@@ -359,7 +392,7 @@ export async function updateContract(contractId: string, input: ContractInput) {
     revalidatePath("/admin/maintenance");
     return { ok: true as const };
   } catch (e) {
-    return { ok: false as const, error: (e as Error).message };
+    return invalidPayload(e);
   }
 }
 
