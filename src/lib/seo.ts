@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
 import type { FAQItem } from "@/data/faq";
-import { getCompanyInfo } from "@/lib/content";
+import type { PublicCompanyInfo } from "@/lib/content-types";
 
 const baseUrl = "https://iefandco.com";
 
@@ -41,42 +41,50 @@ export function generatePageMetadata(page: {
   };
 }
 
-export async function generateLocalBusinessSchema() {
-  const company = await getCompanyInfo();
+/**
+ * Generates the LocalBusiness JSON-LD schema. Sync — accepts the resolved
+ * company info as a parameter so this module stays client-safe (no
+ * server-only imports). The caller (server component) is responsible for
+ * fetching the override via `getCompanyInfo()` from `@/lib/content` and
+ * passing it here. When called without arguments, falls back to the static
+ * `companyInfo` from data/navigation.ts.
+ */
+export function generateLocalBusinessSchema(company?: PublicCompanyInfo) {
+  const c = company ?? (companyInfo as unknown as PublicCompanyInfo);
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "@id": `${baseUrl}/#organization`,
-    name: company.name,
-    legalName: company.legalName,
-    description: company.tagline,
+    name: c.name,
+    legalName: c.legalName,
+    description: c.tagline,
     url: baseUrl,
     logo: `${baseUrl}/icon.svg`,
     image: [
       `${baseUrl}/opengraph-image`,
       `${baseUrl}/images/photos/hero-welder-dark.jpg`,
     ],
-    telephone: company.phone,
-    email: company.email,
-    foundingDate: String(company.founded),
+    telephone: c.phone,
+    email: c.email,
+    foundingDate: String(c.founded),
     founder: {
       "@type": "Person",
-      name: company.president,
+      name: c.president,
     },
     address: {
       "@type": "PostalAddress",
-      streetAddress: company.address.street,
-      addressLocality: company.address.city,
-      postalCode: company.address.postalCode,
-      addressRegion: company.address.region,
-      addressCountry: company.address.country,
+      streetAddress: c.address.street,
+      addressLocality: c.address.city,
+      postalCode: c.address.postalCode,
+      addressRegion: c.address.region,
+      addressCountry: c.address.country,
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: company.geo.lat,
-      longitude: company.geo.lng,
+      latitude: c.geo.lat,
+      longitude: c.geo.lng,
     },
-    areaServed: company.areaServed.map((area) => ({
+    areaServed: c.areaServed.map((area) => ({
       "@type": "AdministrativeArea",
       name: area,
     })),
@@ -100,13 +108,13 @@ export async function generateLocalBusinessSchema() {
       "Portes coupe-feu",
       "Maintenance préventive",
     ],
-    sameAs: Object.values(company.social).filter(
+    sameAs: Object.values(c.social).filter(
       (v): v is string => typeof v === "string" && v.length > 0,
     ),
     identifier: {
       "@type": "PropertyValue",
       propertyID: "SIREN",
-      value: company.siren,
+      value: c.siren,
     },
   };
 }

@@ -810,39 +810,12 @@ export async function getDepannageService(slug: string): Promise<DepannageServic
  * a static fallback to `src/data/navigation.ts#companyInfo` for any field
  * not yet edited via the admin or when the DB is unavailable.
  */
-export interface PublicCompanyInfo {
-  /** Display name, e.g. "IEF & CO". */
-  name: string;
-  /** Legal name, e.g. "IEF AND CO". */
-  legalName: string;
-  /** Marketing tagline / short description (one-liner). */
-  tagline: string;
-  /** Tel: link target — full international format, e.g. "+33 1 34 05 87 03". */
-  phone: string;
-  /** Human-readable phone, e.g. "01 34 05 87 03". */
-  phoneDisplay: string;
-  email: string;
-  address: {
-    street: string;
-    postalCode: string;
-    city: string;
-    region: string;
-    country: string;
-  };
-  /** Free-form opening hours (single line), e.g. "Lundi - Vendredi : 8h - 18h". */
-  hours: string;
-  siren: string;
-  naf?: string;
-  tvaIntra?: string;
-  rcs: string;
-  capital?: string;
-  president: string;
-  founded: number;
-  website: string;
-  geo: { lat: number; lng: number };
-  areaServed: string[];
-  social: { linkedin?: string };
-}
+// PublicCompanyInfo is now declared in `lib/content-types.ts` so that
+// `lib/seo.ts` can reference the type without dragging server-only code
+// into client components. Re-imported here so existing helpers keep
+// working unchanged.
+import type { PublicCompanyInfo } from "./content-types";
+export type { PublicCompanyInfo };
 
 /**
  * Derives a human-readable phone display from the international `phone`
