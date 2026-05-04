@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { companyInfo } from "@/data/navigation";
 import { generatePageMetadata } from "@/lib/seo";
-import { getPageSeo, getCompanyInfo } from "@/lib/content";
+import { getPageSeo, getLegalContent } from "@/lib/content";
+import { markdownToHtml } from "@/lib/markdown";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("politique-confidentialite");
@@ -15,7 +17,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PolitiqueConfidentialite() {
-  const company = await getCompanyInfo();
+  const customMarkdown = await getLegalContent("privacy");
+  const customHtml = customMarkdown ? markdownToHtml(customMarkdown) : null;
+
   return (
     <section className="section-forge-light relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32 min-h-screen">
       <div className="forge-gradient-light" style={{ opacity: 0.4 }} />
@@ -30,33 +34,41 @@ export default async function PolitiqueConfidentialite() {
           Politique de confidentialité
         </h1>
 
-        <div className="mt-10 space-y-8 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Responsable du traitement</h2>
-            <p>{company.legalName}, {company.address.street}, {company.address.postalCode} {company.address.city}.</p>
-            <p>Contact : {company.email}</p>
-          </section>
+        {customHtml ? (
+          <div
+            className="mt-10 space-y-3 text-sm leading-relaxed"
+            style={{ color: "var(--text-secondary)" }}
+            dangerouslySetInnerHTML={{ __html: customHtml }}
+          />
+        ) : (
+          <div className="mt-10 space-y-8 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            <section>
+              <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Responsable du traitement</h2>
+              <p>{companyInfo.fullName}, {companyInfo.address.street}, {companyInfo.address.postalCode} {companyInfo.address.city}.</p>
+              <p>Contact : {companyInfo.email}</p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Données collectées</h2>
-            <p>Les données collectées via les formulaires de contact et de devis comprennent : nom, prénom, email, téléphone, société, et le contenu du message. Ces données sont utilisées exclusivement pour répondre à vos demandes.</p>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Données collectées</h2>
+              <p>Les données collectées via les formulaires de contact et de devis comprennent : nom, prénom, email, téléphone, société, et le contenu du message. Ces données sont utilisées exclusivement pour répondre à vos demandes.</p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Durée de conservation</h2>
-            <p>Les données sont conservées pendant une durée de 3 ans à compter du dernier contact, conformément à la réglementation en vigueur.</p>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Durée de conservation</h2>
+              <p>Les données sont conservées pendant une durée de 3 ans à compter du dernier contact, conformément à la réglementation en vigueur.</p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Vos droits</h2>
-            <p>Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de rectification, de suppression et de portabilité de vos données. Pour exercer ces droits, contactez-nous à {company.email}.</p>
-          </section>
+            <section>
+              <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Vos droits</h2>
+              <p>Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de rectification, de suppression et de portabilité de vos données. Pour exercer ces droits, contactez-nous à {companyInfo.email}.</p>
+            </section>
 
-          <section>
-            <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Cookies</h2>
-            <p>Ce site utilise uniquement des cookies techniques nécessaires à son fonctionnement. Aucun cookie publicitaire ou de tracking n&apos;est utilisé.</p>
-          </section>
-        </div>
+            <section>
+              <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Cookies</h2>
+              <p>Ce site utilise uniquement des cookies techniques nécessaires à son fonctionnement. Aucun cookie publicitaire ou de tracking n&apos;est utilisé.</p>
+            </section>
+          </div>
+        )}
       </div>
     </section>
   );

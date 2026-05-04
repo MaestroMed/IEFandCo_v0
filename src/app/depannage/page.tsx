@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { depannageServices } from "@/data/depannage";
 import { zones } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
-import { getPageSeo, getPageHero, getCompanyInfo } from "@/lib/content";
-import { ATMOSPHERE } from "@/lib/photoMap";
+import { companyInfo } from "@/data/navigation";
+import { getPageSeo, getPageHero } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("depannage-index");
@@ -23,42 +23,58 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DepannageIndexPage() {
-  const [heroOverride, company] = await Promise.all([
-    getPageHero("depannage-index"),
-    getCompanyInfo(),
-  ]);
+  const heroOverride = await getPageHero("depannage-index");
+  const heroOpacity = (heroOverride?.opacity ?? 100) / 100;
+  const heroObjectPos = heroOverride?.objectPosition ?? "center 50%";
+  const heroOverlayLeft = (heroOverride?.overlayLeft ?? 70) / 100;
+  const heroIsVideo = heroOverride?.mediaMime?.startsWith("video/");
   return (
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        {/* Branded background — IEF & CO night intervention van (V3 slot #32) */}
-        <div className="absolute inset-0 pointer-events-none">
-          <Image
-            src={heroOverride?.imageUrl || ATMOSPHERE.heroDepannage}
-            alt={heroOverride?.imageAlt || ""}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-            style={{
-              objectPosition: heroOverride?.objectPosition || "center 50%",
-              opacity: (heroOverride?.opacity ?? 100) / 100,
-              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
-            }}
-          />
-        </div>
-
-        <div className="forge-gradient-dark" style={{ opacity: 0.5 }} />
-        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
-        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.04 }} />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
+        {heroOverride?.mediaUrl && (
+          <div className="absolute inset-0 pointer-events-none">
+            {heroIsVideo ? (
+              <video
+                src={heroOverride.mediaUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            ) : (
+              <Image
+                src={heroOverride.mediaUrl}
+                alt={heroOverride.mediaAlt ?? ""}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            )}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${heroOverlayLeft}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
+              }}
+            />
+          </div>
+        )}
+        <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.55} origin="bottom" />
+        <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 
         <div className="relative z-10 mx-auto max-w-7xl px-6">
           <nav className="mb-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
@@ -73,26 +89,33 @@ export default async function DepannageIndexPage() {
               <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--color-primary)" }} />
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--color-primary)" }}>
-              {heroOverride?.eyebrow || "Urgence 24/7 sur contrat"}
+              {heroOverride?.eyebrow ?? "Urgence 24/7 sur contrat"}
             </span>
           </div>
 
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            {heroOverride?.title ? <>{heroOverride.title}</> : <><span className="text-gradient-metal">Dépannage urgent</span><br />métallerie Île-de-France</>}
+            {heroOverride?.title ? (
+              <>{heroOverride.title}</>
+            ) : (
+              <><span className="text-gradient-metal">Dépannage urgent</span><br />
+              métallerie Île-de-France</>
+            )}
           </h1>
           <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {heroOverride?.intro || `${depannageServices.length} types d'interventions × ${zones.length} départements IDF. Stock pièces permanent pour ${depannageServices.reduce((sum, s) => sum + s.brands.length, 0)}+ marques différentes.`}
+            {heroOverride?.intro ?? (
+              <>{depannageServices.length} types d&apos;interventions × {zones.length} départements IDF. Stock pièces permanent pour {depannageServices.reduce((sum, s) => sum + s.brands.length, 0)}+ marques différentes.</>
+            )}
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
             <a
-              href={`tel:${company.phone}`}
+              href={`tel:${companyInfo.phone}`}
               className="inline-flex items-center gap-3 rounded-lg px-6 py-3 font-semibold text-white transition-all hover:scale-105"
               style={{ background: "var(--color-primary)", boxShadow: "0 10px 30px rgba(225, 16, 33, 0.3)" }}
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
               </svg>
-              {company.phoneDisplay}
+              {companyInfo.phoneDisplay}
             </a>
             <Button href="/maintenance/contrats" variant="secondary" size="lg">Voir nos contrats</Button>
           </div>

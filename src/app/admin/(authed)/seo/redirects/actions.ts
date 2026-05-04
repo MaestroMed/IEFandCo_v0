@@ -105,41 +105,45 @@ export async function importRedirectsCsv(csv: string) {
     let skipped = 0;
     const errors: string[] = [];
 
-    for (const line of lines) {
-      const parts = line.split(",").map((p) => p.trim());
-      if (parts.length < 2) {
-        skipped++;
-        continue;
+    // Wrap all inserts in a single transaction so a failure mid-batch
+    // rolls back the whole import (no partial commits).
+    await db.transaction(async (tx) => {
+      for (const line of lines) {
+        const parts = line.split(",").map((p) => p.trim());
+        if (parts.length < 2) {
+          skipped++;
+          continue;
+        }
+        const fromPath = normalizePath(parts[0]);
+        const toPath = normalizePath(parts[1]);
+        const statusCode = parts[2] ? Number(parts[2]) : 301;
+        if (!fromPath || !toPath) {
+          skipped++;
+          continue;
+        }
+        if (![301, 302, 307, 308].includes(statusCode)) {
+          errors.push(`Ligne ignoree (status invalide): ${line}`);
+          skipped++;
+          continue;
+        }
+        const existing = await tx
+          .select({ id: schema.redirects.id })
+          .from(schema.redirects)
+          .where(eq(schema.redirects.fromPath, fromPath))
+          .limit(1);
+        if (existing.length > 0) {
+          skipped++;
+          continue;
+        }
+        await tx.insert(schema.redirects).values({
+          id: id(),
+          fromPath,
+          toPath,
+          statusCode,
+        });
+        imported++;
       }
-      const fromPath = normalizePath(parts[0]);
-      const toPath = normalizePath(parts[1]);
-      const statusCode = parts[2] ? Number(parts[2]) : 301;
-      if (!fromPath || !toPath) {
-        skipped++;
-        continue;
-      }
-      if (![301, 302, 307, 308].includes(statusCode)) {
-        errors.push(`Ligne ignoree (status invalide): ${line}`);
-        skipped++;
-        continue;
-      }
-      const existing = await db
-        .select({ id: schema.redirects.id })
-        .from(schema.redirects)
-        .where(eq(schema.redirects.fromPath, fromPath))
-        .limit(1);
-      if (existing.length > 0) {
-        skipped++;
-        continue;
-      }
-      await db.insert(schema.redirects).values({
-        id: id(),
-        fromPath,
-        toPath,
-        statusCode,
-      });
-      imported++;
-    }
+    });
 
     await logAudit({
       userId: me.id,

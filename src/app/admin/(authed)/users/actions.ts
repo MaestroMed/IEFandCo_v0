@@ -131,6 +131,11 @@ export async function deleteUser(userId: string) {
   if (!canManageTeam(me)) return { ok: false as const, error: "Acces refuse" };
   if (me.id === userId) return { ok: false as const, error: "Impossible de se supprimer soi-meme" };
   try {
+    // Explicitly revoke any active session for this user before deletion.
+    // The FK already cascades on delete at the DB level, but doing this
+    // explicitly first removes a window where the session token could be
+    // valid against a partially-removed user (and is robust to FK drift).
+    await db.delete(schema.sessions).where(eq(schema.sessions.userId, userId));
     await db.delete(schema.users).where(eq(schema.users.id, userId));
     await deleteSetting(`user-mustchange:${userId}`);
     await logAudit({

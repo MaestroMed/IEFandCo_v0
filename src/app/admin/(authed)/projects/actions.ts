@@ -193,12 +193,16 @@ export async function deleteProjectImage(imageId: string, projectId: string) {
 export async function reorderProjectImages(projectId: string, ordered: string[]) {
   await requireAdmin();
   try {
-    for (let i = 0; i < ordered.length; i++) {
-      await db
-        .update(schema.projectImages)
-        .set({ orderIdx: i })
-        .where(eq(schema.projectImages.id, ordered[i]));
-    }
+    // Wrap reorder in a transaction so a failure mid-loop doesn't leave the
+    // gallery in a half-reordered state.
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < ordered.length; i++) {
+        await tx
+          .update(schema.projectImages)
+          .set({ orderIdx: i })
+          .where(eq(schema.projectImages.id, ordered[i]));
+      }
+    });
     revalidatePath(`/admin/projects/${projectId}`);
     return { ok: true as const };
   } catch (e) {

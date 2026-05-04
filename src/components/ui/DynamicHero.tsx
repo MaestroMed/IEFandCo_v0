@@ -82,11 +82,11 @@ export async function DynamicHero({
   const eyebrow = override?.eyebrow ?? fallbackEyebrow;
   const title = override?.title ? <>{override.title}</> : fallbackTitle;
   const intro = override?.intro ? <>{override.intro}</> : fallbackIntro;
-  const imageSrc = override?.imageUrl ?? fallbackImage;
+  const imageSrc = override?.mediaUrl ?? fallbackImage;
   const objectPosition = override?.objectPosition ?? defaultObjectPosition;
   const opacity = (override?.opacity ?? defaultOpacity) / 100;
   const overlayLeftStrength = (override?.overlayLeft ?? defaultOverlayLeft) / 100;
-  const isVideo = override?.imageMime?.startsWith("video/");
+  const isVideo = override?.mediaMime?.startsWith("video/");
 
   return (
     <section
@@ -94,9 +94,9 @@ export async function DynamicHero({
     >
       {/* Branded background — DB override or static fallback */}
       <div className="absolute inset-0 pointer-events-none">
-        {isVideo && override?.imageUrl ? (
+        {isVideo && override?.mediaUrl ? (
           <video
-            src={override.imageUrl}
+            src={override.mediaUrl}
             autoPlay
             muted
             loop
@@ -111,7 +111,7 @@ export async function DynamicHero({
         ) : (
           <Image
             src={imageSrc}
-            alt={override?.imageAlt || ""}
+            alt={override?.mediaAlt || ""}
             fill
             priority
             sizes="100vw"

@@ -32,6 +32,11 @@ const values = [
 export default async function AProposPage() {
   const team = await getTeam();
   const heroOverride = await getPageHero("a-propos");
+  const heroImage = heroOverride?.mediaUrl ?? ATMOSPHERE.about;
+  const heroOpacity = (heroOverride?.opacity ?? 100) / 100;
+  const heroObjectPos = heroOverride?.objectPosition ?? "center 45%";
+  const heroOverlayLeft = (heroOverride?.overlayLeft ?? 70) / 100;
+  const heroIsVideo = heroOverride?.mediaMime?.startsWith("video/");
   const breadcrumb = generateBreadcrumbSchema([
     { name: "Accueil", url: "/" },
     { name: "À propos", url: "/a-propos" },
@@ -49,24 +54,40 @@ export default async function AProposPage() {
         {/* Workshop atmosphere photo — branded IEF & CO 3-artisans shot,
            kept readable behind the mission copy. */}
         <div className="absolute inset-0 pointer-events-none">
-          <Image
-            src={heroOverride?.imageUrl || ATMOSPHERE.about}
-            alt={heroOverride?.imageAlt || ""}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-            style={{
-              objectPosition: heroOverride?.objectPosition || "center 45%",
-              opacity: (heroOverride?.opacity ?? 100) / 100,
-              filter: "contrast(1.08) brightness(1.02) saturate(1.08)",
-            }}
-          />
+          {heroIsVideo ? (
+            <video
+              src={heroImage}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                objectPosition: heroObjectPos,
+                opacity: heroOpacity,
+                filter: "contrast(1.08) brightness(1.02) saturate(1.08)",
+              }}
+            />
+          ) : (
+            <Image
+              src={heroImage}
+              alt={heroOverride?.mediaAlt ?? ""}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+              style={{
+                objectPosition: heroObjectPos,
+                opacity: heroOpacity,
+                filter: "contrast(1.08) brightness(1.02) saturate(1.08)",
+              }}
+            />
+          )}
           <div
             className="absolute inset-0"
             style={{
               background:
-                `linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
+                `linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, ${heroOverlayLeft}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -86,14 +107,21 @@ export default async function AProposPage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              {heroOverride?.eyebrow || "Maison fondée en 2020 · Groslay, 95"}
+              {heroOverride?.eyebrow ?? "Maison fondée en 2020 · Groslay, 95"}
             </span>
           </div>
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            {heroOverride?.title ? <>{heroOverride.title}</> : <>L&apos;art du métal, <span className="text-gradient-metal">la rigueur d&apos;un atelier</span></>}
+            {heroOverride?.title ? (
+              <>{heroOverride.title}</>
+            ) : (
+              <>L&apos;art du métal, <span className="text-gradient-metal">la rigueur d&apos;un atelier</span></>
+            )}
           </h1>
           <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {heroOverride?.intro || "IEF & CO est une maison indépendante de métallerie-serrurerie, fondée sur l'exigence technique et la relation directe avec le client. Ici, chaque trait est pesé, chaque soudure contrôlée."}
+            {heroOverride?.intro ?? (
+              <>IEF & CO est une maison indépendante de métallerie-serrurerie, fondée sur l&apos;exigence technique
+              et la relation directe avec le client. Ici, chaque trait est pesé, chaque soudure contrôlée.</>
+            )}
           </p>
         </div>
       </section>

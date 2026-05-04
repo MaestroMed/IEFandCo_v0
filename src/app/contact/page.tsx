@@ -1,28 +1,29 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
+import { companyInfo } from "@/data/navigation";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
-import { getPageSeo, getPageHero, getCompanyInfo } from "@/lib/content";
-import { ATMOSPHERE } from "@/lib/photoMap";
+import { getPageSeo, getPageHero } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [seo, company] = await Promise.all([getPageSeo("contact"), getCompanyInfo()]);
+  const seo = await getPageSeo("contact");
   return generatePageMetadata({
     title: seo?.title || "Contact | Parlons de votre projet métallique",
     description:
       seo?.description ||
-      `Contactez IEF & CO pour vos projets de métallerie en Île-de-France. Devis gratuit, étude technique, intervention rapide. Tel : ${company.phoneDisplay}.`,
+      "Contactez IEF & CO pour vos projets de métallerie en Île-de-France. Devis gratuit, étude technique, intervention rapide. Tel : 01 34 05 87 03.",
     path: "/contact",
     image: seo?.ogImageUrl,
   });
 }
 
 export default async function ContactPage() {
-  const [heroOverride, company] = await Promise.all([
-    getPageHero("contact"),
-    getCompanyInfo(),
-  ]);
+  const heroOverride = await getPageHero("contact");
+  const heroOpacity = (heroOverride?.opacity ?? 100) / 100;
+  const heroObjectPos = heroOverride?.objectPosition ?? "center 50%";
+  const heroOverlayLeft = (heroOverride?.overlayLeft ?? 70) / 100;
+  const heroIsVideo = heroOverride?.mediaMime?.startsWith("video/");
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Accueil", url: "/" },
     { name: "Contact", url: "/contact" },
@@ -37,45 +38,67 @@ export default async function ContactPage() {
 
       {/* ═══════════ HERO (DARK) ═══════════ */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-16 md:pt-40">
-        {/* Branded background — welcoming workshop entrance */}
-        <div className="absolute inset-0 pointer-events-none">
-          <Image
-            src={heroOverride?.imageUrl || ATMOSPHERE.heroContact}
-            alt={heroOverride?.imageAlt || ""}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-            style={{
-              objectPosition: heroOverride?.objectPosition || "center 50%",
-              opacity: (heroOverride?.opacity ?? 100) / 100,
-              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
-            }}
-          />
-        </div>
-
-        <div className="forge-gradient-dark" style={{ opacity: 0.5 }} />
-        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
+        {heroOverride?.mediaUrl && (
+          <div className="absolute inset-0 pointer-events-none">
+            {heroIsVideo ? (
+              <video
+                src={heroOverride.mediaUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            ) : (
+              <Image
+                src={heroOverride.mediaUrl}
+                alt={heroOverride.mediaAlt ?? ""}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            )}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${heroOverlayLeft}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
+              }}
+            />
+          </div>
+        )}
+        <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.5} origin="bottom" />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
         <div className="relative z-10 mx-auto max-w-7xl px-6">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              {heroOverride?.eyebrow || "Contact"}
+              {heroOverride?.eyebrow ?? "Contact"}
             </span>
           </div>
           <h1 className="max-w-3xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            {heroOverride?.title ? <>{heroOverride.title}</> : <>Parlons de <span className="text-gradient-metal">votre projet</span></>}
+            {heroOverride?.title ? (
+              <>{heroOverride.title}</>
+            ) : (
+              <>Parlons de <span className="text-gradient-metal">votre projet</span></>
+            )}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {heroOverride?.intro || "Étude gratuite, devis détaillé sous 48h, un seul interlocuteur de la conception à la pose. Chaque projet commence par une conversation."}
+            {heroOverride?.intro ?? (
+              <>Étude gratuite, devis détaillé sous 48h, un seul interlocuteur de la conception à la pose.
+              Chaque projet commence par une conversation.</>
+            )}
           </p>
         </div>
       </section>
@@ -132,9 +155,9 @@ export default async function ContactPage() {
                   </svg>
                 </div>
                 <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {company.address.street}<br />
-                  {company.address.postalCode} {company.address.city}<br />
-                  <span className="text-sm" style={{ color: "var(--text-muted)" }}>{company.address.region}</span>
+                  {companyInfo.address.street}<br />
+                  {companyInfo.address.postalCode} {companyInfo.address.city}<br />
+                  <span className="text-sm" style={{ color: "var(--text-muted)" }}>{companyInfo.address.region}</span>
                 </p>
               </div>
             </div>
@@ -147,7 +170,7 @@ export default async function ContactPage() {
                 Téléphone
               </h3>
               <a
-                href={`tel:${company.phone}`}
+                href={`tel:${companyInfo.phone}`}
                 className="mt-3 flex items-start gap-4 group"
               >
                 <div
@@ -163,7 +186,7 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <div className="font-display text-xl font-bold transition-colors group-hover:text-primary" style={{ color: "var(--text)" }}>
-                    {company.phoneDisplay}
+                    {companyInfo.phoneDisplay}
                   </div>
                   <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Lun-Ven · 8h-18h</div>
                 </div>
@@ -178,7 +201,7 @@ export default async function ContactPage() {
                 Email
               </h3>
               <a
-                href={`mailto:${company.email}`}
+                href={`mailto:${companyInfo.email}`}
                 className="mt-3 flex items-start gap-4 group"
               >
                 <div
@@ -194,7 +217,7 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <div className="font-display text-base font-semibold transition-colors group-hover:text-primary break-all" style={{ color: "var(--text)" }}>
-                    {company.email}
+                    {companyInfo.email}
                   </div>
                   <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Réponse sous 24h</div>
                 </div>

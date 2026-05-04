@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { glossary, getTermsByCategory } from "@/data/glossary";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { getPageSeo, getPageHero } from "@/lib/content";
-import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("glossaire-index");
@@ -33,39 +32,58 @@ const categoryColors: Record<string, string> = {
 export default async function GlossairePage() {
   const byCategory = getTermsByCategory();
   const heroOverride = await getPageHero("glossaire-index");
+  const heroOpacity = (heroOverride?.opacity ?? 100) / 100;
+  const heroObjectPos = heroOverride?.objectPosition ?? "center 50%";
+  const heroOverlayLeft = (heroOverride?.overlayLeft ?? 70) / 100;
+  const heroIsVideo = heroOverride?.mediaMime?.startsWith("video/");
 
   return (
     <>
       {/* HERO */}
       <section className="section-forge-dark relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
-        {/* Branded background — technical reference atmosphere */}
-        <div className="absolute inset-0 pointer-events-none">
-          <Image
-            src={heroOverride?.imageUrl || ATMOSPHERE.heroGlossaire}
-            alt={heroOverride?.imageAlt || ""}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-            style={{
-              objectPosition: heroOverride?.objectPosition || "center 50%",
-              opacity: (heroOverride?.opacity ?? 100) / 100,
-              filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
-            }}
-          />
-        </div>
-
-        <div className="forge-gradient-dark" style={{ opacity: 0.5 }} />
-        <WorkshopAtmosphere intensity={0.4} origin="bottom" />
+        {heroOverride?.mediaUrl && (
+          <div className="absolute inset-0 pointer-events-none">
+            {heroIsVideo ? (
+              <video
+                src={heroOverride.mediaUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            ) : (
+              <Image
+                src={heroOverride.mediaUrl}
+                alt={heroOverride.mediaAlt ?? ""}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+                style={{
+                  objectPosition: heroObjectPos,
+                  opacity: heroOpacity,
+                  filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
+                }}
+              />
+            )}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${heroOverlayLeft}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
+              }}
+            />
+          </div>
+        )}
+        <div className="forge-gradient-dark" />
+        <WorkshopAtmosphere intensity={0.45} origin="bottom" />
         <div className="absolute inset-0 blueprint-grid pointer-events-none" style={{ opacity: 0.05 }} />
-        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />
+        <div className="grain absolute inset-0 pointer-events-none" style={{ opacity: 0.4 }} />
 
         <div className="relative z-10 mx-auto max-w-5xl px-6">
           <nav className="mb-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em]" style={{ color: "var(--text-muted)" }}>
@@ -77,14 +95,21 @@ export default async function GlossairePage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              {heroOverride?.eyebrow || `${glossary.length} termes · 6 catégories`}
+              {heroOverride?.eyebrow ?? `${glossary.length} termes · 6 catégories`}
             </span>
           </div>
           <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            {heroOverride?.title ? <>{heroOverride.title}</> : <><span className="text-gradient-metal">Glossaire</span> métallerie</>}
+            {heroOverride?.title ? (
+              <>{heroOverride.title}</>
+            ) : (
+              <><span className="text-gradient-metal">Glossaire</span> métallerie</>
+            )}
           </h1>
           <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {heroOverride?.intro || "Toutes les définitions techniques, normatives et réglementaires de la métallerie B2B — par les experts IEF & CO."}
+            {heroOverride?.intro ?? (
+              <>Toutes les définitions techniques, normatives et réglementaires de la métallerie B2B —
+              par les experts IEF & CO.</>
+            )}
           </p>
         </div>
       </section>

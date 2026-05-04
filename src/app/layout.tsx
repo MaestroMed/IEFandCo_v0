@@ -14,89 +14,63 @@ import { Analytics } from "@/components/layout/Analytics";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { generateLocalBusinessSchema } from "@/lib/seo";
-import { getBranding } from "@/lib/content";
+import { getNavigation, getPublicIntegrations } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  // Resolve DB-overridable favicon. Falls back to Next.js conventions
-  // (src/app/favicon.ico + public/icon.svg + public/apple-icon.svg) when
-  // no admin-uploaded favicon is configured.
-  const branding = await getBranding();
-
-  const icons: Metadata["icons"] = branding.faviconUrl
-    ? {
-        icon: [
-          { url: branding.faviconUrl },
-          // Keep the static SVG as a fallback for browsers that prefer SVG
-          { url: "/icon.svg", type: "image/svg+xml" },
-        ],
-        apple: [{ url: branding.faviconUrl }],
-        shortcut: branding.faviconUrl,
-      }
-    : undefined;
-
-  return {
-    metadataBase: new URL("https://iefandco.com"),
-    title: {
-      default:
-        "IEF & CO | Métallerie Serrurerie Île-de-France — Groslay (95)",
-      template: "%s | IEF & CO",
-    },
+export const metadata: Metadata = {
+  metadataBase: new URL("https://iefandco.com"),
+  title: {
+    default:
+      "IEF & CO | Métallerie Serrurerie Île-de-France — Groslay (95)",
+    template: "%s | IEF & CO",
+  },
+  description:
+    "IEF & CO, expert en métallerie et serrurerie à Groslay (95). Fermetures industrielles, portails, structures métalliques, menuiserie, portes coupe-feu, automatismes et maintenance 24/7 en Île-de-France.",
+  keywords: [
+    "métallerie",
+    "serrurerie",
+    "Groslay",
+    "Val-d'Oise",
+    "Île-de-France",
+    "porte industrielle",
+    "portail",
+    "structure métallique",
+    "coupe-feu",
+    "maintenance",
+  ],
+  authors: [{ name: "IEF & CO" }],
+  creator: "Numelite",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: "https://iefandco.com",
+    siteName: "IEF & CO",
+    title: "IEF & CO | Métallerie Serrurerie Île-de-France",
     description:
-      "IEF & CO, expert en métallerie et serrurerie à Groslay (95). Fermetures industrielles, portails, structures métalliques, menuiserie, portes coupe-feu, automatismes et maintenance 24/7 en Île-de-France.",
-    keywords: [
-      "métallerie",
-      "serrurerie",
-      "Groslay",
-      "Val-d'Oise",
-      "Île-de-France",
-      "porte industrielle",
-      "portail",
-      "structure métallique",
-      "coupe-feu",
-      "maintenance",
-    ],
-    authors: [{ name: "IEF & CO" }],
-    creator: "Numelite",
-    icons,
-    openGraph: {
-      type: "website",
-      locale: "fr_FR",
-      url: "https://iefandco.com",
-      siteName: "IEF & CO",
-      title: "IEF & CO | Métallerie Serrurerie Île-de-France",
-      description:
-        "Concepteur et fabricant de solutions métalliques sur mesure. De la conception à la pose.",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "IEF & CO | Métallerie Serrurerie Île-de-France",
-      description:
-        "Concepteur et fabricant de solutions métalliques sur mesure.",
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };
-}
+      "Concepteur et fabricant de solutions métalliques sur mesure. De la conception à la pose.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IEF & CO | Métallerie Serrurerie Île-de-France",
+    description:
+      "Concepteur et fabricant de solutions métalliques sur mesure.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
+};
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [localBusinessSchema, branding] = await Promise.all([
-    generateLocalBusinessSchema(),
-    getBranding(),
-  ]);
-  const navbarBranding = {
-    logoUrl: branding.logoUrl,
-    logoLightUrl: branding.logoLightUrl,
-    logoAlt: branding.logoAlt,
-  };
+  const localBusinessSchema = generateLocalBusinessSchema();
+  const navigation = await getNavigation();
+  const integrations = await getPublicIntegrations();
 
   return (
     <html
@@ -128,7 +102,7 @@ export default async function RootLayout({
           </a>
           <PageProgress />
           <ScrollProgress />
-          <Navbar branding={navbarBranding} />
+          <Navbar nav={navigation} />
           <ViewTransition>
             <main id="main-content">{children}</main>
           </ViewTransition>
@@ -136,11 +110,11 @@ export default async function RootLayout({
           <StickyMobileCTA />
           <CookieBanner />
         </SmoothScroll>
-        <Analytics />
+        <Analytics plausibleDomain={integrations.plausibleDomain} />
         {/* Vercel Web Vitals (Core Web Vitals in real time) — no-op if NEXT_PUBLIC_VERCEL_ENV not set */}
         <SpeedInsights />
-        {/* Vercel Analytics — pageviews + custom events. Respect cookie consent via Analytics layer above. */}
-        <VercelAnalytics />
+        {/* Vercel Analytics — gated by BO toggle (Settings > Integrations). Defaults ON. */}
+        {integrations.vercelAnalyticsEnabled && <VercelAnalytics />}
       </body>
     </html>
   );

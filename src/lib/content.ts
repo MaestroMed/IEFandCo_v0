@@ -470,6 +470,197 @@ export async function getHomepageHero(): Promise<HeroConfig | null> {
   }
 }
 
+/* ─────────── Page Heroes (per-page hero overrides for static pages) ─────────── */
+
+export interface PageHeroOverride {
+  enabled: boolean;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  mediaUrl?: string;
+  mediaMime?: string;
+  mediaAlt?: string;
+  objectPosition: string;
+  opacity: number;
+  overlayLeft: number;
+}
+
+export async function getPageHero(key: string): Promise<PageHeroOverride | null> {
+  if (!isDbConfigured()) return null;
+  try {
+    const row = (
+      await db.select().from(schema.pageHeroes).where(eq(schema.pageHeroes.key, key)).limit(1)
+    )[0];
+    if (!row || !row.enabled) return null;
+    let mediaUrl: string | undefined;
+    let mediaMime: string | undefined;
+    let mediaAlt: string | undefined;
+    if (row.mediaId) {
+      const map = await getMediaMetaMap([row.mediaId]);
+      const m = map.get(row.mediaId);
+      mediaUrl = m?.url;
+      mediaMime = m?.mime;
+      mediaAlt = m?.alt ?? undefined;
+    }
+    return {
+      enabled: true,
+      eyebrow: row.eyebrow ?? undefined,
+      title: row.title ?? undefined,
+      intro: row.intro ?? undefined,
+      mediaUrl,
+      mediaMime,
+      mediaAlt,
+      objectPosition: row.objectPosition || "center 50%",
+      opacity: typeof row.opacity === "number" ? row.opacity : 100,
+      overlayLeft: typeof row.overlayLeft === "number" ? row.overlayLeft : 70,
+    };
+  } catch (err) {
+    console.warn("[content] getPageHero failed:", err);
+    return null;
+  }
+}
+
+/* ─────────── Navigation (stored in settings as JSON under nav:main) ─────────── */
+
+import { navigation as staticNavigation, type NavItem as StaticNavItem } from "@/data/navigation";
+
+export type NavigationItem = StaticNavItem;
+
+/**
+ * Reads the public navigation from the settings table (key `nav:main`),
+ * falling back to the static seed in `@/data/navigation`. This lets the
+ * /admin/settings/navigation form drive the public navbar without breaking
+ * when the DB is empty or unreachable.
+ */
+export async function getNavigation(): Promise<NavigationItem[]> {
+  if (!isDbConfigured()) return staticNavigation;
+  try {
+    const row = (
+      await db
+        .select()
+        .from(schema.settings)
+        .where(eq(schema.settings.key, "nav:main"))
+        .limit(1)
+    )[0];
+    if (!row?.valueJson) return staticNavigation;
+    let parsed: unknown = null;
+    try {
+      parsed = JSON.parse(row.valueJson);
+    } catch {
+      return staticNavigation;
+    }
+    if (!Array.isArray(parsed) || parsed.length === 0) return staticNavigation;
+    // Light shape validation — coerce to NavigationItem[]
+    const valid = (parsed as unknown[]).filter(
+      (it): it is NavigationItem =>
+        typeof it === "object" &&
+        it !== null &&
+        typeof (it as { label?: unknown }).label === "string" &&
+        typeof (it as { href?: unknown }).href === "string",
+    );
+    return valid.length > 0 ? valid : staticNavigation;
+  } catch (err) {
+    console.warn("[content] getNavigation failed, falling back to static:", err);
+    return staticNavigation;
+  }
+}
+
+/* ─────────── Legal pages (markdown stored in settings) ─────────── */
+
+/**
+ * Reads the raw markdown of a legal page from the settings table.
+ * Returns null if the DB is not configured, the row is absent, or the
+ * stored value is empty. The caller should fall back to hardcoded content
+ * in that case.
+ */
+export async function getLegalContent(
+  key: "mentions" | "privacy",
+): Promise<string | null> {
+  if (!isDbConfigured()) return null;
+  try {
+    const k = `legal:${key}`;
+    const row = (
+      await db
+        .select()
+        .from(schema.settings)
+        .where(eq(schema.settings.key, k))
+        .limit(1)
+    )[0];
+    if (!row?.valueJson) return null;
+    // valueJson is stored as JSON.stringify(value); for strings that means "..."
+    let parsed: unknown = row.valueJson;
+    try {
+      parsed = JSON.parse(row.valueJson);
+    } catch {
+      /* keep raw */
+    }
+    return typeof parsed === "string" && parsed.trim().length > 0
+      ? parsed
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/* ─────────── Public integration flags (analytics/maps) ─────────── */
+
+export interface PublicIntegrations {
+  /** Resolved domain for Plausible (DB only — env wins client-side). */
+  plausibleDomain: string | null;
+  /** Whether Vercel Analytics should render. */
+  vercelAnalyticsEnabled: boolean;
+  /** Optional Maps embed code (raw iframe HTML). */
+  mapsEmbed: string | null;
+}
+
+/**
+ * Reads the public-facing integration flags from the `settings` table.
+ * Always returns sensible defaults (analytics ON by default — env was the
+ * historical behaviour) so the public site degrades gracefully when DB is
+ * unavailable.
+ */
+export async function getPublicIntegrations(): Promise<PublicIntegrations> {
+  const fallback: PublicIntegrations = {
+    plausibleDomain: null,
+    vercelAnalyticsEnabled: true,
+    mapsEmbed: null,
+  };
+  if (!isDbConfigured()) return fallback;
+  try {
+    const rows = await db
+      .select()
+      .from(schema.settings)
+      .where(
+        inArray(schema.settings.key, [
+          "int:plausible-domain",
+          "int:vercel-analytics",
+          "int:maps-embed",
+        ]),
+      );
+    const map: Record<string, unknown> = {};
+    for (const r of rows) {
+      try {
+        map[r.key] = JSON.parse(r.valueJson);
+      } catch {
+        map[r.key] = null;
+      }
+    }
+    const plausibleDomain =
+      typeof map["int:plausible-domain"] === "string" && map["int:plausible-domain"]
+        ? (map["int:plausible-domain"] as string)
+        : null;
+    // Default ON — only disable when explicitly false.
+    const vercelAnalyticsEnabled = map["int:vercel-analytics"] !== false;
+    const mapsEmbed =
+      typeof map["int:maps-embed"] === "string" && map["int:maps-embed"]
+        ? (map["int:maps-embed"] as string)
+        : null;
+    return { plausibleDomain, vercelAnalyticsEnabled, mapsEmbed };
+  } catch {
+    return fallback;
+  }
+}
+
 /* ─────────── Page SEO (per-page overrides for static pages) ─────────── */
 
 export interface PageSeoOverride {
@@ -494,56 +685,6 @@ export async function getPageSeo(key: string): Promise<PageSeoOverride | null> {
       title: row.title || undefined,
       description: row.description || undefined,
       ogImageUrl,
-    };
-  } catch {
-    return null;
-  }
-}
-
-/* ─────────── Page Hero (per-page hero photo + copy override) ─────────── */
-
-export interface PageHeroOverride {
-  enabled: boolean;
-  eyebrow?: string;
-  title?: string;
-  intro?: string;
-  imageUrl?: string;
-  imageMime?: string;
-  imageAlt?: string;
-  objectPosition: string;
-  opacity: number;
-  overlayLeft: number;
-}
-
-export async function getPageHero(key: string): Promise<PageHeroOverride | null> {
-  if (!isDbConfigured()) return null;
-  try {
-    const row = (
-      await db.select().from(schema.pageHeroes).where(eq(schema.pageHeroes.key, key)).limit(1)
-    )[0];
-    if (!row) return null;
-    if (!row.enabled) return null;
-    let imageUrl: string | undefined;
-    let imageMime: string | undefined;
-    let imageAlt: string | undefined;
-    if (row.mediaId) {
-      const m = await getMediaMetaMap([row.mediaId]);
-      const meta = m.get(row.mediaId);
-      imageUrl = meta?.url;
-      imageMime = meta?.mime;
-      imageAlt = meta?.alt ?? undefined;
-    }
-    return {
-      enabled: row.enabled,
-      eyebrow: row.eyebrow || undefined,
-      title: row.title || undefined,
-      intro: row.intro || undefined,
-      imageUrl,
-      imageMime,
-      imageAlt,
-      objectPosition: row.objectPosition,
-      opacity: row.opacity,
-      overlayLeft: row.overlayLeft,
     };
   } catch {
     return null;

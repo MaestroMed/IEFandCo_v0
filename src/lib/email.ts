@@ -1,30 +1,88 @@
 /**
  * Email sending utility.
- * Uses Resend if RESEND_API_KEY is set, otherwise logs to console (dev mode).
+ * Uses Resend if RESEND_API_KEY is set in env, or stored in `settings`
+ * (key `int:resend-api-key`). Otherwise logs to console (dev mode).
  *
  * Setup:
  *   1. Sign up at resend.com (free tier: 3000 emails/month)
  *   2. Verify your domain (iefandco.com)
- *   3. Set env vars: RESEND_API_KEY, CONTACT_TO_EMAIL, CONTACT_FROM_EMAIL
+ *   3. Either set env vars (RESEND_API_KEY, CONTACT_TO_EMAIL, CONTACT_FROM_EMAIL)
+ *      or save the key from Admin > Settings > Integrations.
  */
 
+import { db, schema, isDbConfigured } from "@/db";
+import { eq } from "drizzle-orm";
+
 interface EmailPayload {
+  /** Recipient(s). When omitted, falls back to CONTACT_TO_EMAIL (used for
+   * internal notifications like new leads). Pass an explicit value to send
+   * to a customer (e.g. replyToLead). */
+  to?: string | string[];
   subject: string;
   html: string;
   replyTo?: string;
-  /**
-   * Optional explicit recipient(s). When omitted, falls back to
-   * `process.env.CONTACT_TO_EMAIL` (the internal contact inbox).
-   * MUST be set when sending mail to an external recipient (e.g. a lead
-   * reply) so the message doesn't get routed to the internal inbox.
-   */
-  to?: string | string[];
 }
 
-export async function sendEmail({ subject, html, replyTo, to }: EmailPayload): Promise<{ ok: boolean; error?: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
+interface ResolvedKey {
+  apiKey: string | null;
+  source: "env" | "db" | null;
+}
+
+// Cache the resolved key for a short window to avoid re-querying the DB
+// on every send. Env always wins. Cache TTL is short so a rotation in the
+// BO is reflected quickly.
+let _cached: { key: string | null; source: "env" | "db" | null; expiresAt: number } | null = null;
+const CACHE_TTL_MS = 60_000; // 1 minute
+
+async function resolveResendKey(): Promise<ResolvedKey> {
+  // Env wins — no DB roundtrip needed when set.
+  if (process.env.RESEND_API_KEY) {
+    return { apiKey: process.env.RESEND_API_KEY, source: "env" };
+  }
+
+  // Cached DB lookup
+  const now = Date.now();
+  if (_cached && _cached.expiresAt > now) {
+    return { apiKey: _cached.key, source: _cached.source };
+  }
+
+  if (!isDbConfigured()) {
+    _cached = { key: null, source: null, expiresAt: now + CACHE_TTL_MS };
+    return { apiKey: null, source: null };
+  }
+
+  try {
+    const row = (
+      await db
+        .select()
+        .from(schema.settings)
+        .where(eq(schema.settings.key, "int:resend-api-key"))
+        .limit(1)
+    )[0];
+    if (row?.valueJson) {
+      const parsed = JSON.parse(row.valueJson);
+      if (typeof parsed === "string" && parsed.length > 0) {
+        _cached = { key: parsed, source: "db", expiresAt: now + CACHE_TTL_MS };
+        return { apiKey: parsed, source: "db" };
+      }
+    }
+  } catch {
+    // Fall through — DB unavailable, treat as no key configured.
+  }
+
+  _cached = { key: null, source: null, expiresAt: now + CACHE_TTL_MS };
+  return { apiKey: null, source: null };
+}
+
+/** Internal — exposed so tests / admin pages can force a refetch. */
+export function _invalidateResendCache() {
+  _cached = null;
+}
+
+export async function sendEmail({ to, subject, html, replyTo }: EmailPayload): Promise<{ ok: boolean; error?: string }> {
+  const { apiKey } = await resolveResendKey();
   const fallbackTo = process.env.CONTACT_TO_EMAIL || "contact@iefandco.com";
-  const toEmail: string | string[] = to ?? fallbackTo;
+  const toEmail = to ?? fallbackTo;
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "noreply@iefandco.com";
 
   // Dev fallback: log metadata only (never PII / full HTML body)

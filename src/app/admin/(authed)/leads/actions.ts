@@ -42,6 +42,19 @@ export async function updateLeadStatus(leadId: string, status: LeadStatus, lossR
 
 export async function assignLead(leadId: string, userId: string | null) {
   const user = await requireAdmin();
+  // Defensive : verify the target user exists before writing the FK to avoid
+  // orphan references (FK is `set null` on user delete, but a hand-crafted
+  // call could still pass a bogus id).
+  if (userId) {
+    const target = await db
+      .select({ id: schema.users.id })
+      .from(schema.users)
+      .where(eq(schema.users.id, userId))
+      .limit(1);
+    if (!target[0]) {
+      return { ok: false, error: "Utilisateur introuvable" };
+    }
+  }
   await db.update(schema.leads)
     .set({ assignedTo: userId, updatedAt: new Date() })
     .where(eq(schema.leads.id, leadId));
@@ -167,6 +180,16 @@ export async function bulkAssign(ids: string[], userId: string | null) {
   if (!ids.length) return { ok: false as const, error: "Aucun lead selectionne" };
   const user = await requireAdmin();
   try {
+    if (userId) {
+      const target = await db
+        .select({ id: schema.users.id })
+        .from(schema.users)
+        .where(eq(schema.users.id, userId))
+        .limit(1);
+      if (!target[0]) {
+        return { ok: false as const, error: "Utilisateur introuvable" };
+      }
+    }
     await db
       .update(schema.leads)
       .set({ assignedTo: userId, updatedAt: new Date() })
