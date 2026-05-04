@@ -4,7 +4,7 @@ import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { AssisteoMockup } from "@/components/ui/AssisteoMockup";
-import { getPageSeo } from "@/lib/content";
+import { getPageSeo, getPageHero } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -55,7 +55,8 @@ const process = [
 // Tech accent — electric blue mix with copper
 const techAccent = "80, 180, 220"; // tech cyan
 
-export default function AssisteoPage() {
+export default async function AssisteoPage() {
+  const heroOverride = await getPageHero("assisteo");
   return (
     <>
       {/* ═══════════ HERO (DARK TECH) ═══════════ */}
@@ -64,15 +65,15 @@ export default function AssisteoPage() {
            tech overlays so it tints the section with a humanised cue. */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroAssisteo}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroAssisteo}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 40%",
-              opacity: 0.95,
+              objectPosition: heroOverride?.objectPosition || "center 40%",
+              opacity: (heroOverride?.opacity ?? 95) / 100,
               filter: "contrast(1.08) brightness(1) saturate(1)",
             }}
           />
@@ -80,7 +81,7 @@ export default function AssisteoPage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, 0.72) 38%, rgba(5, 5, 8, 0.22) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 72) / 100}) 38%, rgba(5, 5, 8, 0.22) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -126,18 +127,16 @@ export default function AssisteoPage() {
               <div className="flex items-center gap-3 mb-6">
                 <span className="h-px w-10" style={{ background: `rgb(${techAccent})` }} />
                 <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: `rgb(${techAccent})` }}>
-                  Par IEF & CO · Service exclusif
+                  {heroOverride?.eyebrow || "Par IEF & CO · Service exclusif"}
                 </span>
               </div>
 
               <h1 className="font-display font-bold tracking-tight leading-[0.9]" style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}>
-                <span style={{ color: "var(--text)" }}>ASSIST</span><span style={{ color: `rgb(${techAccent})` }}>EO</span>
+                {heroOverride?.title ? <>{heroOverride.title}</> : <><span style={{ color: "var(--text)" }}>ASSIST</span><span style={{ color: `rgb(${techAccent})` }}>EO</span></>}
               </h1>
 
               <p className="mt-8 max-w-xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-                L&apos;extension digitale de l&apos;expertise IEF & CO. Diagnostic vidéo en direct,
-                intervention préparée, temps d&apos;arrêt minimisés — par votre métallier,
-                sans déplacement inutile.
+                {heroOverride?.intro || "L'extension digitale de l'expertise IEF & CO. Diagnostic vidéo en direct, intervention préparée, temps d'arrêt minimisés — par votre métallier, sans déplacement inutile."}
               </p>
 
               <div className="mt-10 flex flex-wrap gap-4">

@@ -53,3 +53,9 @@ redirects-*.csv
 # OS
 Thumbs.db
 desktop.ini
+.env*.local
+
+# Raw GPT Image generations dropped by the team — only the curated photos
+# under public/images/photos/ are kept in the repo.
+public/images/ChatGPT*.png
+public/images/last/

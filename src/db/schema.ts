@@ -378,6 +378,32 @@ export const pageSeo = pgTable("page_seo", {
   updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
 });
 
+/* ─────────── Page Heroes (per-page hero photo + copy override) ─────────── */
+/**
+ * One row per public page that has a hero band. The admin can upload a new
+ * cover photo and tweak eyebrow / title / intro / image position / overlay
+ * darkness without touching code. When a row is missing for a given key,
+ * the page falls back to the static defaults baked into the component.
+ */
+export const pageHeroes = pgTable("page_heroes", {
+  /** Stable key matching the page (e.g. "a-propos", "services-index", ...). */
+  key: text("key").primaryKey(),
+  enabled: boolean("enabled").notNull().default(true),
+  /** Optional copy overrides — null means "keep the coded default". */
+  eyebrow: text("eyebrow"),
+  title: text("title"),
+  intro: text("intro"),
+  /** Hero background media (image or video). null = use the static fallback. */
+  mediaId: text("media_id").references(() => media.id, { onDelete: "set null" }),
+  /** CSS object-position string (e.g. "center 30%"). */
+  objectPosition: text("object_position").notNull().default("center 50%"),
+  /** Photo opacity [0-100]. 100 = full strength. */
+  opacity: integer("opacity").notNull().default(100),
+  /** Dark gradient strength on the LEFT side, 0-100. */
+  overlayLeft: integer("overlay_left").notNull().default(70),
+  updatedAt: timestamp("updated_at", { mode: "date", withTimezone: true }).notNull().defaultNow(),
+});
+
 /* ─────────── Glossary ─────────── */
 
 export const glossaryTerms = pgTable("glossary_terms", {
@@ -579,6 +605,7 @@ export type Redirect = typeof redirects.$inferSelect;
 export type RateLimitRow = typeof rateLimits.$inferSelect;
 export type HomepageHero = typeof homepageHero.$inferSelect;
 export type PageSeo = typeof pageSeo.$inferSelect;
+export type PageHero = typeof pageHeroes.$inferSelect;
 export type GlossaryTermRow = typeof glossaryTerms.$inferSelect;
 export type ZoneRow = typeof zones.$inferSelect;
 export type MaintenanceBrandRow = typeof maintenanceBrands.$inferSelect;

@@ -5,7 +5,7 @@ import { generatePageMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { Photo } from "@/components/ui/Photo";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
-import { getRealisations, getPageSeo } from "@/lib/content";
+import { getRealisations, getPageSeo, getPageHero } from "@/lib/content";
 import { getRealisationPhoto, ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -32,6 +32,7 @@ const aspects = [
 
 export default async function RealisationsPage() {
   const realisations = await getRealisations();
+  const heroOverride = await getPageHero("realisations-index");
   return (
     <>
       {/* ═══════════ HERO (DARK) ═══════════ */}
@@ -39,15 +40,15 @@ export default async function RealisationsPage() {
         {/* Branded background — portfolio mood-board on workshop wall */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroRealisations}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroRealisations}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 50%",
-              opacity: 1,
+              objectPosition: heroOverride?.objectPosition || "center 50%",
+              opacity: (heroOverride?.opacity ?? 100) / 100,
               filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
             }}
           />
@@ -55,7 +56,7 @@ export default async function RealisationsPage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -74,18 +75,17 @@ export default async function RealisationsPage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              Portfolio · {realisations.length} projets sélectionnés
+              {heroOverride?.eyebrow || `Portfolio · ${realisations.length} projets sélectionnés`}
             </span>
           </div>
           <div className="grid items-end gap-8 md:grid-cols-3 md:gap-16">
             <div className="md:col-span-2">
               <h1 className="max-w-3xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-                Nos <span className="text-gradient-metal">réalisations</span>
+                {heroOverride?.title ? <>{heroOverride.title}</> : <>Nos <span className="text-gradient-metal">réalisations</span></>}
               </h1>
             </div>
             <p className="text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-              Un aperçu de nos projets récents. Charpentes, façades, portails, fermetures industrielles —
-              chaque ouvrage témoigne d&apos;une rigueur d&apos;exécution.
+              {heroOverride?.intro || "Un aperçu de nos projets récents. Charpentes, façades, portails, fermetures industrielles — chaque ouvrage témoigne d'une rigueur d'exécution."}
             </p>
           </div>
         </div>

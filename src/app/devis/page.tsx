@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo";
 import { DevisMultiStep } from "@/components/forms/DevisMultiStep";
-import { getPageSeo } from "@/lib/content";
+import { getPageSeo, getPageHero } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default function DevisPage() {
+export default async function DevisPage() {
+  const heroOverride = await getPageHero("devis");
   return (
     <>
       {/* ═══════════ HERO (DARK + branded photo) ═══════════ */}
@@ -26,15 +27,15 @@ export default function DevisPage() {
         {/* Branded background — bureau d'étude DEVIS IEF & CO (V3 slot #30) */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroDevis}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroDevis}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 50%",
-              opacity: 1,
+              objectPosition: heroOverride?.objectPosition || "center 50%",
+              opacity: (heroOverride?.opacity ?? 100) / 100,
               filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
             }}
           />
@@ -42,7 +43,7 @@ export default function DevisPage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -60,14 +61,14 @@ export default function DevisPage() {
             <div className="flex items-center gap-3 mb-5">
               <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
               <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-                Étude gratuite · Réponse 48h
+                {heroOverride?.eyebrow || "Étude gratuite · Réponse 48h"}
               </span>
             </div>
             <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-              Demander <span className="text-gradient-metal">un devis</span>
+              {heroOverride?.title ? <>{heroOverride.title}</> : <>Demander <span className="text-gradient-metal">un devis</span></>}
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-              Décrivez votre projet en quelques étapes. Chaque devis est calculé par notre bureau d&apos;étude — sans engagement.
+              {heroOverride?.intro || "Décrivez votre projet en quelques étapes. Chaque devis est calculé par notre bureau d'étude — sans engagement."}
             </p>
           </div>
         </div>

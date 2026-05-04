@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
-import { getPageSeo } from "@/lib/content";
+import { getPageSeo, getPageHero } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -95,7 +95,8 @@ const tiers = [
   },
 ];
 
-export default function ContratsMaintenancePage() {
+export default async function ContratsMaintenancePage() {
+  const heroOverride = await getPageHero("maintenance-contrats");
   return (
     <>
       {/* HERO */}
@@ -103,15 +104,15 @@ export default function ContratsMaintenancePage() {
         {/* Branded background — IEF & CO Bronze / Argent / Or contract folders */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroMaintenanceContrats}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroMaintenanceContrats}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 50%",
-              opacity: 1,
+              objectPosition: heroOverride?.objectPosition || "center 50%",
+              opacity: (heroOverride?.opacity ?? 100) / 100,
               filter: "contrast(1.08) brightness(1.05) saturate(1.1)",
             }}
           />
@@ -119,7 +120,7 @@ export default function ContratsMaintenancePage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -141,15 +142,14 @@ export default function ContratsMaintenancePage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              3 niveaux · 100% modulables
+              {heroOverride?.eyebrow || "3 niveaux · 100% modulables"}
             </span>
           </div>
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            Contrats de <span className="text-gradient-metal">maintenance</span>
+            {heroOverride?.title ? <>{heroOverride.title}</> : <>Contrats de <span className="text-gradient-metal">maintenance</span></>}
           </h1>
           <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            Bronze, Argent, Or. Trois niveaux d&apos;engagement, un seul objectif&nbsp;: garder vos
-            fermetures professionnelles opérationnelles, conformes et tracées.
+            {heroOverride?.intro || "Bronze, Argent, Or. Trois niveaux d'engagement, un seul objectif : garder vos fermetures professionnelles opérationnelles, conformes et tracées."}
           </p>
         </div>
       </section>

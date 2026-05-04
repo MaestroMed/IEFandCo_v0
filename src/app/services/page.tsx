@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getServices, getPageSeo } from "@/lib/content";
+import { getServices, getPageSeo, getPageHero } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
@@ -22,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ServicesPage() {
   const services = await getServices();
+  const heroOverride = await getPageHero("services-index");
   return (
     <>
       {/* ═══════════ HERO (DARK) ═══════════ */}
@@ -29,15 +30,15 @@ export default async function ServicesPage() {
         {/* Branded background — multi-trade atelier panorama (V3 slot #26) */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroServices}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroServices}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 50%",
-              opacity: 1,
+              objectPosition: heroOverride?.objectPosition || "center 50%",
+              opacity: (heroOverride?.opacity ?? 100) / 100,
               filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
             }}
           />
@@ -45,7 +46,7 @@ export default async function ServicesPage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -65,18 +66,17 @@ export default async function ServicesPage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              Catalogue · 7 domaines d&apos;expertise
+              {heroOverride?.eyebrow || "Catalogue · 7 domaines d'expertise"}
             </span>
           </div>
           <div className="grid items-end gap-8 md:grid-cols-3 md:gap-16">
             <div className="md:col-span-2">
               <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-                Nos <span className="text-gradient-metal">services</span>
+                {heroOverride?.title ? <>{heroOverride.title}</> : <>Nos <span className="text-gradient-metal">services</span></>}
               </h1>
             </div>
             <p className="text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-              De la conception à la maintenance, IEF & CO couvre l&apos;ensemble de vos besoins
-              en solutions métalliques sur mesure. Chaque domaine est dimensionné, fabriqué et posé par nos équipes.
+              {heroOverride?.intro || "De la conception à la maintenance, IEF & CO couvre l'ensemble de vos besoins en solutions métalliques sur mesure. Chaque domaine est dimensionné, fabriqué et posé par nos équipes."}
             </p>
           </div>
 

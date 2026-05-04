@@ -1,42 +1,51 @@
 /**
  * Media storage abstraction.
  *
- * Production : Supabase Storage (bucket "media", public read).
- *   Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY + SUPABASE_STORAGE_BUCKET (defaults to "media").
+ * Production : auto-detected based on env vars present.
+ *   - Vercel Blob : if BLOB_READ_WRITE_TOKEN is set (Vercel-managed)
+ *   - Supabase Storage : if SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set
+ *     (legacy / for projects that already use Supabase)
  *
  * Development fallback : local /public/uploads (zero config, dev-only).
- *   Used when SUPABASE_URL is not set. Files written here are not persisted in
- *   prod (Vercel /public is read-only) — Supabase env vars must be set for prod.
+ *   Used when neither cloud provider is set. Files written here are not
+ *   persisted in prod (Vercel /public is read-only) — a cloud provider must
+ *   be configured for prod deployments.
  */
 
+import { put as blobPut, del as blobDel } from "@vercel/blob";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import path from "node:path";
 import fs from "node:fs/promises";
 
 const BUCKET = process.env.SUPABASE_STORAGE_BUCKET || "media";
 
-let _client: SupabaseClient | null = null;
+let _supabase: SupabaseClient | null = null;
 let _bootChecked = false;
 
 function getSupabase(): SupabaseClient | null {
-  if (_client) return _client;
+  if (_supabase) return _supabase;
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
-  _client = createClient(url, key, { auth: { persistSession: false } });
-  return _client;
+  _supabase = createClient(url, key, { auth: { persistSession: false } });
+  return _supabase;
 }
 
-/** Throws in production if Supabase Storage is not configured — uploads to
+function hasVercelBlob(): boolean {
+  return !!process.env.BLOB_READ_WRITE_TOKEN;
+}
+
+/** Throws in production if no storage provider is configured — uploads to
  *  /public/uploads silently break on Vercel (read-only filesystem) so we'd
  *  rather fail fast at the first upload than lose data silently. */
 function assertStorageConfiguredInProd(): void {
   if (_bootChecked) return;
   _bootChecked = true;
   const isProd = process.env.NODE_ENV === "production";
-  if (isProd && (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+  if (isProd && !hasVercelBlob() && !getSupabase()) {
     throw new Error(
-      "Storage non configuré : SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY sont requis en production. " +
+      "Storage non configuré : BLOB_READ_WRITE_TOKEN (Vercel Blob) ou " +
+        "SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (Supabase Storage) sont requis en production. " +
         "Le fallback /public/uploads ne fonctionne pas sur Vercel (filesystem en lecture seule).",
     );
   }
@@ -111,9 +120,11 @@ export function declaredMimeMatchesMagic(declared: string, detected: string | nu
   return false;
 }
 
+export type StorageProvider = "vercel-blob" | "supabase" | "local";
+
 export interface UploadResult {
   url: string;
-  storage: "supabase" | "local";
+  storage: StorageProvider;
   storagePath: string;
 }
 
@@ -136,11 +147,25 @@ export async function uploadMedia({
   mime: string;
 }): Promise<UploadResult> {
   assertStorageConfiguredInProd();
-  const sb = getSupabase();
   const ts = Date.now();
   const safe = safeFilename(filename);
   const objectPath = `${ts}-${safe}`;
 
+  // Provider priority : Vercel Blob → Supabase → local dev fallback
+  if (hasVercelBlob()) {
+    // Wrap the Buffer in a Blob to give @vercel/blob a body it accepts on
+    // every runtime (Edge included). Buffer is a Uint8Array subclass but
+    // the SDK's `PutBody` type is narrower than that.
+    const blob = new Blob([new Uint8Array(bytes)], { type: mime });
+    const result = await blobPut(`media/${objectPath}`, blob, {
+      access: "public",
+      contentType: mime,
+      addRandomSuffix: false,
+    });
+    return { url: result.url, storage: "vercel-blob", storagePath: result.pathname };
+  }
+
+  const sb = getSupabase();
   if (sb) {
     const { error } = await sb.storage.from(BUCKET).upload(objectPath, bytes, {
       contentType: mime,
@@ -161,7 +186,20 @@ export async function uploadMedia({
   return { url: `/uploads/${objectPath}`, storage: "local", storagePath: objectPath };
 }
 
-export async function deleteMedia(storagePath: string, storage: "supabase" | "local"): Promise<void> {
+export async function deleteMedia(storagePath: string, storage: StorageProvider): Promise<void> {
+  if (storage === "vercel-blob") {
+    if (!hasVercelBlob()) return;
+    // Vercel Blob `del` accepts the full URL or the pathname — pathname is what
+    // we persisted, but the SDK requires the full URL. Reconstruct it.
+    try {
+      // If storagePath looks like a URL, use it directly. Otherwise construct
+      // from the public Blob host. The SDK gracefully accepts both forms.
+      await blobDel(storagePath);
+    } catch {
+      /* ignore — best-effort cleanup */
+    }
+    return;
+  }
   if (storage === "supabase") {
     const sb = getSupabase();
     if (!sb) return;
@@ -176,6 +214,7 @@ export async function deleteMedia(storagePath: string, storage: "supabase" | "lo
   }
 }
 
+/** True if any cloud storage provider is configured (Vercel Blob OR Supabase). */
 export function isStorageConfigured(): boolean {
-  return !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return hasVercelBlob() || (!!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 }

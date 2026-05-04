@@ -8,7 +8,7 @@ import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
 import { companyInfo } from "@/data/navigation";
-import { getPageSeo } from "@/lib/content";
+import { getPageSeo, getPageHero } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,7 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default function DepannageIndexPage() {
+export default async function DepannageIndexPage() {
+  const heroOverride = await getPageHero("depannage-index");
   return (
     <>
       {/* HERO */}
@@ -31,15 +32,15 @@ export default function DepannageIndexPage() {
         {/* Branded background — IEF & CO night intervention van (V3 slot #32) */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroDepannage}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroDepannage}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 50%",
-              opacity: 1,
+              objectPosition: heroOverride?.objectPosition || "center 50%",
+              opacity: (heroOverride?.opacity ?? 100) / 100,
               filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
             }}
           />
@@ -47,7 +48,7 @@ export default function DepannageIndexPage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -70,16 +71,15 @@ export default function DepannageIndexPage() {
               <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--color-primary)" }} />
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.2em]" style={{ color: "var(--color-primary)" }}>
-              Urgence 24/7 sur contrat
+              {heroOverride?.eyebrow || "Urgence 24/7 sur contrat"}
             </span>
           </div>
 
           <h1 className="max-w-4xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            <span className="text-gradient-metal">Dépannage urgent</span><br />
-            métallerie Île-de-France
+            {heroOverride?.title ? <>{heroOverride.title}</> : <><span className="text-gradient-metal">Dépannage urgent</span><br />métallerie Île-de-France</>}
           </h1>
           <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            {depannageServices.length} types d&apos;interventions × {zones.length} départements IDF. Stock pièces permanent pour {depannageServices.reduce((sum, s) => sum + s.brands.length, 0)}+ marques différentes.
+            {heroOverride?.intro || `${depannageServices.length} types d'interventions × ${zones.length} départements IDF. Stock pièces permanent pour ${depannageServices.reduce((sum, s) => sum + s.brands.length, 0)}+ marques différentes.`}
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
             <a

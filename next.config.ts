@@ -28,15 +28,24 @@ const nextConfig: NextConfig = {
   images: {
     // Modern formats first — Next.js serves AVIF then WebP then original.
     formats: ["image/avif", "image/webp"],
-    remotePatterns: supabaseHost
-      ? [
-          {
-            protocol: "https",
-            hostname: supabaseHost,
-            pathname: "/storage/v1/object/public/**",
-          },
-        ]
-      : [],
+    remotePatterns: [
+      // Vercel Blob (current storage provider on this deployment)
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+      // Supabase Storage (legacy / alternative provider — kept so projects
+      // that still use Supabase keep working without a config change)
+      ...(supabaseHost
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: supabaseHost,
+              pathname: "/storage/v1/object/public/**",
+            },
+          ]
+        : []),
+    ],
   },
   // Recommended security headers in addition to the ones from vercel.json
   async headers() {

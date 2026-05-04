@@ -499,6 +499,56 @@ export async function getPageSeo(key: string): Promise<PageSeoOverride | null> {
   }
 }
 
+/* ─────────── Page Hero (per-page hero photo + copy override) ─────────── */
+
+export interface PageHeroOverride {
+  enabled: boolean;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  imageUrl?: string;
+  imageMime?: string;
+  imageAlt?: string;
+  objectPosition: string;
+  opacity: number;
+  overlayLeft: number;
+}
+
+export async function getPageHero(key: string): Promise<PageHeroOverride | null> {
+  if (!isDbConfigured()) return null;
+  try {
+    const row = (
+      await db.select().from(schema.pageHeroes).where(eq(schema.pageHeroes.key, key)).limit(1)
+    )[0];
+    if (!row) return null;
+    if (!row.enabled) return null;
+    let imageUrl: string | undefined;
+    let imageMime: string | undefined;
+    let imageAlt: string | undefined;
+    if (row.mediaId) {
+      const m = await getMediaMetaMap([row.mediaId]);
+      const meta = m.get(row.mediaId);
+      imageUrl = meta?.url;
+      imageMime = meta?.mime;
+      imageAlt = meta?.alt ?? undefined;
+    }
+    return {
+      enabled: row.enabled,
+      eyebrow: row.eyebrow || undefined,
+      title: row.title || undefined,
+      intro: row.intro || undefined,
+      imageUrl,
+      imageMime,
+      imageAlt,
+      objectPosition: row.objectPosition,
+      opacity: row.opacity,
+      overlayLeft: row.overlayLeft,
+    };
+  } catch {
+    return null;
+  }
+}
+
 /* ─────────── Glossary ─────────── */
 
 export async function getGlossary(): Promise<GlossaryTerm[]> {

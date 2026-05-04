@@ -4,7 +4,7 @@ import Link from "next/link";
 import { generatePageMetadata } from "@/lib/seo";
 import { Photo } from "@/components/ui/Photo";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
-import { getBlogPosts, getPageSeo } from "@/lib/content";
+import { getBlogPosts, getPageSeo, getPageHero } from "@/lib/content";
 import { getBlogPhoto, ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BlogPage() {
   const blogPosts = await getBlogPosts();
+  const heroOverride = await getPageHero("blog-index");
   const [featured, ...rest] = blogPosts;
 
   return (
@@ -30,15 +31,15 @@ export default async function BlogPage() {
         {/* Branded background — editorial blog atmosphere */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroBlog}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroBlog}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 50%",
-              opacity: 1,
+              objectPosition: heroOverride?.objectPosition || "center 50%",
+              opacity: (heroOverride?.opacity ?? 100) / 100,
               filter: "contrast(1.05) brightness(0.95) saturate(1.05)",
             }}
           />
@@ -46,7 +47,7 @@ export default async function BlogPage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 18%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.18) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -65,15 +66,14 @@ export default async function BlogPage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              Journal{blogPosts.length > 0 ? ` · ${blogPosts.length} articles` : ""}
+              {heroOverride?.eyebrow || `Journal${blogPosts.length > 0 ? ` · ${blogPosts.length} articles` : ""}`}
             </span>
           </div>
           <h1 className="max-w-3xl font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            Le <span className="text-gradient-metal">journal</span> de la métallerie
+            {heroOverride?.title ? <>{heroOverride.title}</> : <>Le <span className="text-gradient-metal">journal</span> de la métallerie</>}
           </h1>
           <p className="mt-6 max-w-2xl text-base md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            Guides techniques, retours de chantier, normes et études de cas. Tout ce qu&apos;on apprend,
-            on le partage ici.
+            {heroOverride?.intro || "Guides techniques, retours de chantier, normes et études de cas. Tout ce qu'on apprend, on le partage ici."}
           </p>
         </div>
       </section>

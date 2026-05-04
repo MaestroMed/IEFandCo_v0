@@ -41,6 +41,7 @@ const nav = [
 
 const siteNav = [
   { href: "/admin/site/hero", icon: Layers, label: "Hero" },
+  { href: "/admin/site/heroes", icon: Layers, label: "Heros pages" },
   { href: "/admin/site/page-seo", icon: Settings, label: "SEO pages" },
 ];
 
@@ -147,7 +148,7 @@ export function Sidebar({ userName, userRole }: SidebarProps) {
         <ul className="space-y-0.5">
           {siteNav.map((item) => {
             const Icon = item.icon;
-            const active = pathname === item.href || pathname.startsWith(item.href);
+            const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
               <li key={item.href}>
                 <Link

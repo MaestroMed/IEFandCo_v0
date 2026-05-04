@@ -5,7 +5,7 @@ import { QuoteEstimator } from "@/components/forms/QuoteEstimator";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata } from "@/lib/seo";
-import { getPageSeo } from "@/lib/content";
+import { getPageSeo, getPageHero } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,7 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default function EstimateurPage() {
+export default async function EstimateurPage() {
+  const heroOverride = await getPageHero("estimateur");
   return (
     <>
       {/* HERO */}
@@ -28,15 +29,15 @@ export default function EstimateurPage() {
         {/* Branded background — tablet configurator + brushed steel samples */}
         <div className="absolute inset-0 pointer-events-none">
           <Image
-            src={ATMOSPHERE.heroEstimateur}
-            alt=""
+            src={heroOverride?.imageUrl || ATMOSPHERE.heroEstimateur}
+            alt={heroOverride?.imageAlt || ""}
             fill
             priority
             sizes="100vw"
             className="object-cover"
             style={{
-              objectPosition: "center 50%",
-              opacity: 1,
+              objectPosition: heroOverride?.objectPosition || "center 50%",
+              opacity: (heroOverride?.opacity ?? 100) / 100,
               filter: "contrast(1.08) brightness(1.02) saturate(1.08)",
             }}
           />
@@ -44,7 +45,7 @@ export default function EstimateurPage() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, 0.7) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)",
+                `linear-gradient(105deg, #050508 16%, rgba(5, 5, 8, ${(heroOverride?.overlayLeft ?? 70) / 100}) 38%, rgba(5, 5, 8, 0.2) 65%, rgba(5, 5, 8, 0) 100%)`,
             }}
           />
         </div>
@@ -64,16 +65,14 @@ export default function EstimateurPage() {
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10" style={{ background: "var(--color-copper)" }} />
             <span className="font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: "var(--color-copper)" }}>
-              Calculateur · fourchette indicative
+              {heroOverride?.eyebrow || "Calculateur · fourchette indicative"}
             </span>
           </div>
           <h1 className="font-display text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl leading-[0.95]" style={{ color: "var(--text)", textWrap: "balance" } as React.CSSProperties}>
-            <span className="text-gradient-metal">Combien</span><br />
-            ça coûte ?
+            {heroOverride?.title ? <>{heroOverride.title}</> : <><span className="text-gradient-metal">Combien</span><br />ça coûte ?</>}
           </h1>
           <p className="mt-8 max-w-2xl text-base md:text-lg" style={{ color: "var(--text-secondary)" }}>
-            Estimez instantanément votre projet en 3 étapes. Transparent, sans engagement,
-            devis précis gratuit sous 48h.
+            {heroOverride?.intro || "Estimez instantanément votre projet en 3 étapes. Transparent, sans engagement, devis précis gratuit sous 48h."}
           </p>
         </div>
       </section>
