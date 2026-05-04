@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -49,7 +50,7 @@ function nullify(v: string | undefined | null): string | null {
 }
 
 export async function createDepannageService(input: DepannageInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = depannageSchema.parse(input);
     const newId = id();
@@ -71,6 +72,13 @@ export async function createDepannageService(input: DepannageInput) {
       visible: p.visible ?? true,
       orderIdx: p.orderIdx ?? 0,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "content:depannage",
+      entityId: newId,
+      action: "create",
+      diff: { label: p.label, slug },
+    });
     revalidatePath("/admin/content/depannage");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -79,7 +87,7 @@ export async function createDepannageService(input: DepannageInput) {
 }
 
 export async function updateDepannageService(serviceId: string, input: DepannageInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = depannageSchema.parse(input);
     const slug = await uniqueSlug(p.slug || p.label, serviceId);
@@ -103,6 +111,13 @@ export async function updateDepannageService(serviceId: string, input: Depannage
         updatedAt: new Date(),
       })
       .where(eq(schema.depannageServices.id, serviceId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:depannage",
+      entityId: serviceId,
+      action: "update",
+      diff: { label: p.label },
+    });
     revalidatePath("/admin/content/depannage");
     revalidatePath(`/admin/content/depannage/${serviceId}`);
     return { ok: true as const };
@@ -112,9 +127,15 @@ export async function updateDepannageService(serviceId: string, input: Depannage
 }
 
 export async function deleteDepannageService(serviceId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.depannageServices).where(eq(schema.depannageServices.id, serviceId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:depannage",
+      entityId: serviceId,
+      action: "delete",
+    });
     revalidatePath("/admin/content/depannage");
     return { ok: true as const };
   } catch (e) {

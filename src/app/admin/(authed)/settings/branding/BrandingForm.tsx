@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { updateBranding } from "../actions";
+import { MediaPicker } from "@/components/admin/MediaPicker";
 
 interface Props {
   initial: {
@@ -15,6 +16,10 @@ interface Props {
     ogDefaultImage: string;
     logoDarkUrl: string;
     logoLightUrl: string;
+    logoMediaId: string;
+    logoLightMediaId: string;
+    faviconMediaId: string;
+    logoAlt: string;
   };
 }
 
@@ -41,6 +46,10 @@ export function BrandingForm({ initial }: Props) {
         "brand:og-default-image": form.ogDefaultImage,
         "brand:logo-dark-url": form.logoDarkUrl,
         "brand:logo-light-url": form.logoLightUrl,
+        "brand:logo-media-id": form.logoMediaId,
+        "brand:logo-light-media-id": form.logoLightMediaId,
+        "brand:favicon-media-id": form.faviconMediaId,
+        "brand:logo-alt": form.logoAlt,
       });
       if (res.ok) {
         toast.success("Marque mise a jour");
@@ -83,11 +92,70 @@ export function BrandingForm({ initial }: Props) {
             />
           </section>
 
+          <section className="rounded-xl p-6 space-y-5" style={{ background: "var(--card-bg)", border: "1px solid var(--border)" }}>
+            <div>
+              <h2 className="font-display font-semibold text-base" style={{ color: "var(--text)" }}>Logo &amp; favicon</h2>
+              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                Choisissez via la bibliotheque media (recommande) ou collez une URL plus bas.
+              </p>
+            </div>
+
+            <div>
+              <label className={labelCls} style={{ color: "var(--text-muted)" }}>Logo principal (theme sombre)</label>
+              <MediaPicker
+                value={form.logoMediaId || null}
+                onChange={(id) => update("logoMediaId", id || "")}
+                mimeFilter="image/"
+                triggerLabel="Choisir le logo (theme sombre)"
+              />
+            </div>
+
+            <div>
+              <label className={labelCls} style={{ color: "var(--text-muted)" }}>Logo (theme clair) — optionnel</label>
+              <MediaPicker
+                value={form.logoLightMediaId || null}
+                onChange={(id) => update("logoLightMediaId", id || "")}
+                mimeFilter="image/"
+                triggerLabel="Choisir le logo (theme clair)"
+              />
+            </div>
+
+            <div>
+              <label className={labelCls} style={{ color: "var(--text-muted)" }}>Favicon</label>
+              <MediaPicker
+                value={form.faviconMediaId || null}
+                onChange={(id) => update("faviconMediaId", id || "")}
+                mimeFilter="image/"
+                triggerLabel="Choisir le favicon"
+              />
+              <p className="mt-1 text-[10px]" style={{ color: "var(--text-muted)" }}>
+                Recommande : PNG carre 512x512 (Next.js sert automatiquement plusieurs tailles).
+              </p>
+            </div>
+
+            <div>
+              <label className={labelCls} style={{ color: "var(--text-muted)" }}>Texte alternatif (alt) du logo</label>
+              <input
+                type="text"
+                value={form.logoAlt}
+                onChange={(e) => update("logoAlt", e.target.value)}
+                placeholder="IEF & CO — Metallerie Serrurerie Ile-de-France"
+                className={inputCls}
+                style={inputStyle}
+              />
+            </div>
+          </section>
+
           <section className="rounded-xl p-6 space-y-4" style={{ background: "var(--card-bg)", border: "1px solid var(--border)" }}>
-            <h2 className="font-display font-semibold text-base" style={{ color: "var(--text)" }}>Identite visuelle</h2>
+            <div>
+              <h2 className="font-display font-semibold text-base" style={{ color: "var(--text)" }}>URL libres (avance)</h2>
+              <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+                Si un media est selectionne ci-dessus, son URL est utilisee en priorite. Ces champs sont une roue de secours.
+              </p>
+            </div>
 
             <UrlField
-              label="Favicon"
+              label="Favicon (URL libre)"
               value={form.faviconUrl}
               onChange={(v) => update("faviconUrl", v)}
               placeholder="/favicon.ico"
@@ -99,13 +167,13 @@ export function BrandingForm({ initial }: Props) {
               placeholder="/og-default.png"
             />
             <UrlField
-              label="Logo (theme sombre)"
+              label="Logo theme sombre (URL libre)"
               value={form.logoDarkUrl}
               onChange={(v) => update("logoDarkUrl", v)}
               placeholder="/logo-dark.svg"
             />
             <UrlField
-              label="Logo (theme clair)"
+              label="Logo theme clair (URL libre)"
               value={form.logoLightUrl}
               onChange={(v) => update("logoLightUrl", v)}
               placeholder="/logo-light.svg"

@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -51,7 +52,7 @@ function nullify(v: string | undefined | null): string | null {
 }
 
 export async function createBrand(input: BrandInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = brandSchema.parse(input);
     const newId = id();
@@ -75,6 +76,13 @@ export async function createBrand(input: BrandInput) {
       visible: p.visible ?? true,
       orderIdx: p.orderIdx ?? 0,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "content:brands",
+      entityId: newId,
+      action: "create",
+      diff: { name: p.name, slug },
+    });
     revalidatePath("/admin/content/brands");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -83,7 +91,7 @@ export async function createBrand(input: BrandInput) {
 }
 
 export async function updateBrand(brandId: string, input: BrandInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = brandSchema.parse(input);
     const slug = await uniqueSlug(p.slug || p.name, brandId);
@@ -109,6 +117,13 @@ export async function updateBrand(brandId: string, input: BrandInput) {
         updatedAt: new Date(),
       })
       .where(eq(schema.maintenanceBrands.id, brandId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:brands",
+      entityId: brandId,
+      action: "update",
+      diff: { name: p.name },
+    });
     revalidatePath("/admin/content/brands");
     revalidatePath(`/admin/content/brands/${brandId}`);
     return { ok: true as const };
@@ -118,9 +133,15 @@ export async function updateBrand(brandId: string, input: BrandInput) {
 }
 
 export async function deleteBrand(brandId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.maintenanceBrands).where(eq(schema.maintenanceBrands.id, brandId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:brands",
+      entityId: brandId,
+      action: "delete",
+    });
     revalidatePath("/admin/content/brands");
     return { ok: true as const };
   } catch (e) {

@@ -14,60 +14,89 @@ import { Analytics } from "@/components/layout/Analytics";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { generateLocalBusinessSchema } from "@/lib/seo";
+import { getBranding } from "@/lib/content";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://iefandco.com"),
-  title: {
-    default:
-      "IEF & CO | Métallerie Serrurerie Île-de-France — Groslay (95)",
-    template: "%s | IEF & CO",
-  },
-  description:
-    "IEF & CO, expert en métallerie et serrurerie à Groslay (95). Fermetures industrielles, portails, structures métalliques, menuiserie, portes coupe-feu, automatismes et maintenance 24/7 en Île-de-France.",
-  keywords: [
-    "métallerie",
-    "serrurerie",
-    "Groslay",
-    "Val-d'Oise",
-    "Île-de-France",
-    "porte industrielle",
-    "portail",
-    "structure métallique",
-    "coupe-feu",
-    "maintenance",
-  ],
-  authors: [{ name: "IEF & CO" }],
-  creator: "Numelite",
-  openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    url: "https://iefandco.com",
-    siteName: "IEF & CO",
-    title: "IEF & CO | Métallerie Serrurerie Île-de-France",
-    description:
-      "Concepteur et fabricant de solutions métalliques sur mesure. De la conception à la pose.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "IEF & CO | Métallerie Serrurerie Île-de-France",
-    description:
-      "Concepteur et fabricant de solutions métalliques sur mesure.",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true },
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  // Resolve DB-overridable favicon. Falls back to Next.js conventions
+  // (src/app/favicon.ico + public/icon.svg + public/apple-icon.svg) when
+  // no admin-uploaded favicon is configured.
+  const branding = await getBranding();
 
-export default function RootLayout({
+  const icons: Metadata["icons"] = branding.faviconUrl
+    ? {
+        icon: [
+          { url: branding.faviconUrl },
+          // Keep the static SVG as a fallback for browsers that prefer SVG
+          { url: "/icon.svg", type: "image/svg+xml" },
+        ],
+        apple: [{ url: branding.faviconUrl }],
+        shortcut: branding.faviconUrl,
+      }
+    : undefined;
+
+  return {
+    metadataBase: new URL("https://iefandco.com"),
+    title: {
+      default:
+        "IEF & CO | Métallerie Serrurerie Île-de-France — Groslay (95)",
+      template: "%s | IEF & CO",
+    },
+    description:
+      "IEF & CO, expert en métallerie et serrurerie à Groslay (95). Fermetures industrielles, portails, structures métalliques, menuiserie, portes coupe-feu, automatismes et maintenance 24/7 en Île-de-France.",
+    keywords: [
+      "métallerie",
+      "serrurerie",
+      "Groslay",
+      "Val-d'Oise",
+      "Île-de-France",
+      "porte industrielle",
+      "portail",
+      "structure métallique",
+      "coupe-feu",
+      "maintenance",
+    ],
+    authors: [{ name: "IEF & CO" }],
+    creator: "Numelite",
+    icons,
+    openGraph: {
+      type: "website",
+      locale: "fr_FR",
+      url: "https://iefandco.com",
+      siteName: "IEF & CO",
+      title: "IEF & CO | Métallerie Serrurerie Île-de-France",
+      description:
+        "Concepteur et fabricant de solutions métalliques sur mesure. De la conception à la pose.",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "IEF & CO | Métallerie Serrurerie Île-de-France",
+      description:
+        "Concepteur et fabricant de solutions métalliques sur mesure.",
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const localBusinessSchema = generateLocalBusinessSchema();
+  const [localBusinessSchema, branding] = await Promise.all([
+    generateLocalBusinessSchema(),
+    getBranding(),
+  ]);
+  const navbarBranding = {
+    logoUrl: branding.logoUrl,
+    logoLightUrl: branding.logoLightUrl,
+    logoAlt: branding.logoAlt,
+  };
 
   return (
     <html
@@ -99,7 +128,7 @@ export default function RootLayout({
           </a>
           <PageProgress />
           <ScrollProgress />
-          <Navbar />
+          <Navbar branding={navbarBranding} />
           <ViewTransition>
             <main id="main-content">{children}</main>
           </ViewTransition>

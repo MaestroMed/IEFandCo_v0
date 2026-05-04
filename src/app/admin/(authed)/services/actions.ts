@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -25,7 +26,7 @@ type ServiceInput = {
 };
 
 export async function updateService(serviceId: string, input: ServiceInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db
       .update(schema.services)
@@ -44,6 +45,13 @@ export async function updateService(serviceId: string, input: ServiceInput) {
         updatedAt: new Date(),
       })
       .where(eq(schema.services.id, serviceId));
+    await logAudit({
+      userId: me.id,
+      entity: "services",
+      entityId: serviceId,
+      action: "update",
+      diff: { title: input.title, visible: input.visible },
+    });
     revalidatePath("/admin/services");
     revalidatePath(`/admin/services/${serviceId}`);
     return { ok: true as const };

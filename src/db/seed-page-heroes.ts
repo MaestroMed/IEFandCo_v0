@@ -28,7 +28,16 @@ function cuid(): string {
  * Page heroes seed list.
  * Order = how it appears in the admin list (logical user navigation order).
  */
-const HEROES = [
+interface HeroSeed {
+  key: string;
+  filename: string;
+  /** Pre-calibrated overlay opacity (background sections sit lower than heroes). */
+  opacity?: number;
+  overlayLeft?: number;
+}
+
+const HEROES: HeroSeed[] = [
+  // Page heroes (full-bleed photo behind copy)
   { key: "a-propos", filename: "about-welder-sunset.jpg" },
   { key: "services-index", filename: "hero-services.jpg" },
   { key: "realisations-index", filename: "hero-realisations.jpg" },
@@ -42,6 +51,10 @@ const HEROES = [
   { key: "depannage-index", filename: "hero-depannage.jpg" },
   { key: "glossaire-index", filename: "hero-glossaire.jpg" },
   { key: "zones-intervention", filename: "hero-zones.jpg" },
+  // Homepage section backgrounds (lower opacity — content sits centered on top)
+  { key: "home-stats", filename: "section-stats.jpg", opacity: 45, overlayLeft: 70 },
+  { key: "home-testimonials", filename: "section-testimonials.jpg", opacity: 35, overlayLeft: 70 },
+  { key: "home-cta", filename: "section-cta.jpg", opacity: 60, overlayLeft: 70 },
 ];
 
 async function seedMediaForPhoto(filename: string): Promise<string | null> {
@@ -98,13 +111,13 @@ async function main() {
     await db.insert(pageHeroes).values({
       key: hero.key,
       enabled: true,
+      objectPosition: "center 50%",
+      opacity: hero.opacity ?? 100,
+      overlayLeft: hero.overlayLeft ?? 70,
       // mediaId stays null so the page falls back to the static image baked
       // into the public page component. The admin can pick a new media via
       // /admin/site/heroes/[key] to start serving the override.
       mediaId: null,
-      objectPosition: "center 50%",
-      opacity: 100,
-      overlayLeft: 70,
     });
     created++;
     console.log(`   ✓ Created default hero row for "${hero.key}"`);

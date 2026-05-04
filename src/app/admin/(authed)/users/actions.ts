@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { canManageTeam, hashPassword, requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { setSetting, deleteSetting } from "@/lib/admin/settings";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
@@ -41,6 +42,13 @@ export async function createUser(input: {
       passwordHash,
     });
     await setSetting(`user-mustchange:${newId}`, true);
+    await logAudit({
+      userId: me.id,
+      entity: "users",
+      entityId: newId,
+      action: "create",
+      diff: { email, name: input.name.trim(), role: input.role },
+    });
     revalidatePath("/admin/users");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -58,6 +66,13 @@ export async function updateUser(userId: string, input: { name: string; role: Us
       .update(schema.users)
       .set({ name: input.name.trim(), role: input.role })
       .where(eq(schema.users.id, userId));
+    await logAudit({
+      userId: me.id,
+      entity: "users",
+      entityId: userId,
+      action: "update",
+      diff: { name: input.name.trim(), role: input.role },
+    });
     revalidatePath("/admin/users");
     revalidatePath(`/admin/users/${userId}`);
     return { ok: true as const };
@@ -72,6 +87,13 @@ export async function changeUserRole(userId: string, role: UserRole) {
   try {
     if (!USER_ROLES.includes(role)) return { ok: false as const, error: "Role invalide" };
     await db.update(schema.users).set({ role }).where(eq(schema.users.id, userId));
+    await logAudit({
+      userId: me.id,
+      entity: "users",
+      entityId: userId,
+      action: "role.change",
+      diff: { role },
+    });
     revalidatePath("/admin/users");
     revalidatePath(`/admin/users/${userId}`);
     return { ok: true as const };
@@ -90,6 +112,12 @@ export async function resetUserPassword(userId: string) {
     await setSetting(`user-mustchange:${userId}`, true);
     // Revoke all existing sessions to force re-login
     await db.delete(schema.sessions).where(eq(schema.sessions.userId, userId));
+    await logAudit({
+      userId: me.id,
+      entity: "users",
+      entityId: userId,
+      action: "password.reset",
+    });
     revalidatePath("/admin/users");
     revalidatePath(`/admin/users/${userId}`);
     return { ok: true as const, tempPassword: tmpPassword };
@@ -105,6 +133,12 @@ export async function deleteUser(userId: string) {
   try {
     await db.delete(schema.users).where(eq(schema.users.id, userId));
     await deleteSetting(`user-mustchange:${userId}`);
+    await logAudit({
+      userId: me.id,
+      entity: "users",
+      entityId: userId,
+      action: "delete",
+    });
     revalidatePath("/admin/users");
     return { ok: true as const };
   } catch (e) {
@@ -117,6 +151,12 @@ export async function revokeSession(sessionId: string) {
   if (!canManageTeam(me)) return { ok: false as const, error: "Acces refuse" };
   try {
     await db.delete(schema.sessions).where(eq(schema.sessions.id, sessionId));
+    await logAudit({
+      userId: me.id,
+      entity: "sessions",
+      entityId: sessionId,
+      action: "revoke",
+    });
     revalidatePath("/admin/users");
     return { ok: true as const };
   } catch (e) {

@@ -87,7 +87,18 @@ export function MediaPicker({ value, onChange, mimeFilter, triggerLabel }: Media
       if (r.ok) {
         const d = await r.json();
         setItems(d.items || []);
+      } else {
+        const msg =
+          r.status === 401
+            ? "Session expirée. Reconnectez-vous."
+            : `Impossible de charger la médiathèque (${r.status}).`;
+        toast.error(msg);
+        setItems([]);
       }
+    } catch (err) {
+      console.error("[MediaPicker] loadItems failed", err);
+      toast.error("Erreur réseau lors du chargement des médias.");
+      setItems([]);
     } finally {
       setLoading(false);
     }

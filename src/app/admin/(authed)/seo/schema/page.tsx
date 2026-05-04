@@ -1,6 +1,6 @@
 import { Topbar } from "@/components/admin/Topbar";
 import { Tag } from "lucide-react";
-import { companyInfo } from "@/data/navigation";
+import { getCompanyInfo, type PublicCompanyInfo } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -11,12 +11,12 @@ interface SchemaItem {
   json: object;
 }
 
-function buildSchemas(): SchemaItem[] {
+function buildSchemas(companyInfo: PublicCompanyInfo): SchemaItem[] {
   const localBusiness = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: companyInfo.name,
-    description: companyInfo.description,
+    description: companyInfo.tagline,
     url: companyInfo.website,
     telephone: companyInfo.phone,
     email: companyInfo.email,
@@ -42,7 +42,7 @@ function buildSchemas(): SchemaItem[] {
       },
     ],
     areaServed: companyInfo.areaServed,
-    sameAs: [companyInfo.social.linkedin],
+    sameAs: companyInfo.social.linkedin ? [companyInfo.social.linkedin] : [],
   };
 
   const service = {
@@ -105,7 +105,7 @@ function buildSchemas(): SchemaItem[] {
   const organization = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: companyInfo.fullName,
+    name: companyInfo.legalName,
     url: companyInfo.website,
     logo: `${companyInfo.website}/logo.png`,
     foundingDate: String(companyInfo.founded),
@@ -124,7 +124,7 @@ function buildSchemas(): SchemaItem[] {
     "@type": "Person",
     name: companyInfo.president,
     jobTitle: "President",
-    worksFor: { "@type": "Organization", name: companyInfo.fullName },
+    worksFor: { "@type": "Organization", name: companyInfo.legalName },
   };
 
   return [
@@ -139,8 +139,9 @@ function buildSchemas(): SchemaItem[] {
   ];
 }
 
-export default function SchemaPreviewPage() {
-  const items = buildSchemas();
+export default async function SchemaPreviewPage() {
+  const company = await getCompanyInfo();
+  const items = buildSchemas(company);
 
   return (
     <>

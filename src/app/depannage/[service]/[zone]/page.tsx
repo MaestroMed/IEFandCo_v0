@@ -8,11 +8,11 @@ import {
   getDepannageService,
   getZones,
   getZoneBySlug,
+  getCompanyInfo,
 } from "@/lib/content";
 import { Button } from "@/components/ui/Button";
 import { ProjectIllustration } from "@/components/ui/ProjectIllustration";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
-import { companyInfo } from "@/data/navigation";
 
 export function generateStaticParams() {
   const params: Array<{ service: string; zone: string }> = [];
@@ -45,11 +45,12 @@ export default async function DepannageComboPage({
   params: Promise<{ service: string; zone: string }>;
 }) {
   const { service, zone } = await params;
-  const [s, z, depannageServices, zones] = await Promise.all([
+  const [s, z, depannageServices, zones, company] = await Promise.all([
     getDepannageService(service),
     getZoneBySlug(zone),
     getDepannageServices(),
     getZones(),
+    getCompanyInfo(),
   ]);
   if (!s || !z) notFound();
 
@@ -68,12 +69,12 @@ export default async function DepannageComboPage({
     provider: {
       "@type": "LocalBusiness",
       name: "IEF & CO",
-      telephone: companyInfo.phone,
+      telephone: company.phone,
       address: {
         "@type": "PostalAddress",
-        streetAddress: companyInfo.address.street,
-        addressLocality: companyInfo.address.city,
-        postalCode: companyInfo.address.postalCode,
+        streetAddress: company.address.street,
+        addressLocality: company.address.city,
+        postalCode: company.address.postalCode,
         addressCountry: "FR",
       },
     },
@@ -151,14 +152,14 @@ export default async function DepannageComboPage({
               </p>
               <div className="mt-10 flex flex-wrap gap-4">
                 <a
-                  href={`tel:${companyInfo.phone}`}
+                  href={`tel:${company.phone}`}
                   className="inline-flex items-center gap-3 rounded-lg px-6 py-3 font-semibold text-white transition-all hover:scale-105"
                   style={{ background: "var(--color-primary)", boxShadow: "0 10px 30px rgba(225, 16, 33, 0.3)" }}
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                   </svg>
-                  Appeler {companyInfo.phoneDisplay}
+                  Appeler {company.phoneDisplay}
                 </a>
                 <Button href="/devis" variant="secondary" size="lg">Demander un devis</Button>
               </div>
@@ -476,14 +477,14 @@ export default async function DepannageComboPage({
           </p>
           <div className="mt-10 flex justify-center gap-4 flex-wrap">
             <a
-              href={`tel:${companyInfo.phone}`}
+              href={`tel:${company.phone}`}
               className="inline-flex items-center gap-3 rounded-lg px-8 py-4 font-semibold text-white text-lg transition-all hover:scale-105"
               style={{ background: "var(--color-primary)", boxShadow: "0 20px 60px rgba(225, 16, 33, 0.4)" }}
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
               </svg>
-              {companyInfo.phoneDisplay}
+              {company.phoneDisplay}
             </a>
             <Button href="/maintenance/contrats" variant="secondary" size="lg">Voir nos contrats</Button>
           </div>

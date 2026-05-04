@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -55,7 +56,7 @@ function nullify(v: string | undefined | null): string | null {
 }
 
 export async function createZone(input: ZoneInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = zoneSchema.parse(input);
     const newId = id();
@@ -83,6 +84,13 @@ export async function createZone(input: ZoneInput) {
       visible: p.visible ?? true,
       orderIdx: p.orderIdx ?? 0,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "content:zones",
+      entityId: newId,
+      action: "create",
+      diff: { name: p.name, slug },
+    });
     revalidatePath("/admin/content/zones");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -91,7 +99,7 @@ export async function createZone(input: ZoneInput) {
 }
 
 export async function updateZone(zoneId: string, input: ZoneInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = zoneSchema.parse(input);
     const slug = await uniqueSlug(p.slug || p.name, zoneId);
@@ -121,6 +129,13 @@ export async function updateZone(zoneId: string, input: ZoneInput) {
         updatedAt: new Date(),
       })
       .where(eq(schema.zones.id, zoneId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:zones",
+      entityId: zoneId,
+      action: "update",
+      diff: { name: p.name },
+    });
     revalidatePath("/admin/content/zones");
     revalidatePath(`/admin/content/zones/${zoneId}`);
     return { ok: true as const };
@@ -130,9 +145,15 @@ export async function updateZone(zoneId: string, input: ZoneInput) {
 }
 
 export async function deleteZone(zoneId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.zones).where(eq(schema.zones.id, zoneId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:zones",
+      entityId: zoneId,
+      action: "delete",
+    });
     revalidatePath("/admin/content/zones");
     return { ok: true as const };
   } catch (e) {

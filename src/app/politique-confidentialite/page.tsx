@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { companyInfo } from "@/data/navigation";
 import { generatePageMetadata } from "@/lib/seo";
-import { getPageSeo } from "@/lib/content";
+import { getPageSeo, getCompanyInfo } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("politique-confidentialite");
@@ -15,7 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default function PolitiqueConfidentialite() {
+export default async function PolitiqueConfidentialite() {
+  const company = await getCompanyInfo();
   return (
     <section className="section-forge-light relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32 min-h-screen">
       <div className="forge-gradient-light" style={{ opacity: 0.4 }} />
@@ -33,8 +33,8 @@ export default function PolitiqueConfidentialite() {
         <div className="mt-10 space-y-8 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           <section>
             <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Responsable du traitement</h2>
-            <p>{companyInfo.fullName}, {companyInfo.address.street}, {companyInfo.address.postalCode} {companyInfo.address.city}.</p>
-            <p>Contact : {companyInfo.email}</p>
+            <p>{company.legalName}, {company.address.street}, {company.address.postalCode} {company.address.city}.</p>
+            <p>Contact : {company.email}</p>
           </section>
 
           <section>
@@ -49,7 +49,7 @@ export default function PolitiqueConfidentialite() {
 
           <section>
             <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Vos droits</h2>
-            <p>Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de rectification, de suppression et de portabilité de vos données. Pour exercer ces droits, contactez-nous à {companyInfo.email}.</p>
+            <p>Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de rectification, de suppression et de portabilité de vos données. Pour exercer ces droits, contactez-nous à {company.email}.</p>
           </section>
 
           <section>

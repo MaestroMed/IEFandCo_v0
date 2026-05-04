@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { randomBytes } from "node:crypto";
@@ -75,9 +76,15 @@ export async function updateRedirect(redirectId: string, input: Input) {
 }
 
 export async function deleteRedirect(redirectId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.redirects).where(eq(schema.redirects.id, redirectId));
+    await logAudit({
+      userId: me.id,
+      entity: "redirects",
+      entityId: redirectId,
+      action: "delete",
+    });
     revalidatePath("/admin/seo/redirects");
     revalidatePath("/admin/seo");
     return { ok: true as const };
@@ -87,7 +94,7 @@ export async function deleteRedirect(redirectId: string) {
 }
 
 export async function importRedirectsCsv(csv: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const lines = csv
       .split(/\r?\n/)
@@ -134,6 +141,12 @@ export async function importRedirectsCsv(csv: string) {
       imported++;
     }
 
+    await logAudit({
+      userId: me.id,
+      entity: "redirects",
+      action: "redirects.import",
+      diff: { imported, skipped, errorCount: errors.length },
+    });
     revalidatePath("/admin/seo/redirects");
     revalidatePath("/admin/seo");
     return { ok: true as const, imported, skipped, errors };

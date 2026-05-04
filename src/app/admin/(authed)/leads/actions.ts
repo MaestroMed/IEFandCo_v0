@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { sendEmail, escapeHtml } from "@/lib/email";
 import { eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -65,6 +66,9 @@ export async function replyToLead(leadId: string, subject: string, body: string)
   const lead = (await db.select().from(schema.leads).where(eq(schema.leads.id, leadId)).limit(1))[0];
   if (!lead) return { ok: false, error: "Lead introuvable" };
 
+  const recipient = (lead.email ?? "").trim();
+  if (!recipient) return { ok: false, error: "Le lead n'a pas d'adresse email" };
+
   const html = `
     <div style="font-family: sans-serif; max-width: 600px;">
       <p>Bonjour ${escapeHtml(lead.firstName)},</p>
@@ -77,6 +81,7 @@ export async function replyToLead(leadId: string, subject: string, body: string)
   `;
 
   const result = await sendEmail({
+    to: recipient,
     subject,
     html,
     replyTo: "contact@iefandco.com",
@@ -106,13 +111,27 @@ export async function replyToLead(leadId: string, subject: string, body: string)
     await logEvent(leadId, "status_change", user.id, { from: "new", to: "contacted", reason: "auto_after_reply" });
   }
 
+  await logAudit({
+    userId: user.id,
+    entity: "leads",
+    entityId: leadId,
+    action: "reply",
+    diff: { subject, to: recipient },
+  });
+
   revalidatePath(`/admin/leads/${leadId}`);
   return { ok: true };
 }
 
 export async function deleteLead(leadId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   await db.delete(schema.leads).where(eq(schema.leads.id, leadId));
+  await logAudit({
+    userId: me.id,
+    entity: "leads",
+    entityId: leadId,
+    action: "delete",
+  });
   revalidatePath("/admin/leads");
   return { ok: true };
 }
@@ -164,9 +183,15 @@ export async function bulkAssign(ids: string[], userId: string | null) {
 
 export async function bulkDelete(ids: string[]) {
   if (!ids.length) return { ok: false as const, error: "Aucun lead selectionne" };
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.leads).where(inArray(schema.leads.id, ids));
+    await logAudit({
+      userId: me.id,
+      entity: "leads",
+      action: "bulk_delete",
+      diff: { ids, count: ids.length },
+    });
     revalidatePath("/admin/leads");
     return { ok: true as const, count: ids.length };
   } catch (e) {

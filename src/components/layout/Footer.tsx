@@ -1,8 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
-import { companyInfo } from "@/data/navigation";
 import { services } from "@/data/services";
+import { getCompanyInfo, getBranding } from "@/lib/content";
 
-export function Footer() {
+export async function Footer() {
+  const [company, branding] = await Promise.all([getCompanyInfo(), getBranding()]);
+
   return (
     <footer
       className="relative overflow-hidden"
@@ -32,12 +35,23 @@ export function Footer() {
         <div className="mb-16 grid items-end gap-8 md:grid-cols-3 md:gap-12">
           <div className="md:col-span-2">
             <Link href="/" className="inline-block group">
-              <span
-                className="font-display text-5xl font-bold tracking-tight md:text-7xl leading-[0.9]"
-                style={{ color: "#F5F5F2" }}
-              >
-                IEF<span className="text-primary">&</span>CO
-              </span>
+              {branding.logoUrl ? (
+                <Image
+                  src={branding.logoUrl}
+                  alt={branding.logoAlt}
+                  width={280}
+                  height={80}
+                  className="h-16 w-auto md:h-20 object-contain"
+                  unoptimized={branding.logoUrl.endsWith(".svg")}
+                />
+              ) : (
+                <span
+                  className="font-display text-5xl font-bold tracking-tight md:text-7xl leading-[0.9]"
+                  style={{ color: "#F5F5F2" }}
+                >
+                  IEF<span className="text-primary">&</span>CO
+                </span>
+              )}
             </Link>
             <p className="mt-6 max-w-md text-base leading-relaxed" style={{ color: "rgba(245, 245, 242, 0.65)" }}>
               Concepteur et fabricant de solutions métalliques sur mesure.
@@ -61,14 +75,14 @@ export function Footer() {
               </svg>
             </Link>
             <a
-              href={`tel:${companyInfo.phone}`}
+              href={`tel:${company.phone}`}
               className="inline-flex items-center gap-2 transition-colors hover:text-white"
               style={{ color: "rgba(245, 245, 242, 0.65)" }}
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} style={{ color: "var(--color-copper)" }} aria-hidden="true">
                 <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
               </svg>
-              <span className="font-mono text-sm">{companyInfo.phoneDisplay}</span>
+              <span className="font-mono text-sm">{company.phoneDisplay}</span>
             </a>
           </div>
         </div>
@@ -185,13 +199,13 @@ export function Footer() {
             </ul>
             <address className="not-italic space-y-3 text-sm" style={{ color: "rgba(245, 245, 242, 0.6)" }}>
               <p>
-                {companyInfo.address.street}<br />
-                {companyInfo.address.postalCode} {companyInfo.address.city}<br />
-                <span style={{ color: "rgba(245, 245, 242, 0.4)" }}>{companyInfo.address.region}</span>
+                {company.address.street}<br />
+                {company.address.postalCode} {company.address.city}<br />
+                <span style={{ color: "rgba(245, 245, 242, 0.4)" }}>{company.address.region}</span>
               </p>
               <p>
-                <a href={`mailto:${companyInfo.email}`} className="transition-colors hover:text-white break-all">
-                  {companyInfo.email}
+                <a href={`mailto:${company.email}`} className="transition-colors hover:text-white break-all">
+                  {company.email}
                 </a>
               </p>
             </address>
@@ -212,7 +226,7 @@ export function Footer() {
             </ul>
             <div className="mt-6">
               <a
-                href={companyInfo.social.linkedin}
+                href={company.social.linkedin || "https://fr.linkedin.com/company/ief-and-co"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex h-10 w-10 items-center justify-center rounded-lg transition-all hover:scale-110"
@@ -239,7 +253,7 @@ export function Footer() {
           <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: "rgba(245, 245, 242, 0.4)" }}>
             <span>© {new Date().getFullYear()} IEF & CO</span>
             <span style={{ color: "rgba(245, 245, 242, 0.2)" }}>·</span>
-            <span>SIREN {companyInfo.siren}</span>
+            <span>SIREN {company.siren}</span>
           </div>
           <div className="flex gap-6 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: "rgba(245, 245, 242, 0.4)" }}>
             <Link href="/mentions-legales" className="transition-colors hover:text-white">Mentions légales</Link>

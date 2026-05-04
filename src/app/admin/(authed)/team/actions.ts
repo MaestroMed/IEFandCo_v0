@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -22,7 +23,7 @@ type Input = {
 };
 
 export async function createTeamMember(input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const newId = id();
     await db.insert(schema.teamMembers).values({
@@ -35,6 +36,13 @@ export async function createTeamMember(input: Input) {
       visible: input.visible ?? true,
       photoMediaId: input.photoMediaId || null,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "team",
+      entityId: newId,
+      action: "create",
+      diff: { name: input.name, role: input.role },
+    });
     revalidatePath("/admin/team");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -43,7 +51,7 @@ export async function createTeamMember(input: Input) {
 }
 
 export async function updateTeamMember(memberId: string, input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db
       .update(schema.teamMembers)
@@ -57,6 +65,13 @@ export async function updateTeamMember(memberId: string, input: Input) {
         photoMediaId: input.photoMediaId || null,
       })
       .where(eq(schema.teamMembers.id, memberId));
+    await logAudit({
+      userId: me.id,
+      entity: "team",
+      entityId: memberId,
+      action: "update",
+      diff: { name: input.name, role: input.role },
+    });
     revalidatePath("/admin/team");
     revalidatePath(`/admin/team/${memberId}`);
     return { ok: true as const };
@@ -66,9 +81,15 @@ export async function updateTeamMember(memberId: string, input: Input) {
 }
 
 export async function deleteTeamMember(memberId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.teamMembers).where(eq(schema.teamMembers.id, memberId));
+    await logAudit({
+      userId: me.id,
+      entity: "team",
+      entityId: memberId,
+      action: "delete",
+    });
     revalidatePath("/admin/team");
     return { ok: true as const };
   } catch (e) {

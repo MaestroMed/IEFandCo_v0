@@ -29,6 +29,10 @@ export default async function BrandingSettingsPage() {
             ogDefaultImage: (data["brand:og-default-image"] as string) || "",
             logoDarkUrl: (data["brand:logo-dark-url"] as string) || "",
             logoLightUrl: (data["brand:logo-light-url"] as string) || "",
+            logoMediaId: (data["brand:logo-media-id"] as string) || "",
+            logoLightMediaId: (data["brand:logo-light-media-id"] as string) || "",
+            faviconMediaId: (data["brand:favicon-media-id"] as string) || "",
+            logoAlt: (data["brand:logo-alt"] as string) || "",
           }}
         />
       </div>

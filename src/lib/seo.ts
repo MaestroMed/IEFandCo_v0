@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { companyInfo } from "@/data/navigation";
 import type { FAQItem } from "@/data/faq";
+import { getCompanyInfo } from "@/lib/content";
 
 const baseUrl = "https://iefandco.com";
 
@@ -40,41 +41,42 @@ export function generatePageMetadata(page: {
   };
 }
 
-export function generateLocalBusinessSchema() {
+export async function generateLocalBusinessSchema() {
+  const company = await getCompanyInfo();
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "@id": `${baseUrl}/#organization`,
-    name: companyInfo.name,
-    legalName: companyInfo.fullName,
-    description: companyInfo.description,
+    name: company.name,
+    legalName: company.legalName,
+    description: company.tagline,
     url: baseUrl,
     logo: `${baseUrl}/icon.svg`,
     image: [
       `${baseUrl}/opengraph-image`,
       `${baseUrl}/images/photos/hero-welder-dark.jpg`,
     ],
-    telephone: companyInfo.phone,
-    email: companyInfo.email,
-    foundingDate: "2020",
+    telephone: company.phone,
+    email: company.email,
+    foundingDate: String(company.founded),
     founder: {
       "@type": "Person",
-      name: companyInfo.president,
+      name: company.president,
     },
     address: {
       "@type": "PostalAddress",
-      streetAddress: companyInfo.address.street,
-      addressLocality: companyInfo.address.city,
-      postalCode: companyInfo.address.postalCode,
-      addressRegion: companyInfo.address.region,
-      addressCountry: companyInfo.address.country,
+      streetAddress: company.address.street,
+      addressLocality: company.address.city,
+      postalCode: company.address.postalCode,
+      addressRegion: company.address.region,
+      addressCountry: company.address.country,
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: companyInfo.geo.lat,
-      longitude: companyInfo.geo.lng,
+      latitude: company.geo.lat,
+      longitude: company.geo.lng,
     },
-    areaServed: companyInfo.areaServed.map((area) => ({
+    areaServed: company.areaServed.map((area) => ({
       "@type": "AdministrativeArea",
       name: area,
     })),
@@ -98,11 +100,13 @@ export function generateLocalBusinessSchema() {
       "Portes coupe-feu",
       "Maintenance préventive",
     ],
-    sameAs: Object.values(companyInfo.social),
+    sameAs: Object.values(company.social).filter(
+      (v): v is string => typeof v === "string" && v.length > 0,
+    ),
     identifier: {
       "@type": "PropertyValue",
       propertyID: "SIREN",
-      value: companyInfo.siren,
+      value: company.siren,
     },
   };
 }

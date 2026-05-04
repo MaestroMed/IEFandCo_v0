@@ -12,11 +12,19 @@ interface EmailPayload {
   subject: string;
   html: string;
   replyTo?: string;
+  /**
+   * Optional explicit recipient(s). When omitted, falls back to
+   * `process.env.CONTACT_TO_EMAIL` (the internal contact inbox).
+   * MUST be set when sending mail to an external recipient (e.g. a lead
+   * reply) so the message doesn't get routed to the internal inbox.
+   */
+  to?: string | string[];
 }
 
-export async function sendEmail({ subject, html, replyTo }: EmailPayload): Promise<{ ok: boolean; error?: string }> {
+export async function sendEmail({ subject, html, replyTo, to }: EmailPayload): Promise<{ ok: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.CONTACT_TO_EMAIL || "contact@iefandco.com";
+  const fallbackTo = process.env.CONTACT_TO_EMAIL || "contact@iefandco.com";
+  const toEmail: string | string[] = to ?? fallbackTo;
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "noreply@iefandco.com";
 
   // Dev fallback: log metadata only (never PII / full HTML body)

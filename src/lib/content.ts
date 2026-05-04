@@ -24,6 +24,7 @@ import { zones as staticZones, type Zone } from "@/data/zones";
 import { brands as staticBrands, type Brand } from "@/data/brands";
 import { comparatifs as staticComparatifs, type Comparator } from "@/data/comparatifs";
 import { depannageServices as staticDepannageServices, type DepannageService } from "@/data/depannage";
+import { companyInfo as staticCompanyInfo } from "@/data/navigation";
 
 /* ─────────── Helpers ─────────── */
 
@@ -797,6 +798,302 @@ export async function getDepannageServices(): Promise<DepannageService[]> {
 export async function getDepannageService(slug: string): Promise<DepannageService | undefined> {
   const all = await getDepannageServices();
   return all.find((d) => d.slug === slug);
+}
+
+/* ─────────── Company info (settings: site:*) ─────────── */
+
+/**
+ * Public-facing company info, structured. Used by the footer, contact page,
+ * legal pages, depannage page, JSON-LD LocalBusiness, etc.
+ *
+ * Sourced from the `settings` table (keys `site:*`) when available, with
+ * a static fallback to `src/data/navigation.ts#companyInfo` for any field
+ * not yet edited via the admin or when the DB is unavailable.
+ */
+export interface PublicCompanyInfo {
+  /** Display name, e.g. "IEF & CO". */
+  name: string;
+  /** Legal name, e.g. "IEF AND CO". */
+  legalName: string;
+  /** Marketing tagline / short description (one-liner). */
+  tagline: string;
+  /** Tel: link target — full international format, e.g. "+33 1 34 05 87 03". */
+  phone: string;
+  /** Human-readable phone, e.g. "01 34 05 87 03". */
+  phoneDisplay: string;
+  email: string;
+  address: {
+    street: string;
+    postalCode: string;
+    city: string;
+    region: string;
+    country: string;
+  };
+  /** Free-form opening hours (single line), e.g. "Lundi - Vendredi : 8h - 18h". */
+  hours: string;
+  siren: string;
+  naf?: string;
+  tvaIntra?: string;
+  rcs: string;
+  capital?: string;
+  president: string;
+  founded: number;
+  website: string;
+  geo: { lat: number; lng: number };
+  areaServed: string[];
+  social: { linkedin?: string };
+}
+
+/**
+ * Derives a human-readable phone display from the international `phone`
+ * value when `phoneDisplay` isn't explicitly stored. Strips a leading
+ * "+33 " and groups by pairs.
+ */
+function derivePhoneDisplay(phone: string): string {
+  const trimmed = phone.trim();
+  // Remove "+33 " or "+33" prefix and replace by leading "0"
+  const local = trimmed.replace(/^\+33\s?/, "0").replace(/[^0-9]/g, "");
+  if (local.length === 10) {
+    return local.match(/.{1,2}/g)?.join(" ") ?? trimmed;
+  }
+  return trimmed;
+}
+
+/**
+ * Parses an admin-edited address string ("8 Rue René Dubos, 95410 Groslay")
+ * into structured parts. Falls back to the static value if parsing fails.
+ */
+function parseAddress(
+  raw: string | null | undefined,
+): { street: string; postalCode: string; city: string } | null {
+  if (!raw) return null;
+  // Match "<street>, <postalCode> <city>" with optional whitespace
+  const m = raw.match(/^\s*(.+?),\s*(\d{5})\s+(.+?)\s*$/);
+  if (m) {
+    return { street: m[1].trim(), postalCode: m[2], city: m[3].trim() };
+  }
+  // No comma — assume the whole string is the street
+  return { street: raw.trim(), postalCode: "", city: "" };
+}
+
+const COMPANY_KEYS = [
+  "site:name",
+  "site:tagline",
+  "site:phone",
+  "site:phoneDisplay",
+  "site:email",
+  "site:address",
+  "site:hours",
+  "site:siren",
+  "site:naf",
+  "site:tvaIntra",
+  "site:rcs",
+  "site:capital",
+  "site:president",
+  "site:legalName",
+] as const;
+
+export async function getCompanyInfo(): Promise<PublicCompanyInfo> {
+  const fallback: PublicCompanyInfo = {
+    name: staticCompanyInfo.name,
+    legalName: staticCompanyInfo.fullName,
+    tagline: staticCompanyInfo.description,
+    phone: staticCompanyInfo.phone,
+    phoneDisplay: staticCompanyInfo.phoneDisplay,
+    email: staticCompanyInfo.email,
+    address: {
+      street: staticCompanyInfo.address.street,
+      postalCode: staticCompanyInfo.address.postalCode,
+      city: staticCompanyInfo.address.city,
+      region: staticCompanyInfo.address.region,
+      country: staticCompanyInfo.address.country,
+    },
+    hours: "Lundi - Vendredi : 8h - 18h",
+    siren: staticCompanyInfo.siren,
+    naf: staticCompanyInfo.naf,
+    rcs: staticCompanyInfo.rcs,
+    capital: staticCompanyInfo.capital,
+    president: staticCompanyInfo.president,
+    founded: staticCompanyInfo.founded,
+    website: staticCompanyInfo.website,
+    geo: staticCompanyInfo.geo,
+    areaServed: [...staticCompanyInfo.areaServed],
+    social: { ...staticCompanyInfo.social },
+  };
+
+  if (!isDbConfigured()) return fallback;
+
+  try {
+    const rows = await db
+      .select()
+      .from(schema.settings)
+      .where(inArray(schema.settings.key, [...COMPANY_KEYS]));
+    if (rows.length === 0) return fallback;
+
+    const map = new Map<string, string>();
+    for (const r of rows) {
+      try {
+        const parsed = JSON.parse(r.valueJson);
+        if (typeof parsed === "string" && parsed.length > 0) {
+          map.set(r.key, parsed);
+        }
+      } catch {
+        // ignore malformed rows
+      }
+    }
+
+    // The admin stores `site:phone` as a human-readable display
+    // (e.g. "01 34 05 87 03"). We derive both fields from it unless
+    // `site:phoneDisplay` is also explicitly set.
+    const rawPhone = map.get("site:phone") || fallback.phoneDisplay;
+    const phoneDisplay = map.get("site:phoneDisplay") || rawPhone;
+    // International form: ensure leading +33 for tel: links
+    const phoneDigits = rawPhone.replace(/[^0-9+]/g, "");
+    const phone = phoneDigits.startsWith("+")
+      ? phoneDigits
+      : phoneDigits.startsWith("0")
+        ? `+33 ${phoneDigits.slice(1).replace(/(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})/, "$1 $2 $3 $4 $5")}`
+        : fallback.phone;
+
+    const addressParsed = parseAddress(map.get("site:address"));
+
+    return {
+      name: map.get("site:name") || fallback.name,
+      legalName: map.get("site:legalName") || fallback.legalName,
+      tagline: map.get("site:tagline") || fallback.tagline,
+      phone,
+      phoneDisplay: map.get("site:phoneDisplay") || derivePhoneDisplay(rawPhone),
+      email: map.get("site:email") || fallback.email,
+      address: {
+        street: addressParsed?.street || fallback.address.street,
+        postalCode: addressParsed?.postalCode || fallback.address.postalCode,
+        city: addressParsed?.city || fallback.address.city,
+        region: fallback.address.region,
+        country: fallback.address.country,
+      },
+      hours: map.get("site:hours") || fallback.hours,
+      siren: map.get("site:siren") || fallback.siren,
+      naf: map.get("site:naf") || fallback.naf,
+      tvaIntra: map.get("site:tvaIntra") || fallback.tvaIntra,
+      rcs: map.get("site:rcs") || fallback.rcs,
+      capital: map.get("site:capital") || fallback.capital,
+      president: map.get("site:president") || fallback.president,
+      founded: fallback.founded,
+      website: fallback.website,
+      geo: fallback.geo,
+      areaServed: fallback.areaServed,
+      social: fallback.social,
+    };
+  } catch (err) {
+    console.warn("[content] getCompanyInfo failed, falling back to static:", err);
+    return fallback;
+  }
+}
+
+/* ─────────── Branding (logo + favicon, settings: branding:*) ─────────── */
+
+/**
+ * Public-facing branding info: logo + favicon URLs resolved from the media
+ * library when configured via /admin/settings/branding, with a fallback to
+ * static URLs entered as plain text in the same admin page.
+ *
+ * Used by the Navbar / Footer / login page to render the logo image, and by
+ * src/app/icon.tsx to serve the favicon.
+ */
+export interface PublicBrandingInfo {
+  /** Primary logo URL (theme-agnostic — used everywhere). null = render the inline text logo fallback. */
+  logoUrl: string | null;
+  /** Optional theme-clair-specific logo URL. null = use logoUrl in both themes. */
+  logoLightUrl: string | null;
+  /** Alt text for the logo image (defaults to "<companyName> — Accueil"). */
+  logoAlt: string;
+  /** Favicon URL. null = serve the static src/app/favicon.ico. */
+  faviconUrl: string | null;
+  /** Primary brand color (hex, default #E11021). */
+  primaryColor: string;
+  /** Copper accent color (hex, default #C4855C). */
+  copperColor: string;
+}
+
+const BRANDING_KEYS = [
+  "brand:primary-color",
+  "brand:copper-color",
+  "brand:favicon-url",
+  "brand:logo-dark-url",
+  "brand:logo-light-url",
+  "brand:logo-media-id",
+  "brand:logo-light-media-id",
+  "brand:favicon-media-id",
+  "brand:logo-alt",
+] as const;
+
+export async function getBranding(): Promise<PublicBrandingInfo> {
+  const fallback: PublicBrandingInfo = {
+    logoUrl: null,
+    logoLightUrl: null,
+    logoAlt: `${staticCompanyInfo.name} — Accueil`,
+    faviconUrl: null,
+    primaryColor: "#E11021",
+    copperColor: "#C4855C",
+  };
+
+  if (!isDbConfigured()) return fallback;
+
+  try {
+    const rows = await db
+      .select()
+      .from(schema.settings)
+      .where(inArray(schema.settings.key, [...BRANDING_KEYS]));
+    if (rows.length === 0) return fallback;
+
+    const map = new Map<string, string>();
+    for (const r of rows) {
+      try {
+        const parsed = JSON.parse(r.valueJson);
+        if (typeof parsed === "string" && parsed.length > 0) {
+          map.set(r.key, parsed);
+        }
+      } catch {
+        // ignore malformed rows
+      }
+    }
+
+    // Resolve any media-id references to URLs in a single query
+    const mediaIds = [
+      map.get("brand:logo-media-id"),
+      map.get("brand:logo-light-media-id"),
+      map.get("brand:favicon-media-id"),
+    ].filter((id): id is string => Boolean(id));
+    const mediaMap = mediaIds.length > 0 ? await getMediaMetaMap(mediaIds) : new Map<string, MediaMeta>();
+
+    const logoMedia = map.get("brand:logo-media-id")
+      ? mediaMap.get(map.get("brand:logo-media-id")!)
+      : undefined;
+    const logoLightMedia = map.get("brand:logo-light-media-id")
+      ? mediaMap.get(map.get("brand:logo-light-media-id")!)
+      : undefined;
+    const faviconMedia = map.get("brand:favicon-media-id")
+      ? mediaMap.get(map.get("brand:favicon-media-id")!)
+      : undefined;
+
+    // Priority: media-id (preferred) → URL string (legacy / advanced)
+    const logoUrl = logoMedia?.url || map.get("brand:logo-dark-url") || null;
+    const logoLightUrl = logoLightMedia?.url || map.get("brand:logo-light-url") || null;
+    const faviconUrl = faviconMedia?.url || map.get("brand:favicon-url") || null;
+    const logoAlt = map.get("brand:logo-alt") || logoMedia?.alt || `${staticCompanyInfo.name} — Accueil`;
+
+    return {
+      logoUrl,
+      logoLightUrl,
+      logoAlt,
+      faviconUrl,
+      primaryColor: map.get("brand:primary-color") || fallback.primaryColor,
+      copperColor: map.get("brand:copper-color") || fallback.copperColor,
+    };
+  } catch (err) {
+    console.warn("[content] getBranding failed, falling back to defaults:", err);
+    return fallback;
+  }
 }
 
 /* ─────────── Static slugs (for generateStaticParams at build) ─────────── */

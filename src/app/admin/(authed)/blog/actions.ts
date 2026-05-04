@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -41,7 +42,7 @@ async function uniqueSlug(base: string, excludeId?: string): Promise<string> {
 }
 
 export async function createPost(input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const newId = id();
     const slug = await uniqueSlug(input.slug || input.title);
@@ -61,6 +62,13 @@ export async function createPost(input: Input) {
       seoDescription: input.seoDescription || null,
       coverMediaId: input.coverMediaId || null,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "blog",
+      entityId: newId,
+      action: "create",
+      diff: { title: input.title, slug, status: input.status },
+    });
     revalidatePath("/admin/blog");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -69,7 +77,7 @@ export async function createPost(input: Input) {
 }
 
 export async function updatePost(postId: string, input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const slug = await uniqueSlug(input.slug || input.title, postId);
     await db
@@ -91,6 +99,13 @@ export async function updatePost(postId: string, input: Input) {
         updatedAt: new Date(),
       })
       .where(eq(schema.blogPosts.id, postId));
+    await logAudit({
+      userId: me.id,
+      entity: "blog",
+      entityId: postId,
+      action: "update",
+      diff: { title: input.title, status: input.status },
+    });
     revalidatePath("/admin/blog");
     revalidatePath(`/admin/blog/${postId}`);
     return { ok: true as const };
@@ -100,9 +115,15 @@ export async function updatePost(postId: string, input: Input) {
 }
 
 export async function deletePost(postId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.blogPosts).where(eq(schema.blogPosts.id, postId));
+    await logAudit({
+      userId: me.id,
+      entity: "blog",
+      entityId: postId,
+      action: "delete",
+    });
     revalidatePath("/admin/blog");
     return { ok: true as const };
   } catch (e) {
@@ -111,12 +132,18 @@ export async function deletePost(postId: string) {
 }
 
 export async function publishNow(postId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db
       .update(schema.blogPosts)
       .set({ status: "published", publishedAt: new Date(), updatedAt: new Date() })
       .where(eq(schema.blogPosts.id, postId));
+    await logAudit({
+      userId: me.id,
+      entity: "blog",
+      entityId: postId,
+      action: "publish",
+    });
     revalidatePath("/admin/blog");
     revalidatePath(`/admin/blog/${postId}`);
     return { ok: true as const };

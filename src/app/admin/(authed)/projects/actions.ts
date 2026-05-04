@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { asc, eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -43,7 +44,7 @@ async function uniqueSlug(base: string, excludeId?: string): Promise<string> {
 }
 
 export async function createProject(input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const newId = id();
     const slug = await uniqueSlug(input.slug || input.title);
@@ -66,6 +67,13 @@ export async function createProject(input: Input) {
       seoTitle: input.seoTitle || null,
       seoDescription: input.seoDescription || null,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "projects",
+      entityId: newId,
+      action: "create",
+      diff: { title: input.title, slug, status: input.status },
+    });
     revalidatePath("/admin/projects");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -74,7 +82,7 @@ export async function createProject(input: Input) {
 }
 
 export async function updateProject(projectId: string, input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const slug = await uniqueSlug(input.slug || input.title, projectId);
     await db
@@ -99,6 +107,13 @@ export async function updateProject(projectId: string, input: Input) {
         updatedAt: new Date(),
       })
       .where(eq(schema.projects.id, projectId));
+    await logAudit({
+      userId: me.id,
+      entity: "projects",
+      entityId: projectId,
+      action: "update",
+      diff: { title: input.title, status: input.status },
+    });
     revalidatePath("/admin/projects");
     revalidatePath(`/admin/projects/${projectId}`);
     return { ok: true as const };
@@ -108,9 +123,15 @@ export async function updateProject(projectId: string, input: Input) {
 }
 
 export async function deleteProject(projectId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.projects).where(eq(schema.projects.id, projectId));
+    await logAudit({
+      userId: me.id,
+      entity: "projects",
+      entityId: projectId,
+      action: "delete",
+    });
     revalidatePath("/admin/projects");
     return { ok: true as const };
   } catch (e) {

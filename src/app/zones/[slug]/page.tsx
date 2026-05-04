@@ -5,8 +5,7 @@ import { zones as staticZones } from "@/data/zones";
 import { Button } from "@/components/ui/Button";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
-import { companyInfo } from "@/data/navigation";
-import { getServices, getZones, getZoneBySlug } from "@/lib/content";
+import { getServices, getZones, getZoneBySlug, getCompanyInfo } from "@/lib/content";
 
 export function generateStaticParams() {
   return staticZones.map((z) => ({ slug: z.slug }));
@@ -33,10 +32,11 @@ export default async function ZonePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [zone, services, zones] = await Promise.all([
+  const [zone, services, zones, company] = await Promise.all([
     getZoneBySlug(slug),
     getServices(),
     getZones(),
+    getCompanyInfo(),
   ]);
   if (!zone) notFound();
 
@@ -54,12 +54,12 @@ export default async function ZonePage({
     image: "https://iefandco.com/opengraph-image",
     "@id": `https://iefandco.com/zones/${zone.slug}`,
     url: `https://iefandco.com/zones/${zone.slug}`,
-    telephone: companyInfo.phone,
+    telephone: company.phone,
     address: {
       "@type": "PostalAddress",
-      streetAddress: companyInfo.address.street,
-      addressLocality: companyInfo.address.city,
-      postalCode: companyInfo.address.postalCode,
+      streetAddress: company.address.street,
+      addressLocality: company.address.city,
+      postalCode: company.address.postalCode,
       addressRegion: zone.region,
       addressCountry: "FR",
     },

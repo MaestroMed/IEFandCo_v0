@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -41,7 +42,7 @@ async function uniqueSlug(base: string, excludeId?: string): Promise<string> {
 }
 
 export async function createGlossaryTerm(input: GlossaryInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const parsed = glossarySchema.parse(input);
     const newId = id();
@@ -58,6 +59,13 @@ export async function createGlossaryTerm(input: GlossaryInput) {
       visible: parsed.visible ?? true,
       orderIdx: parsed.orderIdx ?? 0,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "content:glossary",
+      entityId: newId,
+      action: "create",
+      diff: { term: parsed.term, slug },
+    });
     revalidatePath("/admin/content/glossary");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -66,7 +74,7 @@ export async function createGlossaryTerm(input: GlossaryInput) {
 }
 
 export async function updateGlossaryTerm(termId: string, input: GlossaryInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const parsed = glossarySchema.parse(input);
     const slug = await uniqueSlug(parsed.slug || parsed.term, termId);
@@ -85,6 +93,13 @@ export async function updateGlossaryTerm(termId: string, input: GlossaryInput) {
         updatedAt: new Date(),
       })
       .where(eq(schema.glossaryTerms.id, termId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:glossary",
+      entityId: termId,
+      action: "update",
+      diff: { term: parsed.term },
+    });
     revalidatePath("/admin/content/glossary");
     revalidatePath(`/admin/content/glossary/${termId}`);
     return { ok: true as const };
@@ -94,9 +109,15 @@ export async function updateGlossaryTerm(termId: string, input: GlossaryInput) {
 }
 
 export async function deleteGlossaryTerm(termId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.glossaryTerms).where(eq(schema.glossaryTerms.id, termId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:glossary",
+      entityId: termId,
+      action: "delete",
+    });
     revalidatePath("/admin/content/glossary");
     return { ok: true as const };
   } catch (e) {

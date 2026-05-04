@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { companyInfo } from "@/data/navigation";
 import { generatePageMetadata } from "@/lib/seo";
-import { getPageSeo } from "@/lib/content";
+import { getPageSeo, getCompanyInfo } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getPageSeo("mentions-legales");
@@ -15,7 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default function MentionsLegales() {
+export default async function MentionsLegales() {
+  const company = await getCompanyInfo();
   return (
     <section className="section-forge-light relative overflow-hidden pt-32 pb-24 md:pt-40 md:pb-32 min-h-screen">
       <div className="forge-gradient-light" style={{ opacity: 0.4 }} />
@@ -33,14 +33,14 @@ export default function MentionsLegales() {
         <div className="mt-10 space-y-8 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
           <section>
             <h2 className="font-display text-lg font-semibold mb-3" style={{ color: "var(--text)" }}>Éditeur du site</h2>
-            <p>{companyInfo.fullName}</p>
-            <p>{companyInfo.address.street}, {companyInfo.address.postalCode} {companyInfo.address.city}</p>
-            <p>SIREN : {companyInfo.siren}</p>
-            <p>RCS : {companyInfo.rcs}</p>
-            <p>Capital social : {companyInfo.capital} EUR</p>
-            <p>Président : {companyInfo.president}</p>
-            <p>Téléphone : {companyInfo.phoneDisplay}</p>
-            <p>Email : {companyInfo.email}</p>
+            <p>{company.legalName}</p>
+            <p>{company.address.street}, {company.address.postalCode} {company.address.city}</p>
+            <p>SIREN : {company.siren}</p>
+            <p>RCS : {company.rcs}</p>
+            {company.capital && <p>Capital social : {company.capital} EUR</p>}
+            <p>Président : {company.president}</p>
+            <p>Téléphone : {company.phoneDisplay}</p>
+            <p>Email : {company.email}</p>
           </section>
 
           <section>

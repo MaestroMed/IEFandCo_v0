@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -22,7 +23,7 @@ type Input = {
 };
 
 export async function createClient(input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const newId = id();
     await db.insert(schema.clients).values({
@@ -34,6 +35,13 @@ export async function createClient(input: Input) {
       orderIdx: input.orderIdx ?? 0,
       logoMediaId: input.logoMediaId || null,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "clients",
+      entityId: newId,
+      action: "create",
+      diff: { name: input.name, permissionStatus: input.permissionStatus },
+    });
     revalidatePath("/admin/clients");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -42,7 +50,7 @@ export async function createClient(input: Input) {
 }
 
 export async function updateClient(clientId: string, input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db
       .update(schema.clients)
@@ -55,6 +63,13 @@ export async function updateClient(clientId: string, input: Input) {
         logoMediaId: input.logoMediaId || null,
       })
       .where(eq(schema.clients.id, clientId));
+    await logAudit({
+      userId: me.id,
+      entity: "clients",
+      entityId: clientId,
+      action: "update",
+      diff: { name: input.name },
+    });
     revalidatePath("/admin/clients");
     revalidatePath(`/admin/clients/${clientId}`);
     return { ok: true as const };
@@ -64,9 +79,15 @@ export async function updateClient(clientId: string, input: Input) {
 }
 
 export async function deleteClient(clientId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.clients).where(eq(schema.clients.id, clientId));
+    await logAudit({
+      userId: me.id,
+      entity: "clients",
+      entityId: clientId,
+      action: "delete",
+    });
     revalidatePath("/admin/clients");
     return { ok: true as const };
   } catch (e) {

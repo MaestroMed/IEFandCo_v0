@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { generatePageMetadata, generateBreadcrumbSchema } from "@/lib/seo";
-import { companyInfo } from "@/data/navigation";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { WorkshopAtmosphere } from "@/components/ui/WorkshopAtmosphere";
-import { getPageSeo, getPageHero } from "@/lib/content";
+import { getPageSeo, getPageHero, getCompanyInfo } from "@/lib/content";
 import { ATMOSPHERE } from "@/lib/photoMap";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = await getPageSeo("contact");
+  const [seo, company] = await Promise.all([getPageSeo("contact"), getCompanyInfo()]);
   return generatePageMetadata({
     title: seo?.title || "Contact | Parlons de votre projet métallique",
     description:
       seo?.description ||
-      "Contactez IEF & CO pour vos projets de métallerie en Île-de-France. Devis gratuit, étude technique, intervention rapide. Tel : 01 34 05 87 03.",
+      `Contactez IEF & CO pour vos projets de métallerie en Île-de-France. Devis gratuit, étude technique, intervention rapide. Tel : ${company.phoneDisplay}.`,
     path: "/contact",
     image: seo?.ogImageUrl,
   });
 }
 
 export default async function ContactPage() {
-  const heroOverride = await getPageHero("contact");
+  const [heroOverride, company] = await Promise.all([
+    getPageHero("contact"),
+    getCompanyInfo(),
+  ]);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Accueil", url: "/" },
     { name: "Contact", url: "/contact" },
@@ -130,9 +132,9 @@ export default async function ContactPage() {
                   </svg>
                 </div>
                 <p className="text-base leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {companyInfo.address.street}<br />
-                  {companyInfo.address.postalCode} {companyInfo.address.city}<br />
-                  <span className="text-sm" style={{ color: "var(--text-muted)" }}>{companyInfo.address.region}</span>
+                  {company.address.street}<br />
+                  {company.address.postalCode} {company.address.city}<br />
+                  <span className="text-sm" style={{ color: "var(--text-muted)" }}>{company.address.region}</span>
                 </p>
               </div>
             </div>
@@ -145,7 +147,7 @@ export default async function ContactPage() {
                 Téléphone
               </h3>
               <a
-                href={`tel:${companyInfo.phone}`}
+                href={`tel:${company.phone}`}
                 className="mt-3 flex items-start gap-4 group"
               >
                 <div
@@ -161,7 +163,7 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <div className="font-display text-xl font-bold transition-colors group-hover:text-primary" style={{ color: "var(--text)" }}>
-                    {companyInfo.phoneDisplay}
+                    {company.phoneDisplay}
                   </div>
                   <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Lun-Ven · 8h-18h</div>
                 </div>
@@ -176,7 +178,7 @@ export default async function ContactPage() {
                 Email
               </h3>
               <a
-                href={`mailto:${companyInfo.email}`}
+                href={`mailto:${company.email}`}
                 className="mt-3 flex items-start gap-4 group"
               >
                 <div
@@ -192,7 +194,7 @@ export default async function ContactPage() {
                 </div>
                 <div>
                   <div className="font-display text-base font-semibold transition-colors group-hover:text-primary break-all" style={{ color: "var(--text)" }}>
-                    {companyInfo.email}
+                    {company.email}
                   </div>
                   <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Réponse sous 24h</div>
                 </div>

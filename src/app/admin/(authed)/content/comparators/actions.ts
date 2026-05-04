@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -47,7 +48,7 @@ function nullify(v: string | undefined | null): string | null {
 }
 
 export async function createComparator(input: ComparatorInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = comparatorSchema.parse(input);
     const newId = id();
@@ -68,6 +69,13 @@ export async function createComparator(input: ComparatorInput) {
       visible: p.visible ?? true,
       orderIdx: p.orderIdx ?? 0,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "content:comparators",
+      entityId: newId,
+      action: "create",
+      diff: { title: p.title, slug },
+    });
     revalidatePath("/admin/content/comparators");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -76,7 +84,7 @@ export async function createComparator(input: ComparatorInput) {
 }
 
 export async function updateComparator(comparatorId: string, input: ComparatorInput) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const p = comparatorSchema.parse(input);
     const slug = await uniqueSlug(p.slug || p.title, comparatorId);
@@ -99,6 +107,13 @@ export async function updateComparator(comparatorId: string, input: ComparatorIn
         updatedAt: new Date(),
       })
       .where(eq(schema.comparators.id, comparatorId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:comparators",
+      entityId: comparatorId,
+      action: "update",
+      diff: { title: p.title },
+    });
     revalidatePath("/admin/content/comparators");
     revalidatePath(`/admin/content/comparators/${comparatorId}`);
     return { ok: true as const };
@@ -108,9 +123,15 @@ export async function updateComparator(comparatorId: string, input: ComparatorIn
 }
 
 export async function deleteComparator(comparatorId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.comparators).where(eq(schema.comparators.id, comparatorId));
+    await logAudit({
+      userId: me.id,
+      entity: "content:comparators",
+      entityId: comparatorId,
+      action: "delete",
+    });
     revalidatePath("/admin/content/comparators");
     return { ok: true as const };
   } catch (e) {

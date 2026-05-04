@@ -25,6 +25,13 @@ export const BRANDING_KEYS = [
   "brand:og-default-image",
   "brand:logo-dark-url",
   "brand:logo-light-url",
+  // Media-id based fields (resolved against the media table → url + alt)
+  // Preferred path going forward; the *-url fields above remain for backwards
+  // compatibility when an admin hand-pastes a URL instead of using MediaPicker.
+  "brand:logo-media-id",
+  "brand:logo-light-media-id",
+  "brand:favicon-media-id",
+  "brand:logo-alt",
 ] as const;
 
 export const INTEGRATION_KEYS = [

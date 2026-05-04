@@ -2,6 +2,7 @@
 
 import { db, schema } from "@/db";
 import { requireAdmin } from "@/lib/admin/auth";
+import { logAudit } from "@/lib/admin/audit";
 import { eq } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
@@ -21,7 +22,7 @@ type Input = {
 };
 
 export async function createTestimonial(input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     const newId = id();
     await db.insert(schema.testimonials).values({
@@ -34,6 +35,13 @@ export async function createTestimonial(input: Input) {
       orderIdx: input.orderIdx ?? 0,
       photoMediaId: input.photoMediaId || null,
     });
+    await logAudit({
+      userId: me.id,
+      entity: "testimonials",
+      entityId: newId,
+      action: "create",
+      diff: { author: input.author, rating: input.rating },
+    });
     revalidatePath("/admin/testimonials");
     return { ok: true as const, id: newId };
   } catch (e) {
@@ -42,7 +50,7 @@ export async function createTestimonial(input: Input) {
 }
 
 export async function updateTestimonial(testimonialId: string, input: Input) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db
       .update(schema.testimonials)
@@ -56,6 +64,13 @@ export async function updateTestimonial(testimonialId: string, input: Input) {
         photoMediaId: input.photoMediaId || null,
       })
       .where(eq(schema.testimonials.id, testimonialId));
+    await logAudit({
+      userId: me.id,
+      entity: "testimonials",
+      entityId: testimonialId,
+      action: "update",
+      diff: { author: input.author, rating: input.rating },
+    });
     revalidatePath("/admin/testimonials");
     revalidatePath(`/admin/testimonials/${testimonialId}`);
     return { ok: true as const };
@@ -65,9 +80,15 @@ export async function updateTestimonial(testimonialId: string, input: Input) {
 }
 
 export async function deleteTestimonial(testimonialId: string) {
-  await requireAdmin();
+  const me = await requireAdmin();
   try {
     await db.delete(schema.testimonials).where(eq(schema.testimonials.id, testimonialId));
+    await logAudit({
+      userId: me.id,
+      entity: "testimonials",
+      entityId: testimonialId,
+      action: "delete",
+    });
     revalidatePath("/admin/testimonials");
     return { ok: true as const };
   } catch (e) {

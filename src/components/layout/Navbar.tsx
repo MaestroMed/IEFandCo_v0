@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
@@ -9,6 +10,12 @@ import { navigation, companyInfo, type NavItem } from "@/data/navigation";
 import { MobileMenu } from "./MobileMenu";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
+
+export interface NavbarBrandingProp {
+  logoUrl: string | null;
+  logoLightUrl: string | null;
+  logoAlt: string;
+}
 
 function ServicesDropdown({ items, menuId }: { items: NavItem[]; menuId: string }) {
   return (
@@ -74,6 +81,32 @@ function ServicesDropdown({ items, menuId }: { items: NavItem[]; menuId: string 
 
 // Pixar-style bouncy spring for each letter
 const pixarSpring = { type: "spring" as const, stiffness: 400, damping: 12, mass: 0.8 };
+
+function BrandLogo({ branding, themeClass }: { branding?: NavbarBrandingProp; themeClass: "light" | "dark" }) {
+  // Pick the right URL : explicit light variant when in light theme, otherwise primary.
+  const url = branding
+    ? themeClass === "light" && branding.logoLightUrl
+      ? branding.logoLightUrl
+      : branding.logoUrl
+    : null;
+
+  if (!url) return <AnimatedLogo />;
+
+  const alt = branding?.logoAlt || "IEF & CO — Accueil";
+  return (
+    <Link href="/" className="relative z-10 inline-flex items-center" aria-label={alt}>
+      <Image
+        src={url}
+        alt={alt}
+        width={140}
+        height={36}
+        className="h-9 w-auto object-contain"
+        priority
+        unoptimized={url.endsWith(".svg")}
+      />
+    </Link>
+  );
+}
 
 function AnimatedLogo() {
   const [hasPlayed, setHasPlayed] = useState(false);
@@ -143,7 +176,7 @@ function AnimatedLogo() {
   );
 }
 
-export function Navbar() {
+export function Navbar({ branding }: { branding?: NavbarBrandingProp }) {
   const scrolled = useScrolledPast(80);
   const pathname = usePathname();
   // Track which specific dropdown is open (by href). `null` = none open.
@@ -286,7 +319,7 @@ export function Navbar() {
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
           <div style={{ color: navTextPrimary, transition: "color 350ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
-            <AnimatedLogo />
+            <BrandLogo branding={branding} themeClass={themeClass} />
           </div>
 
           {/* Primary nav — 5 items, centered, breathing room */}
